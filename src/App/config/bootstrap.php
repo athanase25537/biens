@@ -1,11 +1,10 @@
 <?php
 
-use PDO;
 use App\Repositories\MySQLUserRepository;
 use App\UseCases\CreateUserUseCase;
 use App\Controllers\UserController;
 
-$pdo = new PDO('mysql:host=localhost;dbname=my_database', 'username', 'password');
+$pdo = new PDO('mysql:host=localhost;dbname=bailonline', 'root', '');
 $userRepository = new MySQLUserRepository($pdo);
 $createUserUseCase = new CreateUserUseCase($userRepository);
 $userController = new UserController($createUserUseCase);

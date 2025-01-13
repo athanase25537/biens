@@ -1,27 +1,40 @@
 <?php
+
 namespace App\Adapter\Persistence\Doctrine;
 
 use App\Core\Domain\Entity\User;
 use App\Port\Out\UserRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Port\Out\DatabaseAdapterInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
-    private $entityManager;
+    private DatabaseAdapterInterface $dbAdapter;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(DatabaseAdapterInterface $dbAdapter)
     {
-        $this->entityManager = $entityManager;
+        $this->dbAdapter = $dbAdapter;
     }
 
     public function save(User $user): void
     {
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $stmt = $this->dbAdapter->prepare("INSERT INTO users (email, password, name) VALUES (:email, :password, :name)");
+        $stmt->bindParam(':email', $user->getEmail());
+        $stmt->bindParam(':password', $user->getPassword());
+        $stmt->bindParam(':name', $user->getName());
+        $stmt->execute();
     }
 
     public function findByEmail(string $email): ?User
     {
-        return $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        $stmt = $this->dbAdapter->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        
+        $data = $stmt->fetch();
+        if ($data) {
+            return new User($data['id'], $data['email'], $data['password'], $data['name']);
+        }
+        
+        return null;
     }
 }

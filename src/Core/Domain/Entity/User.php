@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Core\Domain\Entity;
 
 class User
 {
-    private $id;
-    private $email;
-    private $password;
-    private $name;
+    private int $id;
+    private string $email;
+    private string $password;
+    private string $name;
 
     public function __construct(int $id, string $email, string $password, string $name)
     {

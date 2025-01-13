@@ -1,37 +1,20 @@
 <?php
-namespace App\Adapter\Persistence;
+namespace App\Adapter\Persistence\Doctrine\DatabaseAdapter;
 
 use App\Port\Out\DatabaseAdapterInterface;
 use PDO;
 
-class PostgreSQLAdapter implements DatabaseAdapterInterface
-{
-    private $pdo;
+class PostgreSQLAdapter implements DatabaseAdapterInterface {
+    private $connection;
 
-    public function connect(): void
-    {
-        $host = 'localhost';
-        $dbname = 'mon_db';
-        $username = 'postgres';
-        $password = 'ma_pass';
-
-        try {
-            $this->pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (\PDOException $e) {
-            throw new \RuntimeException('Error connecting to PostgreSQL: ' . $e->getMessage());
-        }
+    public function connect(array $config): void {
+        $dsn = "pgsql:host={$config['host']};dbname={$config['dbname']}";
+        $this->connection = new PDO($dsn, $config['user'], $config['password'], [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
     }
 
-    public function query(string $query, array $params = []): array
-    {
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function prepare(string $query): object
-    {
-        return $this->pdo->prepare($query);
-    }
+    // Autres méthodes identiques à MySQLAdapter
+    // ... (implementation des autres méthodes)
 }

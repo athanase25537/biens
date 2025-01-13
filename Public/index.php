@@ -2,22 +2,33 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Adapter\Persistence\PDOAdapter;
-use App\Adapter\Persistence\Doctrine\UserRepository;
+// Chargement de la configuration
+$dbConfig = require __DIR__ . '/../config/database.php';
 
-// Charger la configuration
-$config = require __DIR__ . '/../config/database.php';
+// Création de l'adaptateur de base de données approprié
+$dbAdapterClass = match($dbConfig['db_type']) {
+    'mysql' => \App\Adapter\Persistence\Doctrine\DatabaseAdapter\MySQLAdapter::class,
+    'postgresql' => \App\Adapter\Persistence\Doctrine\DatabaseAdapter\PostgreSQLAdapter::class,
+    default => throw new \Exception("Unsupported database type: {$dbConfig['db_type']}")
+};
 
-// Initialiser la connexion PDO
-$dsn = sprintf('mysql:host=%s;dbname=%s', $config['host'], $config['dbname']);
-$pdo = new PDO($dsn, $config['user'], $config['password']);
-$pdoAdapter = new PDOAdapter($pdo);
+$dbAdapter = new $dbAdapterClass();
+$dbAdapter->connect($dbConfig);
 
-// Initialiser le UserRepository
-$userRepository = new UserRepository($pdoAdapter);
+// Initialisation des dépendances
+$userRepository = new \App\Adapter\Persistence\Doctrine\UserRepository($dbAdapter);
+$loginUseCase = new \App\Core\Application\UseCase\LoginUserUseCase($userRepository);
+$registerUseCase = new \App\Core\Application\UseCase\RegisterUserUseCase($userRepository);
+$controller = new \App\Adapter\Api\Rest\AuthController($registerUseCase, $loginUseCase);
 
-// Exemple d'utilisation
-$newUser = new \App\Core\Domain\Entity\User(0, 'test@example.com', 'password123', 'John Doe');
-$userRepository->save($newUser);
+// Gestion des routes
+$requestUri = $_SERVER['REQUEST_URI'];
 
-echo "User saved!";
+if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->login();
+} elseif ($requestUri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->register();
+} else {
+    http_response_code(404);
+    echo json_encode(['success' => false, 'error' => 'Not Found']);
+}

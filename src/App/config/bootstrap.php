@@ -1,8 +1,10 @@
 <?php
 
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
 use App\Repositories\MySQLUserRepository;
-use App\UseCases\CreateUserUseCase;
 use App\Controllers\UserController;
+use App\UseCases\CreateUserUseCase;
 
 $pdo = new PDO('mysql:host=localhost;dbname=bailonline', 'root', '');
 $userRepository = new MySQLUserRepository($pdo);
@@ -20,6 +22,7 @@ $data = [
     'rules' => '',
     'name' => 'Atha',
     'firstname' => 'Nos',
+    'is_active' => true,
 ];
 
 echo $userController->createUser($data);

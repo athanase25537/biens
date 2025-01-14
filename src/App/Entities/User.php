@@ -16,7 +16,7 @@ class User
     private string $rules;
     private string $name;
     private string $firstname;
-    private bool $is_active;
+    private int $is_active;
     private DateTime $last_login;
     private DateTime $created_at;
     private DateTime $updated_at;
@@ -41,7 +41,7 @@ class User
         $this->rules = $rules;
         $this->name = $name;
         $this->firstname = $firstname;
-        $this->is_active = false;
+        $this->is_active = 0;
         $this->last_login = new DateTime();
         $this->created_at = new DateTime();
         $this->updated_at = new DateTime();
@@ -149,9 +149,9 @@ class User
         $this->firstname = $firstname;
     }
 
-    public function isActive(): bool
+    public function isActive(): int
     {
-        return $this->is_active;
+        return (int)$this->is_active;
     }
 
     public function setIsActive(bool $is_active): void

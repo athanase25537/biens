@@ -1,82 +1,49 @@
 <?php
-namespace App\Adapter\Persistence\Doctrine\DatabaseAdapter;
+
+namespace App\Adapter\Persistence;
 
 use App\Port\Out\DatabaseAdapterInterface;
-use PDO;
 
 class MySQLAdapter implements DatabaseAdapterInterface {
     private $connection;
 
     public function connect(array $config): void {
-        $dsn = "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4";
-        $this->connection = new PDO($dsn, $config['user'], $config['password'], [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
+        $this->connection = new \mysqli(
+            $config['host'],
+            $config['user'],
+            $config['password'],
+            $config['dbname']
+        );
+
+        if ($this->connection->connect_error) {
+            throw new \Exception("Connection failed: " . $this->connection->connect_error);
+        }
     }
 
-    public function query(string $sql, array $params = []): array {
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
+    public function query(string $query, array $params = []): array {
+        $stmt = $this->connection->prepare($query);
+        if ($params) {
+            $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if (!$result) {
+            throw new \Exception("Query failed: " . $this->connection->error);
+        }
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+      public function findOne($email)
+    {
+        $query = "SELECT * FROM users WHERE email = ?";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute([$email]);
+
+        return $stmt->fetch();
     }
 
-    public function findOne(string $sql, array $params = []): ?array {
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
-        $result = $stmt->fetch();
-        return $result ?: null;
-    }
-
-    public function execute(string $sql, array $params = []): bool {
-        $stmt = $this->connection->prepare($sql);
-        return $stmt->execute($params);
-    }
-
-    public function lastInsertId(): string {
-        return $this->connection->lastInsertId();
+    public function close(): void {
+        $this->connection->close();
     }
 }
-
-
-
-
-
-
-
-// namespace App\Adapter\Persistence;
-
-// use App\Port\Out\DatabaseAdapterInterface;
-// use PDO;
-
-// class MySQLAdapter implements DatabaseAdapterInterface
-// {
-//     private $pdo;
-
-//     public function connect(): void
-//     {
-//         $host = 'localhost';
-//         $dbname = 'bailonline';
-//         $username = 'bailonline';
-//         $password = '3NEeZuRailVisKB7V2Gr';
-
-//         try {
-//             $this->pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-//             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-//         } catch (\PDOException $e) {
-//             throw new \RuntimeException('Error connecting to MySQL: ' . $e->getMessage());
-//         }
-//     }
-
-//     public function query(string $query, array $params = []): array
-//     {
-//         $stmt = $this->pdo->prepare($query);
-//         $stmt->execute($params);
-//         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-//     }
-
-//     public function prepare(string $query): object
-//     {
-//         return $this->pdo->prepare($query);
-//     }
-// }

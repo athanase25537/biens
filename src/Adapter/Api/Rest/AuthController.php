@@ -3,8 +3,6 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\RegisterUserUseCase;
 use App\Core\Application\UseCase\LoginUserUseCase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class AuthController
 {
@@ -17,23 +15,33 @@ class AuthController
         $this->loginUserUseCase = $loginUserUseCase;
     }
 
-    public function register(Request $request): Response
+    public function register()
     {
-        $data = json_decode($request->getContent(), true);
+
+        $data = json_decode(file_get_contents('php://input'), true);
         $user = $this->registerUserUseCase->execute($data['email'], $data['password'], $data['name']);
         
-        return new Response('User registered successfully', Response::HTTP_CREATED);
+        $this->sendResponse('User registered successfully', 201);
     }
 
-    public function login(Request $request): Response
+    public function login()
     {
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode(file_get_contents('php://input'), true);
+        
         $user = $this->loginUserUseCase->execute($data['email'], $data['password']);
 
         if ($user) {
-            return new Response('Login successful', Response::HTTP_OK);
+            $this->sendResponse('Login successful', 200);
+        } else {
+            $this->sendResponse('Invalid credentials', 401);
         }
+    }
 
-        return new Response('Invalid credentials', Response::HTTP_UNAUTHORIZED);
+    private function sendResponse($message, $statusCode)
+    {
+        header('Content-Type: application/json');
+        http_response_code($statusCode);
+
+        echo json_encode(['message' => $message]);
     }
 }

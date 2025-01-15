@@ -21,7 +21,7 @@ class AuthController
         $data = json_decode(file_get_contents('php://input'), true);
         $user = $this->registerUserUseCase->execute($data);
         
-        // Structure de la réponse contenant le message et les données utilisateur
+        // Response structure
         $response = [
             'message' => 'User registered successfully',
             'user' => [
@@ -35,7 +35,7 @@ class AuthController
             ],
         ];
 
-        // Envoi de la réponse avec le statut HTTP 201 (Created)
+        // Sending response
         $this->sendResponse($response, 201);
     }
 

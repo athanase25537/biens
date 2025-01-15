@@ -2,7 +2,7 @@
     "name": "andriamasy/bailonline",
     "autoload": {
         "psr-4": {
-            "App\\": "src/App/"
+            "App\\": "src/"
         }
     },
     "require": {}

@@ -28,7 +28,7 @@ class RegisterUserUseCase implements RegisterUserInputPort
             $data['prenom']
         );
 
-        $this->userRepository->save($user);
+        $user = $this->userRepository->save($user);
         return $user;
     }
 }

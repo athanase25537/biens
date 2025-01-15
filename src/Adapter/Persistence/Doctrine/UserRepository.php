@@ -20,9 +20,8 @@ class UserRepository implements UserRepositoryInterface {
         );
     }
 
-    public function save(User $user): void
+    public function save(User $user): User
     {
-        
         $config = [
             'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
             'host' => 'localhost',
@@ -30,16 +29,17 @@ class UserRepository implements UserRepositoryInterface {
             'user' => 'root',
             'password' => '',
         ];
-        
-       // Préparation de la requête
-        $query = "INSERT INTO users (id_parrain, username, photo, email, portable, password, role, nom, prenom, is_active, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
-        // Initialisation de la connexion MySQLi (Assurez-vous que $mysqli est une instance valide de MySQLi)
-        $stmt = $this->db->connect($config)->prepare($query);
+        // Préparation de la requête
+        $query = "INSERT INTO users (id_parrain, username, photo, email, portable, password, role, nom, prenom, is_active, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+
+        // Initialisation de la connexion MySQLi
+        $db = $this->db->connect($config);
+        $stmt = $db->prepare($query);
 
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $this->mysqli->error);
+            throw new \Exception("Failed to prepare statement: " . $db->error);
         }
 
         // Liaison des paramètres (type "s" pour string, "i" pour integer, "d" pour double, "b" pour blob)
@@ -75,10 +75,13 @@ class UserRepository implements UserRepositoryInterface {
         }
 
         // Récupération de l'ID inséré
-        $user->setId((int)$this->db->connect($config)->insert_id);
+        $lastInsertedId = $db->insert_id;
+        $user->setId((int)$lastInsertedId);
 
         // Fermeture du statement
         $stmt->close();
 
+        return $user;
     }
+
 }

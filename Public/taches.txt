@@ -1,0 +1,2 @@
+CRUD BIEN IMMOBILIER
+tables utilent: biens_immobiliers / types_bien / biens_immobilier_configuration / bien_immobilier_option

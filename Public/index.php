@@ -5,9 +5,12 @@ require_once '../vendor/autoload.php';
 use App\Adapter\Api\Rest\AuthController;
 use App\Adapter\Persistence\MySQLAdapter;
 use App\Adapter\Persistence\PostgreSQLAdapter;
+use App\Adapter\Api\Rest\BienImmobilierController;
 use App\Core\Application\UseCase\LoginUserUseCase;
 use App\Adapter\Persistence\Doctrine\UserRepository;
 use App\Core\Application\UseCase\RegisterUserUseCase;
+use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
+use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
@@ -23,6 +26,13 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// bien immobilier
+$bienImmobilierRepository = new BienImmobilierRepository($dbAdapter);
+$createBienImmobilierUseCase = new CreateBienImmobilierUseCase($bienImmobilierRepository);
+$bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase);
+
+// user
 $userRepository = new UserRepository($dbAdapter);
 $loginUseCase = new LoginUserUseCase($userRepository);
 $registerUseCase = new RegisterUserUseCase($userRepository);
@@ -35,6 +45,12 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->login();
 } elseif ($requestUri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
+} elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $bienImmobilier->create();
+// } elseif ($requestUri === '/bien-immobilier/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+//     $bienImmobilier->update();
+// } elseif ($requestUri === '/bien-immobilier/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+//     $bienImmobilier->destroy();
 } else {
     http_response_code(404);
     echo json_encode(['success' => false, 'error' => 'Not Found']);

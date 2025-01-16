@@ -11,5 +11,4 @@ class Signature
     private \DateTime $createdAt;
     private \DateTime $updatedAt;
 
-    // Ajoute ici les getters, setters et méthodes métier
 }

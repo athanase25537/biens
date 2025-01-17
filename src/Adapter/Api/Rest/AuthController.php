@@ -33,7 +33,7 @@ class AuthController
         if ($user) {
             $this->sendResponse('Login successful', 200);
         } else {
-            $this->sendResponse('Invalid credentials', 401);
+            $this->sendResponse('Email ou mot de passe incorrect', 401);
         }
     }
 

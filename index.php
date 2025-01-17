@@ -28,6 +28,13 @@ $userRepository = new \App\Adapter\Persistence\Doctrine\UserRepository($dbAdapte
 $loginUseCase = new \App\Core\Application\UseCase\LoginUserUseCase($userRepository);
 $registerUseCase = new \App\Core\Application\UseCase\RegisterUserUseCase($userRepository);
 $controller = new \App\Adapter\Api\Rest\AuthController($registerUseCase, $loginUseCase);
+$bailRepository = new \App\Adapter\Persistence\Doctrine\BailRepository($dbAdapter);
+$addBailUseCase = new \App\Core\Application\UseCase\AddBailUseCase($bailRepository);
+$bailController = new \App\Adapter\Api\Rest\BailController($addBailUseCase);
+
+if ($requestUri === '/bail' && $requestMethod === 'POST') {
+    $bailController->addBail();
+}
 
 // Gestion des routes
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

@@ -1,6 +1,6 @@
 
 <?php
-namespace Port\Out;
+namespace App\Port\Out;
 
 interface BailRepositoryInterface
 {

@@ -1,0 +1,23 @@
+{
+    "name": "php-hexagonal-bail-online",
+    "description": "PHP clean architecture core library",
+    "type": "library",
+    "keywords": ["clean-architecture", "php", "core"],
+    "homepage": "https://bailonline.behoririka.mg",
+    "authors": [
+        {
+            "name": "Bajoh Tonane",
+            "email": "alfreddjpro@gmail.com",
+            "role": "Fullstackweb Developper",
+            "homepage": ""
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+    }
+}

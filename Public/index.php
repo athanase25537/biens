@@ -15,6 +15,7 @@ use App\Adapter\Api\Rest\TypeBienController;
 use App\Core\Application\UseCase\LoginUserUseCase;
 use App\Core\Application\UseCase\RegisterUserUseCase;
 use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
+use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 
 // repositories
@@ -40,7 +41,8 @@ $dbAdapter->connect($dbConfig);
 // bien immobilier
 $bienImmobilierRepository = new BienImmobilierRepository($dbAdapter);
 $createBienImmobilierUseCase = new CreateBienImmobilierUseCase($bienImmobilierRepository);
-$bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase);
+$updateBienImmobilierUseCase = new UpdateBienImmobilierUseCase($bienImmobilierRepository);
+$bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase, $updateBienImmobilierUseCase);
 
 // type bien
 $typeBienRepository = new TypeBienRepository($dbAdapter);
@@ -62,8 +64,14 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
 } elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $bienImmobilier->create();
-// } elseif ($requestUri === '/bien-immobilier/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-//     $bienImmobilier->update();
+} elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+// } elseif ($requestUri === '/bien-immobilier/update/{id_proprietaire}/{id_bien}' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idBien = $matches[1];
+    try{
+        $bienImmobilier->update($idBien);
+    } catch(Exception $e) {
+        echo "Erreur: " . $e;
+    }
 // } elseif ($requestUri === '/bien-immobilier/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 //     $bienImmobilier->destroy();
 } elseif ($requestUri === '/admin/type-bien/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {

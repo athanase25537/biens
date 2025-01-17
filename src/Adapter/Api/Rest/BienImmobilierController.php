@@ -2,16 +2,22 @@
 namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
+use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
 
 class BienImmobilierController
 {
 
     private $createBienImmobilierUseCase;
+    private $updateBienImmobilierUseCase;
 
-    public function __construct(CreateBienImmobilierUseCase $createBienImmobilierUseCase)
+    public function __construct(
+        CreateBienImmobilierUseCase $createBienImmobilierUseCase,
+        UpdateBienImmobilierUseCase $updateBienImmobilierUseCase,    
+    )
     {
 
         $this->createBienImmobilierUseCase = $createBienImmobilierUseCase;
+        $this->updateBienImmobilierUseCase = $updateBienImmobilierUseCase;
 
     }
 
@@ -55,6 +61,25 @@ class BienImmobilierController
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponse($response, 201);
         
+    }
+
+    public function update($idBien)
+    {
+        // Récupération des données de la requête
+        $data = json_decode(file_get_contents('php://input'), true);
+        echo $idBien;
+
+        // Création du bien immobilier via le use case ou service
+        $bienImmobilier = $this->updateBienImmobilierUseCase->execute($idBien, $data);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Bien immobilier enregistré avec succès',
+            'bien_immobilier' => $bienImmobilier
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponse($response, 201);
     }
 
     private function sendResponse($message, $statusCode)

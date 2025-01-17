@@ -10,23 +10,20 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
 {
 
     private $db;
-
+    private $config = [
+        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
+        'host' => 'localhost',
+        'dbname' => 'bailonline',
+        'user' => 'root',
+        'password' => '',
+    ];
     public function __construct(DatabaseAdapterInterface $dbAdapter)
     {
         $this->db = $dbAdapter;
     }
 
     public function save(BienImmobilier $bienImmobilier): BienImmobilier
-    {
-
-        $config = [
-            'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-            'host' => 'localhost',
-            'dbname' => 'bailonline',
-            'user' => 'root',
-            'password' => '',
-        ];
-        
+    {   
         // Préparation de la requête
         $query = "INSERT INTO biens_immobiliers 
             (etat_general, classe_energetique, consommation_energetique, 
@@ -36,7 +33,7 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
         
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($config);
+        $db = $this->db->connect($this->config);
         $stmt = $db->prepare($query);
         
         if (!$stmt) {
@@ -104,4 +101,141 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         
     }
 
+
+    public function update(int $idBienImmobilier, array $data): bool
+    {   
+        $query = "UPDATE biens_immobiliers 
+                    SET 
+                    etat_general = ?, 
+                    classe_energetique = ?, 
+                    consommation_energetique = ?, 
+                    emissions_ges = ?, 
+                    taxe_fonciere = ?, 
+                    taxe_habitation = ?, 
+                    orientation = ?, 
+                    vue = ?, 
+                    type_chauffage = ?, 
+                    statut_propriete = ?, 
+                    description = ?, 
+                    date_mise_a_jour = ?, 
+                    adresse = ?, 
+                    immeuble = ?, 
+                    etage = ?, 
+                    quartier = ?, 
+                    ville = ?, 
+                    code_postal = ?, 
+                    pays = ?, 
+                    updated_at = NOW() 
+                    WHERE id = ?";
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+        
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        // Récupération des données de l'enregistrement
+        $bienImmobilier = $this->getBienImmobilier($idBienImmobilier);
+        if (!$bienImmobilier) {
+            return false;
+        }
+
+        // Assignation des valeurs
+        $bienImmobilier = $data;
+        $etatGeneral = $bienImmobilier['etat_general'];
+        $classeEnergetique = $bienImmobilier['classe_energetique'];
+        $consommationEnergetique = $bienImmobilier['consommation_energetique'];
+        $emissionsGes = $bienImmobilier['emissions_ges'];
+        $taxeFonciere = $bienImmobilier['taxe_fonciere'];
+        $taxeHabitation = $bienImmobilier['taxe_habitation'];
+        $orientation = $bienImmobilier['orientation'];
+        $vue = $bienImmobilier['vue'];
+        $typeChauffage = $bienImmobilier['type_chauffage'];
+        $statutPropriete = $bienImmobilier['statut_propriete'];
+        $description = $bienImmobilier['description'];
+        $dateMiseAJour = $bienImmobilier['date_mise_a_jour'];
+        $adresse = $bienImmobilier['adresse'];
+        $immeuble = $bienImmobilier['immeuble'];
+        $etage = $bienImmobilier['etage'];
+        $quartier = $bienImmobilier['quartier'];
+        $ville = $bienImmobilier['ville'];
+        $codePostal = $bienImmobilier['code_postal'];
+        $pays = $bienImmobilier['pays'];
+        $id = $idBienImmobilier;
+
+        // Liaison des paramètres
+        $stmt->bind_param(
+            "sssssddssssssssssssi",
+            $etatGeneral,
+            $classeEnergetique,
+            $consommationEnergetique,
+            $emissionsGes,
+            $taxeFonciere,
+            $taxeHabitation,
+            $orientation,
+            $vue,
+            $typeChauffage,
+            $statutPropriete,
+            $description,
+            $dateMiseAJour,
+            $adresse,
+            $immeuble,
+            $etage,
+            $quartier,
+            $ville,
+            $codePostal,
+            $pays,
+            $id
+        );
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+                
+        $stmt->close();
+        return true;
+    }
+
+    public function getBienImmobilier($idBienImmobilier): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM biens_immobiliers WHERE id = ?";
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
+
+        // Assignation de la valeur du paramètre
+        $id = $idBienImmobilier;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun bien immobilier trouvé");
+        }
+
+        // Traitement du résultat
+        $row = $result->fetch_assoc();
+
+        // Remplissage de l'objet BienImmobilier avec les données récupérées
+        $bienImmobilier = $row;
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $bienImmobilier;
+
+    }
 }

@@ -47,6 +47,11 @@ try {
         $controller->login();
     } elseif ($requestUri === '/register' && $requestMethod === 'POST') {
         $controller->register();
+    }elseif($requestUri === '/upload-signature' && $requestMethod === 'POST') {
+            $repository = new SignatureRepository($pdo);
+            $controller = new SignatureController($repository);
+            $controller->uploadSignature();
+            exit;
     } else {
         http_response_code(404);
         echo json_encode(['success' => false, 'error' => 'Not Found']);

@@ -3,25 +3,29 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 
 class BienImmobilierController
 {
 
     private $createBienImmobilierUseCase;
     private $updateBienImmobilierUseCase;
+    private $deleteBienImmobilierUseCase;
 
     public function __construct(
         CreateBienImmobilierUseCase $createBienImmobilierUseCase,
         UpdateBienImmobilierUseCase $updateBienImmobilierUseCase,    
+        DeleteBienImmobilierUseCase $deleteBienImmobilierUseCase,    
     )
     {
 
         $this->createBienImmobilierUseCase = $createBienImmobilierUseCase;
         $this->updateBienImmobilierUseCase = $updateBienImmobilierUseCase;
+        $this->deleteBienImmobilierUseCase = $deleteBienImmobilierUseCase;
 
     }
 
-    public function create()
+    public function create(): void
     {
         // Récupération des données de la requête
         $data = json_decode(file_get_contents('php://input'), true);
@@ -63,19 +67,33 @@ class BienImmobilierController
         
     }
 
-    public function update($idBien)
+    public function update($idBien): void
     {
         // Récupération des données de la requête
         $data = json_decode(file_get_contents('php://input'), true);
-        echo $idBien;
 
         // Création du bien immobilier via le use case ou service
         $bienImmobilier = $this->updateBienImmobilierUseCase->execute($idBien, $data);
 
         // Structure de la réponse
         $response = [
-            'message' => 'Bien immobilier enregistré avec succès',
+            'message' => 'Bien mis à jour enregistré avec succès',
             'bien_immobilier' => $bienImmobilier
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponse($response, 201);
+    }
+
+    public function destroy(int $idBienImmobilier): void
+    {
+
+        // Création du bien immobilier via le use case ou service
+        $bienImmobilier = $this->deleteBienImmobilierUseCase->execute($idBienImmobilier);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Bien immobilier supprimer avec succès',
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)

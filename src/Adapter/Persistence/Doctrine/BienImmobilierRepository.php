@@ -236,6 +236,34 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         $stmt->close();
 
         return $bienImmobilier;
+    }
 
+    public function destroy(int $idBienImmobilier): bool
+    {
+        // Préparation de la connexion et de la requête
+        $query = "DELETE  FROM biens_immobiliers WHERE id = ?";
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
+
+        // Assignation de la valeur du paramètre
+        $id = $idBienImmobilier;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return true;       
     }
 }

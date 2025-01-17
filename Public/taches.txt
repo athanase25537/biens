@@ -1,2 +1,5 @@
 CRUD BIEN IMMOBILIER
 tables utilent: biens_immobiliers / types_bien / biens_immobilier_configuration / bien_immobilier_option
+rules: Alors le type de bien comme je te dit c'est ladmin qui gérer
+       Et la configuration/option tu peux faire un deuxième poste 
+       Car on a besoin de l'identifiant du bien pour le lier

@@ -4,103 +4,107 @@ namespace App\Adapter\Persistence\Doctrine;
 
 use App\Core\Domain\Entity\Bail;
 use App\Port\Out\BailRepositoryInterface;
-use PDO;
+use App\Port\Out\DatabaseAdapterInterface;
 
 class BailRepository implements BailRepositoryInterface
 {
-    private PDO $dbAdapter;
+    private $db;
 
-    public function __construct(PDO $dbAdapter)
+    public function __construct(DatabaseAdapterInterface $dbAdapter)
     {
-        $this->dbAdapter = $dbAdapter;
+        $this->db = $dbAdapter;
     }
 
-    public function save(Bail $bail): void
+    public function save(Bail $bail): Bail
     {
-        $query = "INSERT INTO baux (garant_id, bien_immobilier_id, montant_loyer, montant_charge, montant_caution, echeance_paiement, date_debut, date_fin, duree_preavis, statut, engagement_attestation_assurance, mode_paiement, conditions_speciales, references_legales, indexation_annuelle, indice_reference, caution_remboursee, date_remboursement_caution, created_at, updated_at)
-                  VALUES (:garant_id, :bien_immobilier_id, :montant_loyer, :montant_charge, :montant_caution, :echeance_paiement, :date_debut, :date_fin, :duree_preavis, :statut, :engagement_attestation_assurance, :mode_paiement, :conditions_speciales, :references_legales, :indexation_annuelle, :indice_reference, :caution_remboursee, :date_remboursement_caution, :created_at, :updated_at)";
-        $stmt = $this->dbAdapter->prepare($query);
+        $this->db->execute(
+            "INSERT INTO baux 
+            (garant_id, bien_immobilier_id, montant_loyer, montant_charge, montant_caution, 
+            echeance_paiement, date_debut, date_fin, duree_preavis, statut, engagement_attestation_assurance, 
+            mode_paiement, conditions_speciales, references_legales, indexation_annuelle, indice_reference, 
+            caution_remboursee, date_remboursement_caution, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
+            [
+                $bail->getGarantId(),
+                $bail->getBienImmobilierId(),
+                $bail->getMontantLoyer(),
+                $bail->getMontantCharge(),
+                $bail->getMontantCaution(),
+                $bail->getEcheancePaiement(),
+                $bail->getDateDebut()->format('Y-m-d'),
+                $bail->getDateFin()->format('Y-m-d'),
+                $bail->getDureePreavis(),
+                $bail->getStatut(),
+                $bail->getEngagementAttestationAssurance(),
+                $bail->getModePaiement(),
+                $bail->getConditionsSpeciales(),
+                $bail->getReferencesLegales(),
+                $bail->getIndexationAnnuelle(),
+                $bail->getIndiceReference(),
+                $bail->getCautionRemboursee(),
+                $bail->getDateRemboursementCaution() ? $bail->getDateRemboursementCaution()->format('Y-m-d') : null,
+            ]
+        );
 
-        $stmt->execute([
-            'garant_id' => $bail->getGarantId(),
-            'bien_immobilier_id' => $bail->getBienImmobilierId(),
-            'montant_loyer' => $bail->getMontantLoyer(),
-            'montant_charge' => $bail->getMontantCharge(),
-            'montant_caution' => $bail->getMontantCaution(),
-            'echeance_paiement' => $bail->getEcheancePaiement(),
-            'date_debut' => $bail->getDateDebut()->format('Y-m-d'),
-            'date_fin' => $bail->getDateFin()->format('Y-m-d'),
-            'duree_preavis' => $bail->getDureePreavis(),
-            'statut' => $bail->getStatut(),
-            'engagement_attestation_assurance' => $bail->getEngagementAttestationAssurance(),
-            'mode_paiement' => $bail->getModePaiement(),
-            'conditions_speciales' => $bail->getConditionsSpeciales(),
-            'references_legales' => $bail->getReferencesLegales(),
-            'indexation_annuelle' => $bail->getIndexationAnnuelle(),
-            'indice_reference' => $bail->getIndiceReference(),
-            'caution_remboursee' => $bail->getCautionRemboursee(),
-            'date_remboursement_caution' => $bail->getDateRemboursementCaution()?->format('Y-m-d'),
-            'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-            'updated_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-        ]);
+        // Set the ID from the database to the Bail object
+        $bail->setId((int)$this->db->lastInsertId());
 
-        return (int)$this->dbAdapter->lastInsertId();
+        return $bail;
     }
 
-    public function findById(int $id): ?Bail
+    public function update(int $idBail, array $data): bool
     {
-        $query = "SELECT * FROM baux WHERE id = :id";
-        $stmt = $this->dbAdapter->prepare($query);
-        $stmt->execute(['id' => $id]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $setClause = implode(', ', array_map(fn($key) => "$key = ?", array_keys($data)));
 
-        if (!$data) {
-            return null;
-        }
+        $query = "UPDATE baux SET $setClause, updated_at = NOW() WHERE id = ?";
+        $params = array_values($data);
+        $params[] = $idBail;
 
-        return $this->mapToBailEntity($data);
+        return $this->db->execute($query, $params);
     }
 
-    public function findAll(): array
+    public function getBail(int $idBail): ?Bail
     {
-        $query = "SELECT * FROM baux";
-        $stmt = $this->dbAdapter->query($query);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $row = $this->db->findOne(
+            "SELECT * FROM baux WHERE id = ?",
+            [$idBail]
+        );
 
-        return array_map([$this, 'mapToBailEntity'], $data);
+        return $row ? $this->mapToEntity($row) : null;
     }
 
-    public function delete(int $id): void
+    public function destroy(int $idBail): bool
     {
-        $query = "DELETE FROM baux WHERE id = :id";
-        $stmt = $this->dbAdapter->prepare($query);
-        $stmt->execute(['id' => $id]);
+        return $this->db->execute(
+            "DELETE FROM baux WHERE id = ?",
+            [$idBail]
+        );
     }
 
-    private function mapToBailEntity(array $data): Bail
+    private function mapToEntity(array $row): Bail
     {
         $bail = new Bail();
-        $bail->setId($data['id']);
-        $bail->setGarantId($data['garant_id']);
-        $bail->setBienImmobilierId($data['bien_immobilier_id']);
-        $bail->setMontantLoyer($data['montant_loyer']);
-        $bail->setMontantCharge($data['montant_charge']);
-        $bail->setMontantCaution($data['montant_caution']);
-        $bail->setEcheancePaiement($data['echeance_paiement']);
-        $bail->setDateDebut(new \DateTime($data['date_debut']));
-        $bail->setDateFin(new \DateTime($data['date_fin']));
-        $bail->setDureePreavis($data['duree_preavis']);
-        $bail->setStatut($data['statut']);
-        $bail->setEngagementAttestationAssurance($data['engagement_attestation_assurance']);
-        $bail->setModePaiement($data['mode_paiement']);
-        $bail->setConditionsSpeciales($data['conditions_speciales']);
-        $bail->setReferencesLegales($data['references_legales']);
-        $bail->setIndexationAnnuelle($data['indexation_annuelle']);
-        $bail->setIndiceReference($data['indice_reference']);
-        $bail->setCautionRemboursee($data['caution_remboursee']);
-        $bail->setDateRemboursementCaution($data['date_remboursement_caution'] ? new \DateTime($data['date_remboursement_caution']) : null);
-        $bail->setCreatedAt(new \DateTime($data['created_at']));
-        $bail->setUpdatedAt(new \DateTime($data['updated_at']));
+        $bail->setId($row['id']);
+        $bail->setGarantId($row['garant_id']);
+        $bail->setBienImmobilierId($row['bien_immobilier_id']);
+        $bail->setMontantLoyer($row['montant_loyer']);
+        $bail->setMontantCharge($row['montant_charge']);
+        $bail->setMontantCaution($row['montant_caution']);
+        $bail->setEcheancePaiement($row['echeance_paiement']);
+        $bail->setDateDebut(new \DateTime($row['date_debut']));
+        $bail->setDateFin(new \DateTime($row['date_fin']));
+        $bail->setDureePreavis($row['duree_preavis']);
+        $bail->setStatut($row['statut']);
+        $bail->setEngagementAttestationAssurance($row['engagement_attestation_assurance']);
+        $bail->setModePaiement($row['mode_paiement']);
+        $bail->setConditionsSpeciales($row['conditions_speciales']);
+        $bail->setReferencesLegales($row['references_legales']);
+        $bail->setIndexationAnnuelle($row['indexation_annuelle']);
+        $bail->setIndiceReference($row['indice_reference']);
+        $bail->setCautionRemboursee($row['caution_remboursee']);
+        $bail->setDateRemboursementCaution($row['date_remboursement_caution'] ? new \DateTime($row['date_remboursement_caution']) : null);
+        $bail->setCreatedAt(new \DateTime($row['created_at']));
+        $bail->setUpdatedAt(new \DateTime($row['updated_at']));
 
         return $bail;
     }

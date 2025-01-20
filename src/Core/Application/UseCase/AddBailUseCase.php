@@ -2,6 +2,7 @@
 namespace App\Core\Application\UseCase;
 
 use App\Core\Domain\Entity\Bail;
+use App\Core\Domain\Port\Out\CreateBailImmobilierInputPort;
 use App\Core\Domain\Port\Out\BailRepositoryInterface;
 
 class AddBailUseCase
@@ -13,9 +14,9 @@ class AddBailUseCase
         $this->bailRepository = $bailRepository;
     }
 
-    public function execute(array $bailData): int
+    public function execute(Bail $bail): Bail
     {
-        $bail = new Bail($bailData);
+        // Code pour ajouter un bail
         return $this->bailRepository->save($bail);
     }
 }

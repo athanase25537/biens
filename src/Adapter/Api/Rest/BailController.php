@@ -12,7 +12,7 @@ class BailController
         $this->addBailUseCase = $addBailUseCase;
     }
 
-    public function addBail(): void
+    public function create(): void
     {
         $data = json_decode(file_get_contents('php://input'), true);
 

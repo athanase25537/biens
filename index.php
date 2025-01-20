@@ -1,6 +1,8 @@
 <?php
-
-require_once '/autoload.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+require_once 'autoload.php';
 
 // adapters
 use App\Adapter\Persistence\MySQLAdapter;
@@ -10,6 +12,7 @@ use App\Adapter\Persistence\PostgreSQLAdapter;
 use App\Adapter\Api\Rest\AuthController;
 use App\Adapter\Api\Rest\BienImmobilierController;
 use App\Adapter\Api\Rest\TypeBienController;
+use App\Adapter\Api\Rest\BailController;
 
 // useCases
 use App\Core\Application\UseCase\LoginUserUseCase;
@@ -18,11 +21,13 @@ use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
+use App\Core\Application\UseCase\AddBailUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
 use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
+use App\Adapter\Persistence\Doctrine\BailRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/config/database.php';
@@ -51,6 +56,11 @@ $bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase, $up
 $typeBienRepository = new TypeBienRepository($dbAdapter);
 $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
 $typeBien = new TypeBienController($createTypeBienUseCase);
+// Bau
+$bailRepository = new BailRepository($dbAdapter);
+$createBail = new AddBailUseCase($bailRepository);
+$bailController = new BailController($createBail);
+
 
 // user
 $userRepository = new UserRepository($dbAdapter);
@@ -65,7 +75,10 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->login();
 } elseif ($requestUri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
-} elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+} elseif ($requestUri === '/bail/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $bailController->create();
+}
+elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $bienImmobilier->create();
 } elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // } elseif ($requestUri === '/bien-immobilier/update/{id_proprietaire}/{id_bien}' && $_SERVER['REQUEST_METHOD'] === 'POST') {

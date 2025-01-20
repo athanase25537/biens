@@ -12,6 +12,7 @@ use App\Adapter\Api\Rest\BienImmobilierController;
 use App\Adapter\Api\Rest\TypeBienController;
 use App\Adapter\Api\Rest\EtatLieuxController;
 use App\Adapter\Api\Rest\EtatLieuxItemsController;
+use App\Adapter\Api\Rest\IncidentController;
 
 // useCases
 use App\Core\Application\UseCase\LoginUserUseCase;
@@ -22,6 +23,7 @@ use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\CreateEtatLieuxUseCase;
 use App\Core\Application\UseCase\CreateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\CreateIncidentUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
@@ -29,6 +31,7 @@ use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
 use App\Adapter\Persistence\Doctrine\EtatLieuxRepository;
 use App\Adapter\Persistence\Doctrine\EtatLieuxItemsRepository;
+use App\Adapter\Persistence\Doctrine\IncidentRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
@@ -44,6 +47,12 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// Incident
+$incidentRepository = new IncidentRepository($dbAdapter);
+$createIncidentUseCase = new CreateIncidentUseCase($incidentRepository);
+
+$incident = new IncidentController($createIncidentUseCase);
 
 // Etats Lieux items
 $etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
@@ -83,6 +92,8 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->login();
 } elseif ($requestUri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
+} elseif ($requestUri === '/incident/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $incident->create();
 } elseif ($requestUri === '/etat-lieux-items/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $etatLieuxItems->create();
 } elseif ($requestUri === '/etat-lieux/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,0 +1,10 @@
+<?php
+
+namespace App\Port\Out;
+
+use App\Core\Domain\Entity\EtatLieux;
+
+interface EtatLieuxRepositoryInterface
+{
+    public function save(EtatLieux $etatLieux): EtatLieux;
+}

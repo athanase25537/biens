@@ -25,7 +25,7 @@ class TypeBienController
 
         // Structure de la réponse
         $response = [
-            'message' => 'Bien immobilier enregistré avec succès',
+            'message' => 'Type Bien enregistré avec succès',
             'type_bien' => [
                 'type' => $typeBien->getType(),
                 'description' => $typeBien->getDescription(),

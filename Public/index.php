@@ -10,6 +10,8 @@ use App\Adapter\Persistence\PostgreSQLAdapter;
 use App\Adapter\Api\Rest\AuthController;
 use App\Adapter\Api\Rest\BienImmobilierController;
 use App\Adapter\Api\Rest\TypeBienController;
+use App\Adapter\Api\Rest\EtatLieuxController;
+use App\Adapter\Api\Rest\EtatLieuxItemsController;
 
 // useCases
 use App\Core\Application\UseCase\LoginUserUseCase;
@@ -18,11 +20,15 @@ use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
+use App\Core\Application\UseCase\CreateEtatLieuxUseCase;
+use App\Core\Application\UseCase\CreateEtatLieuxItemsUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
 use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
+use App\Adapter\Persistence\Doctrine\EtatLieuxRepository;
+use App\Adapter\Persistence\Doctrine\EtatLieuxItemsRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
@@ -38,6 +44,18 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// Etats Lieux items
+$etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
+$createEtatLieuxItemsUseCase = new CreateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
+
+$etatLieuxItems = new EtatLieuxItemsController($createEtatLieuxItemsUseCase);
+
+// Etats lieux
+$etatLieuxRepository = new EtatLieuxRepository($dbAdapter);
+$createEtatLieuxUseCase = new CreateEtatLieuxUseCase($etatLieuxRepository);
+
+$etatLieux = new EtatLieuxController(new CreateEtatLieuxUseCase($etatLieuxRepository));
 
 // bien immobilier
 $bienImmobilierRepository = new BienImmobilierRepository($dbAdapter);
@@ -65,6 +83,10 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->login();
 } elseif ($requestUri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
+} elseif ($requestUri === '/etat-lieux-items/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $etatLieuxItems->create();
+} elseif ($requestUri === '/etat-lieux/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $etatLieux->create();
 } elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $bienImmobilier->create();
 } elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {

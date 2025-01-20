@@ -23,7 +23,7 @@ class AuthController
         
         // Response structure
         $response = [
-            'message' => 'User registered successfully',
+            'message' => 'Utilisateur enregistré avec succès',
             'user' => [
             'id' => $user->getId(),
             'username' => $user->getUsername(),

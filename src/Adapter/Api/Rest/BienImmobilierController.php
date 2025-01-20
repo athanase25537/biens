@@ -77,7 +77,7 @@ class BienImmobilierController
 
         // Structure de la réponse
         $response = [
-            'message' => 'Bien mis à jour enregistré avec succès',
+            'message' => 'Bien mis à jour avec succès',
             'bien_immobilier' => $bienImmobilier
         ];
 

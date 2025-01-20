@@ -46,4 +46,26 @@ class MySQLAdapter implements DatabaseAdapterInterface {
     public function close(): void {
         $this->connection->close();
     }
+    public function execute(string $query, array $params = []): bool
+    {
+        $stmt = $this->connection->prepare($query);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->connection->error);
+        }
+
+        if (!empty($params)) {
+            $types = str_repeat("s", count($params)); // Ajustez les types selon vos besoins
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $success = $stmt->execute();
+
+        if (!$success) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        $stmt->close();
+        return $success;
+    }
 }

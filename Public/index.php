@@ -23,6 +23,7 @@ use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\CreateEtatLieuxUseCase;
 use App\Core\Application\UseCase\CreateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\UpdateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\CreateIncidentUseCase;
 
 // repositories
@@ -57,8 +58,9 @@ $incident = new IncidentController($createIncidentUseCase);
 // Etats Lieux items
 $etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
 $createEtatLieuxItemsUseCase = new CreateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
+$updateEtatLieuxItemsUseCase = new UpdateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
 
-$etatLieuxItems = new EtatLieuxItemsController($createEtatLieuxItemsUseCase);
+$etatLieuxItems = new EtatLieuxItemsController($createEtatLieuxItemsUseCase, $updateEtatLieuxItemsUseCase);
 
 // Etats lieux
 $etatLieuxRepository = new EtatLieuxRepository($dbAdapter);
@@ -96,6 +98,13 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $incident->create();
 } elseif ($requestUri === '/etat-lieux-items/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $etatLieuxItems->create();
+} elseif (preg_match('#^/etat-lieux-items/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    try{
+        $etatLieuxItemsId = $matches[1];
+        $etatLieuxItems->update($etatLieuxItemsId);
+    } catch(Exception $e) {
+        echo "Erreur: " . $e;
+    }
 } elseif ($requestUri === '/etat-lieux/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $etatLieux->create();
 } elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {

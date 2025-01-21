@@ -4,21 +4,25 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\CreateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\UpdateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\DeleteEtatLieuxItemsUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class EtatLieuxItemsController
 {
     private $createEtatLieuxItemsUseCase;
     private $updateEtatLieuxItemsUseCase;
+    private $deleteEtatLieuxItemsUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateEtatLieuxItemsUseCase $createEtatLieuxItemsUseCase,
-        UpdateEtatLieuxItemsUseCase $updateEtatLieuxItemsUseCase
+        UpdateEtatLieuxItemsUseCase $updateEtatLieuxItemsUseCase,
+        DeleteEtatLieuxItemsUseCase $deleteEtatLieuxItemsUseCase,
         )
     {
         $this->createEtatLieuxItemsUseCase = $createEtatLieuxItemsUseCase;
         $this->updateEtatLieuxItemsUseCase = $updateEtatLieuxItemsUseCase;
+        $this->deleteEtatLieuxItemsUseCase = $deleteEtatLieuxItemsUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -45,7 +49,7 @@ class EtatLieuxItemsController
         // Récupération des données de la requête
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
+        // Création du etat lieux items via le use case ou service
         $etatLieuxItems = $this->updateEtatLieuxItemsUseCase->execute($etatLieuxItemsId, $data);
 
         // Structure de la réponse
@@ -56,5 +60,18 @@ class EtatLieuxItemsController
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
         
+    }
+
+    public function destroy($etatLieuxItemsId): void 
+    {
+        $this->deleteEtatLieuxItemsUseCase->execute($etatLieuxItemsId);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Etat lieux items supprimer avec succès',
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponseController::sendResponse($response, 201);
     }
 }

@@ -197,4 +197,33 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         $stmt->close();
         return true;
     }
+
+    public function destroy(int $etatLieuxItemsId): bool
+    {
+        // Préparation de la connexion et de la requête
+        $query = "DELETE  FROM etat_lieux_items WHERE id = ?";
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
+
+        // Assignation de la valeur du paramètre
+        $id = $etatLieuxItemsId;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return true;       
+    }
 } 

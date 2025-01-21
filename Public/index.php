@@ -6,6 +6,9 @@ require_once '../vendor/autoload.php';
 use App\Adapter\Persistence\MySQLAdapter;
 use App\Adapter\Persistence\PostgreSQLAdapter;
 
+// route
+use App\Route\Router;
+
 // controllers
 use App\Adapter\Api\Rest\AuthController;
 use App\Adapter\Api\Rest\BienImmobilierController;
@@ -93,53 +96,20 @@ $loginUseCase = new LoginUserUseCase($userRepository);
 $registerUseCase = new RegisterUserUseCase($userRepository);
 $controller = new AuthController($registerUseCase, $loginUseCase);
 
-// Gestion des routes
-$requestUri = $_SERVER['REQUEST_URI'];
+$router = new Router();
 
-if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->login();
-} elseif ($requestUri === '/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->register();
-} elseif ($requestUri === '/incident/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $incident->create();
-} elseif ($requestUri === '/etat-lieux-items/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $etatLieuxItems->create();
-} elseif (preg_match('#^/etat-lieux-items/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    try{
-        $etatLieuxItemsId = $matches[1];
-        $etatLieuxItems->update($etatLieuxItemsId);
-    } catch(Exception $e) {
-        echo "Erreur: " . $e;
-    }
-} elseif (preg_match('#^/etat-lieux-items/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        $etatLieuxItemsId = $matches[1];
-        try{
-            $etatLieuxItems->destroy($etatLieuxItemsId);
-        } catch(Exception $e) {
-            echo "Erreur: " . $e;
-        }
-} elseif ($requestUri === '/etat-lieux/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $etatLieux->create();
-} elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $bienImmobilier->create();
-} elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-// } elseif ($requestUri === '/bien-immobilier/update/{id_proprietaire}/{id_bien}' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $idBien = $matches[1];
-    try{
-        $bienImmobilier->update($idBien);
-    } catch(Exception $e) {
-        echo "Erreur: " . $e;
-    }
-} elseif (preg_match('#^/bien-immobilier/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    $idBien = $matches[1];
-    try{
-        $bienImmobilier->destroy($idBien);
-    } catch(Exception $e) {
-        echo "Erreur: " . $e;
-    }
-} elseif ($requestUri === '/admin/type-bien/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $typeBien->create();
-} else {
-    http_response_code(404);
-    echo json_encode(['success' => false, 'error' => 'Not Found']);
-} 
+// Define routes
+$router->addRoute('POST', '#^/login$#', [$controller, 'login']);
+$router->addRoute('POST', '#^/register$#', [$controller, 'register']);
+$router->addRoute('POST', '#^/incident/create$#', [$incident, 'create']);
+$router->addRoute('POST', '#^/etat-lieux-items/create$#', [$etatLieuxItems, 'create']);
+$router->addRoute('POST', '#^/etat-lieux-items/update/(\d+)$#', [$etatLieuxItems, 'update']);
+$router->addRoute('DELETE', '#^/etat-lieux-items/delete/(\d+)$#', [$etatLieuxItems, 'destroy']);
+$router->addRoute('POST', '#^/etat-lieux/create$#', [$etatLieux, 'create']);
+$router->addRoute('POST', '#^/bien-immobilier/create$#', [$bienImmobilier, 'create']);
+$router->addRoute('POST', '#^/bien-immobilier/update/(\d+)$#', [$bienImmobilier, 'update']);
+$router->addRoute('DELETE', '#^/bien-immobilier/delete/(\d+)$#', [$bienImmobilier, 'destroy']);
+$router->addRoute('POST', '#^/admin/type-bien/create$#', [$typeBien, 'create']);
+
+// Handle the request
+$router->handleRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

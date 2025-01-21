@@ -23,7 +23,7 @@ use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\AddBailUseCase;
-use App\Core\Application\UseCase\UploadMediaUseCase;
+use App\Core\Application\UseCase\AddMediaUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
@@ -31,6 +31,7 @@ use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
 use App\Adapter\Persistence\Doctrine\BailRepository;
 use App\Adapter\Persistence\Doctrine\MediaRepository;
+
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/config/database.php';
@@ -73,8 +74,9 @@ $controller = new AuthController($registerUseCase, $loginUseCase);
 
 // Media
 $mediaRepository = new MediaRepository($dbAdapter);
-$uploadMediaUseCase = new UploadMediaUseCase($mediaRepository);
-$mediaController = new MediaController($uploadMediaUseCase);
+$addMediaUseCase = new AddMediaUseCase($mediaRepository);
+$mediaController = new MediaController($addMediaUseCase);
+
 
 // Gestion des routes
 $requestUri = $_SERVER['REQUEST_URI'];

@@ -198,10 +198,15 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         return true;
     }
 
-    public function destroy(int $etatLieuxItemsId): bool
+    public function destroy(int $etatLieuxItemsId, int $etatLieuxId): bool
     {
         // Préparation de la connexion et de la requête
-        $query = "DELETE  FROM etat_lieux_items WHERE id = ?";
+        $query = 'DELETE eli 
+        FROM etat_lieux_items AS eli 
+        INNER JOIN etat_lieux AS el 
+        ON el.id = eli.etat_lieux_id 
+        WHERE eli.id = ? AND el.id = ?';
+
 
         $db = $this->db->connect($this->config);
         $stmt = $db->prepare($query);
@@ -210,11 +215,13 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
             throw new \Exception("Failed to prepare statement: " . $db->error);
         }
 
-        // Liaison du paramètre
-        $stmt->bind_param("i", $id);
-
+        
         // Assignation de la valeur du paramètre
-        $id = $etatLieuxItemsId;
+        $eli_id = $etatLieuxItemsId;
+        $el_id = $etatLieuxId;
+
+        // Liaison du paramètre
+        $stmt->bind_param("ii", $eli_id, $el_id);
 
         // Exécution de la requête
         if (!$stmt->execute()) {

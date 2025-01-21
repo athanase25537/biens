@@ -104,11 +104,10 @@ $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
 $router->addRoute('POST', '#^/incident/create$#', [$incident, 'create']);
 $router->addRoute('POST', '#^/etat-lieux-items/create$#', [$etatLieuxItems, 'create']);
 $router->addRoute('POST', '#^/etat-lieux-items/update/(\d+)$#', [$etatLieuxItems, 'update']);
-$router->addRoute('DELETE', '#^/etat-lieux-items/delete/(\d+)$#', [$etatLieuxItems, 'destroy']);
+$router->addRoute('DELETE', '#^/etat-lieux-items/delete/(\d+)/(\d+)$#', [$etatLieuxItems, 'destroy']);
 $router->addRoute('POST', '#^/etat-lieux/create$#', [$etatLieux, 'create']);
 $router->addRoute('POST', '#^/bien-immobilier/create$#', [$bienImmobilier, 'create']);
 $router->addRoute('POST', '#^/bien-immobilier/update/(\d+)$#', [$bienImmobilier, 'update']);
-$router->addRoute('DELETE', '#^/bien-immobilier/delete/(\d+)$#', [$bienImmobilier, 'destroy']);
 $router->addRoute('POST', '#^/admin/type-bien/create$#', [$typeBien, 'create']);
 
 // Handle the request

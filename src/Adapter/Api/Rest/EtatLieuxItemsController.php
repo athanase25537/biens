@@ -62,9 +62,9 @@ class EtatLieuxItemsController
         
     }
 
-    public function destroy($etatLieuxItemsId): void 
+    public function destroy(int $etatLieuxItemsId, int $etatLieuxId): void 
     {
-        $this->deleteEtatLieuxItemsUseCase->execute($etatLieuxItemsId);
+        $this->deleteEtatLieuxItemsUseCase->execute($etatLieuxItemsId, $etatLieuxId);
 
         // Structure de la réponse
         $response = [

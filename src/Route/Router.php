@@ -26,7 +26,7 @@ class Router {
         }
 
         // Route not found
-        $this->sendResponse(['success' => false, 'error' => 'Not Found'], 404);
+        $this->sendResponse(['success' => false, 'error' => 'Route Not Found'], 404);
     }
 
     private function sendResponse($data, $statusCode = 200) {

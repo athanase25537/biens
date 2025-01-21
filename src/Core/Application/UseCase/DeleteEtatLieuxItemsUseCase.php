@@ -16,8 +16,8 @@ class DeleteEtatLieuxItemsUseCase implements DeleteEtatLieuxItemsInputPort
         $this->etatLieuxItemsRepository = $etatLieuxItemsRepository;
     }
 
-    public function execute(int $etatLieuxItemsId): void
+    public function execute(int $etatLieuxItemsId, int $etatLieuxId): void
     {
-        $this->etatLieuxItemsRepository->destroy($etatLieuxItemsId);
+        $a = $this->etatLieuxItemsRepository->destroy($etatLieuxItemsId, $etatLieuxId);
     }
 }

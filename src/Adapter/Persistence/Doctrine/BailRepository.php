@@ -15,7 +15,7 @@ class BailRepository implements BailRepositoryInterface
         $this->db = $dbAdapter;
     }
 
-    public function save(Bail $bail): Bail
+	public function save(Bail $bail): Bail
     {
         $this->db->execute(
             "INSERT INTO baux 
@@ -23,7 +23,7 @@ class BailRepository implements BailRepositoryInterface
             echeance_paiement, date_debut, date_fin, duree_preavis, statut, engagement_attestation_assurance, 
             mode_paiement, conditions_speciales, references_legales, indexation_annuelle, indice_reference, 
             caution_remboursee, date_remboursement_caution, created_at, updated_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
             [
                 $bail->getGarantId(),
                 $bail->getBienImmobilierId(),
@@ -42,13 +42,12 @@ class BailRepository implements BailRepositoryInterface
                 $bail->getIndexationAnnuelle(),
                 $bail->getIndiceReference(),
                 $bail->getCautionRemboursee(),
-                $bail->getDateRemboursementCaution() ? $bail->getDateRemboursementCaution()->format('Y-m-d') : null,
+                $bail->getDateRemboursementCaution() ? $bail->getDateRemboursementCaution()->format('Y-m-d') : null
             ]
         );
 
-        // Set the ID from the database to the Bail object
-        $bail->setId((int)$this->db->lastInsertId());
-
+        //$bail->setId((int)$this->db->lastInsertId());
+        
         return $bail;
     }
 
@@ -63,21 +62,30 @@ class BailRepository implements BailRepositoryInterface
         return $this->db->execute($query, $params);
     }
 
-    public function getBail(int $idBail): ?Bail
+    public function findById(int $id): ?Bail
     {
         $row = $this->db->findOne(
             "SELECT * FROM baux WHERE id = ?",
-            [$idBail]
+            [$id]
         );
 
         return $row ? $this->mapToEntity($row) : null;
     }
 
-    public function destroy(int $idBail): bool
+    public function findAll(): array
     {
-        return $this->db->execute(
+        $rows = $this->db->findAll(
+            "SELECT * FROM baux"
+        );
+
+        return array_map([$this, 'mapToEntity'], $rows);
+    }
+
+    public function delete(int $id): void
+    {
+        $this->db->execute(
             "DELETE FROM baux WHERE id = ?",
-            [$idBail]
+            [$id]
         );
     }
 

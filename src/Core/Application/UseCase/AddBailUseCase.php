@@ -2,8 +2,7 @@
 namespace App\Core\Application\UseCase;
 
 use App\Core\Domain\Entity\Bail;
-use App\Core\Domain\Port\Out\CreateBailImmobilierInputPort;
-use App\Core\Domain\Port\Out\BailRepositoryInterface;
+use App\Port\Out\BailRepositoryInterface;
 
 class AddBailUseCase
 {

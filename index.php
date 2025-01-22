@@ -20,6 +20,7 @@ use App\Core\Application\UseCase\LoginUserUseCase;
 use App\Core\Application\UseCase\RegisterUserUseCase;
 use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\UpdateBailUseCase;
 use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\AddBailUseCase;
@@ -87,12 +88,20 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
 } elseif ($requestUri === '/bail/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $bailController->create();
-}if ($requestUri === '/media/upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+}elseif ($requestUri === '/media/upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $mediaController->upload();
 }
 elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $bienImmobilier->create();
-} elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+}elseif (preg_match('#^/bail/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idBail = $matches[1];
+    try {
+        $bailController->update($idBail);
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
+}
+elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // } elseif ($requestUri === '/bien-immobilier/update/{id_proprietaire}/{id_bien}' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $idBien = $matches[1];
     try{

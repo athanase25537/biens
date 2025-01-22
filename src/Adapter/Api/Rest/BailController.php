@@ -3,15 +3,24 @@
 namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\AddBailUseCase;
+use App\Core\Application\UseCase\UpdateBailUseCase;
 use App\Core\Domain\Entity\Bail;
 
 class BailController
 {
     private $addBailUseCase;
+    private $updateBailUseCase;
 
-    public function __construct(AddBailUseCase $addBailUseCase)
+    public function __construct(
+        AddBailUseCase $addBailUseCase,
+        updateBailUseCase $updateBailUseCase,    
+
+    )
     {
+
         $this->addBailUseCase = $addBailUseCase;
+        $this->updateBailUseCase = $updateBailUseCase;
+
     }
 
     public function create()
@@ -64,5 +73,22 @@ class BailController
                 'error' => $e->getMessage()
             ]);
         }
+    }
+    public function update($idBien): void
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            throw new \Exception("L'utilisateur n'est pas authentifié.");
+        }
+        $bailImmobilier = $this->updateBailUseCase->execute($idBien, $data, $userId);
+
+        $response = [
+            'message' => 'Bien mis à jour enregistré avec succès',
+            'bail_immobilier' => $bailImmobilier
+        ];
+
+        $this->sendResponse($response, 201);
     }
 }

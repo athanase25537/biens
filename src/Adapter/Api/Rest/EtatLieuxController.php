@@ -2,15 +2,23 @@
 namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\UpdateEtatLieuxUseCase;
 
 class EtatLieuxController
 {
 
     private $createEtatLieuxUseCase;
+    private $updateEtatLieuxUseCase;
+    private SendResponseController $sendResponseController;
 
-    public function __construct(CreateEtatLieuxUseCase $createEtatLieuxUseCase)
+    public function __construct(
+        CreateEtatLieuxUseCase $createEtatLieuxUseCase,
+        UpdateEtatLieuxUseCase $updateEtatLieuxUseCase,
+        )
     {
         $this->createEtatLieuxUseCase = $createEtatLieuxUseCase;
+        $this->updateEtatLieuxUseCase = $updateEtatLieuxUseCase;
+        $this->sendResponseController = new SendResponseController();
     }
 
     public function create(): void
@@ -27,15 +35,24 @@ class EtatLieuxController
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponse($response, 201);
-        
+        $this->sendResponseController::sendResponse($response, 201);        
     }
 
-    private function sendResponse($message, $statusCode)
+    public function update(int $etatLieuxId): void
     {
-        header('Content-Type: application/json');
-        http_response_code($statusCode);
+        // Récupération des données de la requête
+        $data = json_decode(file_get_contents('php://input'), true);
 
-        echo json_encode(['message' => $message]);
+        // Création du etat lieux items via le use case ou service
+        $etatLieux = $this->updateEtatLieuxUseCase->execute($etatLieuxId, $data);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Etat lieux mis a jour avec succès',
+            'etat_lieux'=> $etatLieux
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponseController::sendResponse($response, 201);
     }
 }

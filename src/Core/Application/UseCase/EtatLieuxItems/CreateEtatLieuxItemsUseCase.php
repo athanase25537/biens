@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Application\UseCaseEtatLieuxItems;
+namespace App\Core\Application\UseCase\EtatLieuxItems;
 
 use App\Port\Out\EtatLieuxItemsRepositoryInterface;
 use App\Port\In\CreateEtatLieuxItemsInputPort;

@@ -25,6 +25,7 @@ use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\UpdateEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\CreateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\UpdateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
@@ -74,8 +75,12 @@ $etatLieuxItems = new EtatLieuxItemsController(
 // Etats lieux
 $etatLieuxRepository = new EtatLieuxRepository($dbAdapter);
 $createEtatLieuxUseCase = new CreateEtatLieuxUseCase($etatLieuxRepository);
+$updateEtatLieuxUseCase = new UpdateEtatLieuxUseCase($etatLieuxRepository);
 
-$etatLieux = new EtatLieuxController(new CreateEtatLieuxUseCase($etatLieuxRepository));
+$etatLieux = new EtatLieuxController(
+    $createEtatLieuxUseCase,
+    $updateEtatLieuxUseCase,
+);
 
 // bien immobilier
 $bienImmobilierRepository = new BienImmobilierRepository($dbAdapter);
@@ -101,13 +106,22 @@ $router = new Router();
 // Define routes
 $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
 $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
+
 $router->addRoute('POST', '#^/incident/create$#', [$incident, 'create']);
+
+// etat lieux items
 $router->addRoute('POST', '#^/etat-lieux-items/create$#', [$etatLieuxItems, 'create']);
 $router->addRoute('POST', '#^/etat-lieux-items/update/(\d+)$#', [$etatLieuxItems, 'update']);
 $router->addRoute('DELETE', '#^/etat-lieux-items/delete/(\d+)/(\d+)$#', [$etatLieuxItems, 'destroy']);
+
+// etat lieux
 $router->addRoute('POST', '#^/etat-lieux/create$#', [$etatLieux, 'create']);
+$router->addRoute('PATCH', '#^/etat-lieux/update/(\d+)$#', [$etatLieux, 'update']);
+
+// bien immobilier
 $router->addRoute('POST', '#^/bien-immobilier/create$#', [$bienImmobilier, 'create']);
 $router->addRoute('POST', '#^/bien-immobilier/update/(\d+)$#', [$bienImmobilier, 'update']);
+
 $router->addRoute('POST', '#^/admin/type-bien/create$#', [$typeBien, 'create']);
 
 // Handle the request

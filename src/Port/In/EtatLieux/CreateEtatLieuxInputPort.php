@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Port\In;
+namespace App\Port\In\EtatLieux;
 
 use App\Core\Domain\Entity\EtatLieux;
 

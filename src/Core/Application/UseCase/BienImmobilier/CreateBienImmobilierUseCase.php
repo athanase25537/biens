@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Application\UseCase;
+namespace App\Core\Application\UseCase\BienImmobilier;
 
 use App\Core\Domain\Entity\BienImmobilier;
 use App\Port\In\CreateBienImmobilierInputPort;

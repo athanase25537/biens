@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Application\UseCase;
+namespace App\Core\Application\UseCase\EtatLieuxItems;
 
 use App\Core\Domain\Entity\EtatLieuxItems;
 use App\Port\In\DeleteEtatLieuxItemsInputPort;
@@ -18,6 +18,6 @@ class DeleteEtatLieuxItemsUseCase implements DeleteEtatLieuxItemsInputPort
 
     public function execute(int $etatLieuxItemsId, int $etatLieuxId): void
     {
-        $a = $this->etatLieuxItemsRepository->destroy($etatLieuxItemsId, $etatLieuxId);
+        $this->etatLieuxItemsRepository->destroy($etatLieuxItemsId, $etatLieuxId);
     }
 }

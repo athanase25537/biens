@@ -1,7 +1,7 @@
 <?php
 namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\CreateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
 
 class EtatLieuxController
 {

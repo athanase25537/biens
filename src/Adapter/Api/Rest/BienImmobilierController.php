@@ -1,9 +1,9 @@
 <?php
 namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
-use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
-use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 
 class BienImmobilierController
 {

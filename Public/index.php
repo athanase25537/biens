@@ -18,17 +18,17 @@ use App\Adapter\Api\Rest\EtatLieuxItemsController;
 use App\Adapter\Api\Rest\IncidentController;
 
 // useCases
-use App\Core\Application\UseCase\LoginUserUseCase;
-use App\Core\Application\UseCase\RegisterUserUseCase;
-use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
-use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
-use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
-use App\Core\Application\UseCase\CreateTypeBienUseCase;
-use App\Core\Application\UseCase\CreateEtatLieuxUseCase;
-use App\Core\Application\UseCase\CreateEtatLieuxItemsUseCase;
-use App\Core\Application\UseCase\UpdateEtatLieuxItemsUseCase;
-use App\Core\Application\UseCase\DeleteEtatLieuxItemsUseCase;
-use App\Core\Application\UseCase\CreateIncidentUseCase;
+use App\Core\Application\UseCase\User\LoginUserUseCase;
+use App\Core\Application\UseCase\User\RegisterUserUseCase;
+use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
+use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
+use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\CreateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\UpdateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;

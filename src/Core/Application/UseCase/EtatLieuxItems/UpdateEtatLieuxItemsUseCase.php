@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Application\UseCase;
+namespace App\Core\Application\UseCase\EtatLieuxItems;
 
 use App\Core\Domain\Entity\EtatLieuxItems;
 use App\Port\In\UpdateEtatLieuxItemsInputPort;

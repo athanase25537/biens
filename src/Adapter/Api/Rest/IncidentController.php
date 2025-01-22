@@ -2,7 +2,7 @@
 
 namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\CreateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class IncidentController

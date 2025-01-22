@@ -1,8 +1,8 @@
 <?php
 namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\LoginUserUseCase;
-use App\Core\Application\UseCase\RegisterUserUseCase;
+use App\Core\Application\UseCase\User\LoginUserUseCase;
+use App\Core\Application\UseCase\User\RegisterUserUseCase;
 
 class AuthController
 {

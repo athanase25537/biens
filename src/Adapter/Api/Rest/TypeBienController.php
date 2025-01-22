@@ -1,7 +1,7 @@
 <?php
 namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\CreateTypeBienUseCase;
+use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
 
 class TypeBienController
 {

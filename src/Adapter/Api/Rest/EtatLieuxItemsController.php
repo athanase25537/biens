@@ -2,9 +2,9 @@
 
 namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\CreateEtatLieuxItemsUseCase;
-use App\Core\Application\UseCase\UpdateEtatLieuxItemsUseCase;
-use App\Core\Application\UseCase\DeleteEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\CreateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\UpdateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class EtatLieuxItemsController

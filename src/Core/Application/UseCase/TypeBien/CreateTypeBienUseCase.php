@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Application\UseCase;
+namespace App\Core\Application\UseCase\TypeBien;
 
 use App\Core\Domain\Entity\TypeBien;
 use App\Port\In\CreateTypeBienInputPort;

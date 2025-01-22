@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Application\UseCase;
+namespace App\Core\Application\UseCase\Incident;
 
 use App\Core\Domain\Entity\Incident;
 use App\Port\In\CreateIncidentInputPort;

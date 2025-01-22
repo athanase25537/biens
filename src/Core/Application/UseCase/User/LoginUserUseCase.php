@@ -1,5 +1,5 @@
 <?php
-namespace App\Core\Application\UseCase;
+namespace App\Core\Application\UseCase\User;
 
 use App\Core\Domain\Entity\User;
 use App\Port\In\LoginUserInputPort;

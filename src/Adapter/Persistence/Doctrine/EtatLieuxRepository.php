@@ -147,5 +147,41 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
 
         return $etatLieux;
     }
+
+    public function destroy(int $etatLieuxId, int $bauxId): bool
+    {
+        // Préparation de la connexion et de la requête
+        $query = 'DELETE el
+        FROM etat_lieux AS el 
+        INNER JOIN baux AS b 
+        ON b.id = el.baux_id 
+        WHERE el.id = ? AND b.id = ?';
+
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        
+        // Assignation de la valeur du paramètre
+        $el_id = $etatLieuxId;
+        $b_id = $bauxId;
+
+        // Liaison du paramètre
+        $stmt->bind_param("ii", $el_id, $b_id);
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return true;       
+    }
 }
 

@@ -26,6 +26,7 @@ use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieux\UpdateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\DeleteEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\CreateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\UpdateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
@@ -76,10 +77,12 @@ $etatLieuxItems = new EtatLieuxItemsController(
 $etatLieuxRepository = new EtatLieuxRepository($dbAdapter);
 $createEtatLieuxUseCase = new CreateEtatLieuxUseCase($etatLieuxRepository);
 $updateEtatLieuxUseCase = new UpdateEtatLieuxUseCase($etatLieuxRepository);
+$deleteEtatLieuxUseCase = new DeleteEtatLieuxUseCase($etatLieuxRepository);
 
 $etatLieux = new EtatLieuxController(
     $createEtatLieuxUseCase,
     $updateEtatLieuxUseCase,
+    $deleteEtatLieuxUseCase
 );
 
 // bien immobilier
@@ -117,6 +120,7 @@ $router->addRoute('DELETE', '#^/etat-lieux-items/delete/(\d+)/(\d+)$#', [$etatLi
 // etat lieux
 $router->addRoute('POST', '#^/etat-lieux/create$#', [$etatLieux, 'create']);
 $router->addRoute('PATCH', '#^/etat-lieux/update/(\d+)$#', [$etatLieux, 'update']);
+$router->addRoute('DELETE', '#^/etat-lieux/delete/(\d+)/(\d+)$#', [$etatLieux, 'destroy']);
 
 // bien immobilier
 $router->addRoute('POST', '#^/bien-immobilier/create$#', [$bienImmobilier, 'create']);

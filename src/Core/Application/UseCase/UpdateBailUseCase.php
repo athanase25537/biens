@@ -26,7 +26,7 @@ class UpdateBailUseCase
            'bail',
             $id,
             $userId,
-            'modification',
+            'mise à jour',
             json_encode($updatedBail)
         );
     }

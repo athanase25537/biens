@@ -68,4 +68,9 @@ class MySQLAdapter implements DatabaseAdapterInterface {
         $stmt->close();
         return $success;
     }
+    public function lastInsertId(): int
+    {
+        return $this->connection->insert_id;
+    }   
+
 }

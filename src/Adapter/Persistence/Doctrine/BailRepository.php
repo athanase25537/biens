@@ -46,7 +46,7 @@ class BailRepository implements BailRepositoryInterface
             ]
         );
 
-        //$bail->setId((int)$this->db->lastInsertId());
+        $bail->setId((int)$this->db->lastInsertId());
         
         return $bail;
     }

@@ -27,7 +27,10 @@ class BailController
     {
         try {
             $data = json_decode(file_get_contents('php://input'), true);
-            
+            $userId = 2;
+            if (!$userId) {
+                throw new \Exception("L'utilisateur n'est pas authentifié.");
+            }
             // Créer un nouvel objet Bail avec les données reçues
             $bail = new Bail();
             $bail->setGarantId($data['garant_id'] ?? null);
@@ -53,7 +56,7 @@ class BailController
             }
 
             // Exécuter le use case
-            $createdBail = $this->addBailUseCase->execute($bail);
+            $createdBail = $this->addBailUseCase->execute($bail, $userId);
 
             // Renvoyer la réponse
             header('Content-Type: application/json');
@@ -77,7 +80,7 @@ class BailController
     public function update($idBien): void
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        
+
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
             throw new \Exception("L'utilisateur n'est pas authentifié.");

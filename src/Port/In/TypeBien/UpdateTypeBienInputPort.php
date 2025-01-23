@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Port\In\EtatLieux;
+namespace App\Port\In\TypeBien;
 
-interface UpdateEtatLieuxInputPort
+interface UpdateTypeBienInputPort
 {
     public function execute(int $etatLieuxId, array $data): ?array;
 }

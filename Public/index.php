@@ -18,18 +18,31 @@ use App\Adapter\Api\Rest\EtatLieuxItemsController;
 use App\Adapter\Api\Rest\IncidentController;
 
 // useCases
+
+// user
 use App\Core\Application\UseCase\User\LoginUserUseCase;
 use App\Core\Application\UseCase\User\RegisterUserUseCase;
+
+// bien immobilier
 use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
+
+// type bien
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
+use App\Core\Application\UseCase\TypeBien\UpdateTypeBienUseCase;
+
+// etat lieux
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieux\UpdateEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieux\DeleteEtatLieuxUseCase;
+
+// etat lieux items
 use App\Core\Application\UseCase\EtatLieuxItems\CreateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\UpdateEtatLieuxItemsUseCase;
 use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
+
+// incident
 use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
 
 // repositories
@@ -96,7 +109,12 @@ $bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase, $up
 // type bien
 $typeBienRepository = new TypeBienRepository($dbAdapter);
 $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
-$typeBien = new TypeBienController($createTypeBienUseCase);
+$updateTypeBienUseCase = new UpdateTypeBienUseCase($typeBienRepository);
+
+$typeBien = new TypeBienController(
+    $createTypeBienUseCase,
+    $updateTypeBienUseCase,
+);
 
 // user
 $userRepository = new UserRepository($dbAdapter);
@@ -126,7 +144,9 @@ $router->addRoute('DELETE', '#^/etat-lieux/delete/(\d+)/(\d+)$#', [$etatLieux, '
 $router->addRoute('POST', '#^/bien-immobilier/create$#', [$bienImmobilier, 'create']);
 $router->addRoute('POST', '#^/bien-immobilier/update/(\d+)$#', [$bienImmobilier, 'update']);
 
+// type bien
 $router->addRoute('POST', '#^/admin/type-bien/create$#', [$typeBien, 'create']);
+$router->addRoute('PATCH', '#^/admin/type-bien/update/(\d+)$#', [$typeBien, 'update']);
 
 // Handle the request
 $router->handleRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

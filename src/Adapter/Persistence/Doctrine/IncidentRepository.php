@@ -121,6 +121,39 @@ class IncidentRepository implements IncidentRepositoryInterface
         return true;
     }
 
+    public function destroy(int $incidentId, int $bienId, int $bailId): bool 
+    {
+        $query = "DELETE inc
+            FROM incidents AS inc
+            INNER JOIN biens_immobiliers AS bi ON bi.id = inc.bien_id
+            INNER JOIN baux AS b ON b.id = inc.bail_id
+            WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
+    
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        // Liaison des paramètres
+        $stmt->bind_param(
+            "iii", // Types des paramètres (i = integer, s = string, d = double)
+            $incidentId,
+            $bienId,
+            $bailId
+        );
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        $stmt->close();
+
+        return true;
+    }
+    
     public function getIncident(int $incidentId): ?array
     {
         // Préparation de la connexion et de la requête

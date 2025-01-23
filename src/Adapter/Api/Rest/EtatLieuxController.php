@@ -62,16 +62,12 @@ class EtatLieuxController
 
     public function destroy(int $etatLieuxId, int $bauxId): void
     {
-        // Récupération des données de la requête
-        $data = json_decode(file_get_contents('php://input'), true);
-
         // Création du etat lieux items via le use case ou service
         $etatLieux = $this->deleteEtatLieuxUseCase->execute($etatLieuxId, $bauxId);
 
         // Structure de la réponse
         $response = [
             'message' => 'Etat lieux supprimer avec succès',
-            'etat_lieux'=> $etatLieux
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)

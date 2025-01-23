@@ -4,22 +4,26 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
 use App\Core\Application\UseCase\Incident\UpdateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\DeleteIncidentUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class IncidentController
 {
     private $createIncidentUseCase;
     private $updateIncidentUseCase;
+    private $deleteIncidentUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateIncidentUseCase $createIncidentUseCase,
         UpdateIncidentUseCase $updateIncidentUseCase,
+        DeleteIncidentUseCase $deleteIncidentUseCase
     
     )
     {
         $this->createIncidentUseCase = $createIncidentUseCase;
         $this->updateIncidentUseCase = $updateIncidentUseCase;
+        $this->deleteIncidentUseCase = $deleteIncidentUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -65,5 +69,18 @@ class IncidentController
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
+    }
+
+    public function destroy(int $incidentId, int $bienId, int $bailId): void 
+    {
+        $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Incident supprimer avec succès',
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponseController::sendResponse($response, 201);   
     }
 }

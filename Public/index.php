@@ -31,6 +31,7 @@ use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 // type bien
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\TypeBien\UpdateTypeBienUseCase;
+use App\Core\Application\UseCase\TypeBien\DeleteTypeBienUseCase;
 
 // etat lieux
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
@@ -110,10 +111,12 @@ $bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase, $up
 $typeBienRepository = new TypeBienRepository($dbAdapter);
 $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
 $updateTypeBienUseCase = new UpdateTypeBienUseCase($typeBienRepository);
+$deleteTypeBienUseCase = new DeleteTypeBienUseCase($typeBienRepository);
 
 $typeBien = new TypeBienController(
     $createTypeBienUseCase,
     $updateTypeBienUseCase,
+    $deleteTypeBienUseCase
 );
 
 // user
@@ -147,6 +150,7 @@ $router->addRoute('POST', '#^/bien-immobilier/update/(\d+)$#', [$bienImmobilier,
 // type bien
 $router->addRoute('POST', '#^/admin/type-bien/create$#', [$typeBien, 'create']);
 $router->addRoute('PATCH', '#^/admin/type-bien/update/(\d+)$#', [$typeBien, 'update']);
+$router->addRoute('DELETE', '#^/admin/type-bien/delete/(\d+)$#', [$typeBien, 'destroy']);
 
 // Handle the request
 $router->handleRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

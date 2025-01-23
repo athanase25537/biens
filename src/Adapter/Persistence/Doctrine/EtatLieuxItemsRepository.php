@@ -104,7 +104,7 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun bien immobilier trouvé");
+            throw new \Exception("Aucun etat lieux items trouvé");
         }
 
         // Traitement du résultat

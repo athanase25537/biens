@@ -97,6 +97,48 @@ class TypeBienRepository implements TypeBienRepositoryInterface
         return true;
     }
 
+    public function destroy(int $typeBienId): bool
+    {
+        try{
+            $t = $this->getTypeBien($typeBienId);
+        } catch(Exception $e) {
+            echo "Erreur: $e.getMessage()";
+        }
+        if($t == null) {
+            throw new \Exception("Ce type bien n'existe pas: ");
+            return false;
+        }
+        // Préparation de la connexion et de la requête
+        $query = 'DELETE 
+        FROM types_bien
+        WHERE id = ?';
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+        var_dump($stmt);
+
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        
+        // Assignation de la valeur du paramètre
+        $id = $typeBienId;
+
+        // Liaison du paramètre
+        $stmt->bind_param("i",$id);
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return true;       
+    }
+
     public function getTypeBien(int $typeBienId): ?array
     {
         // Préparation de la connexion et de la requête
@@ -123,7 +165,7 @@ class TypeBienRepository implements TypeBienRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun bien immobilier trouvé");
+            throw new \Exception("Aucun Type Bien trouvé");
         }
 
         // Traitement du résultat

@@ -3,6 +3,7 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\TypeBien\UpdateTypeBienUseCase;
+use App\Core\Application\UseCase\TypeBien\DeleteTypeBienUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class TypeBienController
@@ -10,15 +11,18 @@ class TypeBienController
 
     private $createTypeBienUseCase;
     private $updateTypeBienUseCase;
+    private $deleteTypeBienUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateTypeBienUseCase $createTypeBienUseCase,
         UpdateTypeBienUseCase $updateTypeBienUseCase,
+        DeleteTypeBienUseCase $deleteTypeBienUseCase,
         )
     {
         $this->createTypeBienUseCase = $createTypeBienUseCase;
         $this->updateTypeBienUseCase = $updateTypeBienUseCase;
+        $this->deleteTypeBienUseCase = $deleteTypeBienUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -68,4 +72,20 @@ class TypeBienController
         $this->sendResponseController::sendResponse($response, 201);                
     }
 
+    public function destroy(int $typeBienId): void 
+    {
+        // Récupération des données de la requête
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        // Création du bien immobilier via le use case ou service
+        $this->deleteTypeBienUseCase->execute($typeBienId);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Type Bien supprimer avec succès',
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponseController::sendResponse($response, 201);
+    }
 }

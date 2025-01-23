@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\EtatLieuxItems;
 
 use App\Core\Domain\Entity\EtatLieuxItems;
-use App\Port\In\DeleteEtatLieuxItemsInputPort;
+use App\Port\In\EtatLieuxItems\DeleteEtatLieuxItemsInputPort;
 use App\Port\Out\EtatLieuxItemsRepositoryInterface;
 
 class DeleteEtatLieuxItemsUseCase implements DeleteEtatLieuxItemsInputPort

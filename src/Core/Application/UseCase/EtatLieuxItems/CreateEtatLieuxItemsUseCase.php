@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\EtatLieuxItems;
 
 use App\Port\Out\EtatLieuxItemsRepositoryInterface;
-use App\Port\In\CreateEtatLieuxItemsInputPort;
+use App\Port\In\EtatLieuxItems\CreateEtatLieuxItemsInputPort;
 use App\Core\Domain\Entity\EtatLieuxItems;
 
 class CreateEtatLieuxItemsUseCase implements CreateEtatLieuxItemsInputPort

@@ -2,7 +2,7 @@
 namespace App\Core\Application\UseCase\User;
 
 use App\Core\Domain\Entity\User;
-use App\Port\In\LoginUserInputPort;
+use App\Port\In\User\LoginUserInputPort;
 use App\Port\Out\UserRepositoryInterface;
 
 class LoginUserUseCase implements LoginUserInputPort

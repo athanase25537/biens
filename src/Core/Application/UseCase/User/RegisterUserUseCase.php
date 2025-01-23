@@ -2,7 +2,7 @@
 namespace App\Core\Application\UseCase\User;
 
 use App\Core\Domain\Entity\User;
-use App\Port\In\RegisterUserInputPort;
+use App\Port\In\User\RegisterUserInputPort;
 use App\Port\Out\UserRepositoryInterface;
 
 class RegisterUserUseCase implements RegisterUserInputPort

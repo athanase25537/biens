@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\BienImmobilier;
 
 use App\Core\Domain\Entity\BienImmobilier;
-use App\Port\In\DeleteBienImmobilierInputPort;
+use App\Port\In\BienImmobilier\DeleteBienImmobilierInputPort;
 use App\Port\Out\BienImmobilierRepositoryInterface;
 
 class DeleteBienImmobilierUseCase implements DeleteBienImmobilierInputPort

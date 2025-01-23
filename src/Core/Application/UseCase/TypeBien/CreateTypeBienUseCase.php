@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\TypeBien;
 
 use App\Core\Domain\Entity\TypeBien;
-use App\Port\In\CreateTypeBienInputPort;
+use App\Port\In\TypeBien\CreateTypeBienInputPort;
 use App\Port\Out\TypeBienRepositoryInterface;
 
 class CreateTypeBienUseCase implements CreateTypeBienInputPort

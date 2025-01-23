@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\BienImmobilier;
 
 use App\Core\Domain\Entity\BienImmobilier;
-use App\Port\In\UpdateBienImmobilierInputPort;
+use App\Port\In\BienImmobilier\UpdateBienImmobilierInputPort;
 use App\Port\Out\BienImmobilierRepositoryInterface;
 
 class UpdateBienImmobilierUseCase implements UpdateBienImmobilierInputPort

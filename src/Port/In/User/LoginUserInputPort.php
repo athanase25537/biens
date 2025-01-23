@@ -1,5 +1,5 @@
 <?php
-namespace App\Port\In;
+namespace App\Port\In\User;
 
 interface LoginUserInputPort
 {

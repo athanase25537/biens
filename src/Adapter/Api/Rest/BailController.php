@@ -94,4 +94,28 @@ class BailController
 
         $this->sendResponse($response, 201);
     }
+    public function delete($id, $userId)
+    {
+        try {
+            $isDeleted = $this->deleteBailUseCase->execute($id, $userId);
+
+            if ($isDeleted) {
+                return [
+                    'success' => true,
+                    'message' => "Le bail avec l'ID {$id} a été supprimé."
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => "Impossible de supprimer le bail avec l'ID {$id}."
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
 }

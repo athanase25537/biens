@@ -109,10 +109,17 @@ elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) &
     } catch(Exception $e) {
         echo "Erreur: " . $e;
     }
-} elseif (preg_match('#^/bien-immobilier/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+}elseif (preg_match('#^/bien-immobilier/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $idBien = $matches[1];
     try{
         $bienImmobilier->destroy($idBien);
+    } catch(Exception $e) {
+        echo "Erreur: " . $e;
+    }
+} elseif (preg_match('#^/bail/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $idBail = $matches[1];
+    try{
+        $bailController->destroy($idBail);
     } catch(Exception $e) {
         echo "Erreur: " . $e;
     }

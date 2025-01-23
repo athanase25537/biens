@@ -16,8 +16,14 @@ use App\Adapter\Api\Rest\TypeBienController;
 use App\Adapter\Api\Rest\EtatLieuxController;
 use App\Adapter\Api\Rest\EtatLieuxItemsController;
 use App\Adapter\Api\Rest\IncidentController;
+use App\Adapter\Api\Rest\QuittanceLoyerController;
 
 // useCases
+
+// quittance loyer
+use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
+// use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
+// use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
 
 // user
 use App\Core\Application\UseCase\User\LoginUserUseCase;
@@ -55,6 +61,7 @@ use App\Adapter\Persistence\Doctrine\TypeBienRepository;
 use App\Adapter\Persistence\Doctrine\EtatLieuxRepository;
 use App\Adapter\Persistence\Doctrine\EtatLieuxItemsRepository;
 use App\Adapter\Persistence\Doctrine\IncidentRepository;
+use App\Adapter\Persistence\Doctrine\QuittanceLoyerRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
@@ -70,6 +77,18 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// Quittance Loyer
+$quittanceLoyerRepository = new QuittanceLoyerRepository($dbAdapter);
+$createQuittanceLoyerUseCase = new CreateQuittanceLoyerUseCase($quittanceLoyerRepository);
+// $updateQuittanceLoyerUseCase = new UpdateQuittanceLoyerUseCase($quittanceLoyerRepository);
+// $deleteQuittanceLoyerUseCase = new DeleteQuittanceLoyerUseCase($quittanceLoyerRepository);
+
+$quittanceLoyer = new QuittanceLoyerController(
+    $createQuittanceLoyerUseCase,
+    // $updateQuittanceLoyerUseCase,
+    // $deleteQuittanceLoyerUseCase,
+);
 
 // Incident
 $incidentRepository = new IncidentRepository($dbAdapter);
@@ -138,6 +157,11 @@ $router = new Router();
 // Define routes
 $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
 $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
+
+// quittance loyer
+// $router->addRoute('PATCH', '#^/quittance-loyer/update/(\d+)$#', [$quittanceLoyer, 'update']);
+// $router->addRoute('DELETE', '#^/quittance-loyer/delete/(\d+)/(\d+)/(\d+)$#', [$quittanceLoyer, 'destroy']);
+$router->addRoute('POST', '#^/quittance-loyer/create$#', [$quittanceLoyer, 'create']);
 
 // incident
 $router->addRoute('PATCH', '#^/incident/update/(\d+)$#', [$incident, 'update']);

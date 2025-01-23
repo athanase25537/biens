@@ -45,6 +45,7 @@ use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
 
 // incident
 use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\UpdateIncidentUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
@@ -72,8 +73,12 @@ $dbAdapter->connect($dbConfig);
 // Incident
 $incidentRepository = new IncidentRepository($dbAdapter);
 $createIncidentUseCase = new CreateIncidentUseCase($incidentRepository);
+$updateIncidentUseCase = new UpdateIncidentUseCase($incidentRepository);
 
-$incident = new IncidentController($createIncidentUseCase);
+$incident = new IncidentController(
+    $createIncidentUseCase,
+    $updateIncidentUseCase,
+);
 
 // Etats Lieux items
 $etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
@@ -131,6 +136,8 @@ $router = new Router();
 $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
 $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
 
+// incident
+$router->addRoute('PATCH', '#^/incident/update/(\d+)$#', [$incident, 'update']);
 $router->addRoute('POST', '#^/incident/create$#', [$incident, 'create']);
 
 // etat lieux items

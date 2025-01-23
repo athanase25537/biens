@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Port\In;
+namespace App\Port\In\Incident;
 
 use App\Core\Domain\Entity\Incident;
 

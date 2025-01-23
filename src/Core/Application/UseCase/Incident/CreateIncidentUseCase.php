@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\Incident;
 
 use App\Core\Domain\Entity\Incident;
-use App\Port\In\CreateIncidentInputPort;
+use App\Port\In\Incident\CreateIncidentInputPort;
 use App\Port\Out\IncidentRepositoryInterface;
 
 class CreateIncidentUseCase implements CreateIncidentInputPort

@@ -3,7 +3,7 @@
 namespace App\Core\Application\UseCase\Incident;
 
 use App\Core\Domain\Entity\Incident;
-use App\Port\In\UpdateIncidentInputPort;
+use App\Port\In\Incident\UpdateIncidentInputPort;
 use App\Port\Out\IncidentRepositoryInterface;
 
 class UpdateIncidentUseCase implements UpdateIncidentInputPort
@@ -17,16 +17,7 @@ class UpdateIncidentUseCase implements UpdateIncidentInputPort
 
     public function execute(int $incidentId, array $data): ?array
     {
-        $incident = new Incident(
-            $data['bien_id'],
-            $data['bail_id'],
-            $data['description'],
-            $data['statut'],
-            new \DateTime($data['date_signalement']),
-            new \DateTime($data['date_resolution']),
-        );
-
-        $incident = $this->incidentRepository->save($incident);
-        return $incident;
+        $update = $this->incidentRepository->update($incidentId, $data);
+        return ($update) ? $this->incidentRepository->getIncident($incidentId) : null;
     }
 }

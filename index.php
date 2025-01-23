@@ -22,6 +22,7 @@ use App\Core\Application\UseCase\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\UpdateBailUseCase;
 use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
+use App\Core\Application\UseCase\DeleteBailUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\AddBailUseCase;
 use App\Core\Application\UseCase\AddMediaUseCase;
@@ -32,7 +33,6 @@ use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
 use App\Adapter\Persistence\Doctrine\BailRepository;
 use App\Adapter\Persistence\Doctrine\MediaRepository;
-
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/config/database.php';
@@ -56,17 +56,21 @@ $updateBienImmobilierUseCase = new UpdateBienImmobilierUseCase($bienImmobilierRe
 $deleteBienImmobilierUseCase = new DeleteBienImmobilierUseCase($bienImmobilierRepository);
 
 $bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase, $updateBienImmobilierUseCase, $deleteBienImmobilierUseCase);
-
+// HistoriqueService
+$historiqueService = new \App\Core\Application\Service\HistoriqueService(
+    new \App\Adapter\Persistence\Doctrine\HistoriqueModificationRepository($dbAdapter)
+);
 // type bien
 $typeBienRepository = new TypeBienRepository($dbAdapter);
 $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
 $typeBien = new TypeBienController($createTypeBienUseCase);
 // Bau
 $bailRepository = new BailRepository($dbAdapter);
-$createBail = new AddBailUseCase($bailRepository);
-$bailController = new BailController($createBail);
+$createBail = new AddBailUseCase($bailRepository, $historiqueService);
+$updateBail = new UpdateBailUseCase($bailRepository, $historiqueService);
+$deleteBail = new DeleteBailUseCase($bailRepository, $historiqueService);
 
-
+$bailController = new BailController($createBail, $updateBail, $deleteBail);
 // user
 $userRepository = new UserRepository($dbAdapter);
 $loginUseCase = new LoginUserUseCase($userRepository);
@@ -100,6 +104,13 @@ elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] 
     } catch (Exception $e) {
         echo "Erreur : " . $e->getMessage();
     }
+} elseif (preg_match('#^/bail/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $idBail = $matches[1];
+    try{
+        $bailController->delete($idBail);
+    } catch(Exception $e) {
+        echo "Erreur: " . $e;
+    }
 }
 elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // } elseif ($requestUri === '/bien-immobilier/update/{id_proprietaire}/{id_bien}' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -109,17 +120,10 @@ elseif (preg_match('#^/bien-immobilier/update/(\d+)$#', $requestUri, $matches) &
     } catch(Exception $e) {
         echo "Erreur: " . $e;
     }
-}elseif (preg_match('#^/bien-immobilier/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+} elseif (preg_match('#^/bien-immobilier/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $idBien = $matches[1];
     try{
         $bienImmobilier->destroy($idBien);
-    } catch(Exception $e) {
-        echo "Erreur: " . $e;
-    }
-} elseif (preg_match('#^/bail/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    $idBail = $matches[1];
-    try{
-        $bailController->destroy($idBail);
     } catch(Exception $e) {
         echo "Erreur: " . $e;
     }

@@ -29,7 +29,26 @@ class AddBailUseCase
             $savedBail->getId(),
             $userId,     
             'création',
-            json_encode($savedBail)
+            json_encode([
+                'garant_id' => $savedBail->getGarantId(),
+                'bien_immobilier_id' => $savedBail->getBienImmobilierId(),                
+              	'montant_loyer' => $savedBail->getMontantLoyer(),
+              	'montant_charge' => $savedBail->getMontantCharge(),
+              	'montant_caution' => $savedBail->getMontantCaution(),
+              	'echeance_paiement' => $savedBail->getEcheancePaiement(),
+              	'date_debut' => $savedBail->getDateDebut()->format('Y-m-d'),
+              	'date_fin' => $savedBail->getDateFin()->format('Y-m-d'),
+              	'duree_preavis' => $savedBail->getDureePreavis(),
+              	'statut' => $savedBail->getStatut(),
+              	'engagement_attestation_assurance' => $savedBail->getEngagementAttestationAssurance(),
+              	'mode_paiement' => $savedBail->getModePaiement(),
+              	'conditions_speciales' => $savedBail->getConditionsSpeciales(),	
+              	'references_legales' => $savedBail->getReferencesLegales(),
+              	'indexation_annuelle' => $savedBail->getIndexationAnnuelle(),	
+              	'indice_reference' => $savedBail->getIndiceReference(),
+              	'caution_remboursee' => $savedBail->getCautionRemboursee(),
+              	'date_remboursement_caution' => $savedBail->getDateRemboursementCaution() ? $bail->getDateRemboursementCaution()->format('Y-m-d') : null
+            ])
         );
 
         return $savedBail;

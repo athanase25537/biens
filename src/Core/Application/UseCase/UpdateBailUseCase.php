@@ -20,14 +20,22 @@ class UpdateBailUseCase
 
     public function execute(int $id, array $updatedBail, int $userId): ?array
     {
+
         $update = $this->bailRepository->update($id, $updatedBail);
-        return ($update) ? $this->bailRepository->findById($id) : null;
-        $this->historiqueService->enregistrerModification(
-           'bail',
-            $id,
-            $userId,
-            'mise à jour',
-            json_encode($updatedBail)
-        );
+
+        if ($update) {
+            $this->historiqueService->enregistrerModification(
+                'bail',
+                $id,
+                $userId,
+                'mise à jour',
+                json_encode($updatedBail)
+            );
+
+
+            return $this->bailRepository->findById($id);
+        }
+
+        return null;
     }
 }

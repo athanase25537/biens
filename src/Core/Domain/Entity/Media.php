@@ -14,6 +14,7 @@ class Media
     private $position;
     private $createdAt;
     private $updatedAt;
+  	private $name;
 
     // Getters et setters pour chaque propriété
     public function getId(): ?int { return $this->id; }
@@ -45,4 +46,7 @@ class Media
 
     public function getUpdatedAt(): \DateTime { return $this->updatedAt; }
     public function setUpdatedAt(\DateTime $updatedAt): void { $this->updatedAt = $updatedAt; }
+    
+  	public function getName(): string { return $this->name; }
+    public function setName(string $name): void { $this->name = $name; }
 }

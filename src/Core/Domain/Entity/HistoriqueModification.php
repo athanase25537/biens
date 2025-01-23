@@ -26,7 +26,8 @@ class HistoriqueModification
         $this->details = $details;
         $this->dateModification = new \DateTime();
     }
-    public function getTableCible(): string
+
+	public function getTableCible(): string
     {
         return $this->tableCible;
     }
@@ -50,5 +51,4 @@ class HistoriqueModification
     {
         return $this->details;
     }
-
 }

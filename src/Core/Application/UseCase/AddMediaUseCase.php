@@ -16,6 +16,7 @@ class AddMediaUseCase
 
     public function execute(array $mediaData): Media
     {
+      	$uniqueId = $this->generateUniqueId();
         $media = new Media();
         $media->setBienId($mediaData['bien_id'] ?? null);
         $media->setEtatLieuxItemsId($mediaData['etat_lieux_items_id'] ?? null);
@@ -26,8 +27,14 @@ class AddMediaUseCase
         $media->setPosition($mediaData['position'] ?? null);
         $media->setCreatedAt(new \DateTime());
         $media->setUpdatedAt(new \DateTime());
+      
+      	$media->setName($uniqueId . '-' . basename($mediaData['url']));
 
 
         return $this->mediaRepository->saveMedia($media);
+    }
+      private function generateUniqueId(): string
+    {
+        return str_pad(rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
     }
 }

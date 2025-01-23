@@ -4,22 +4,28 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\AddBailUseCase;
 use App\Core\Application\UseCase\UpdateBailUseCase;
+use App\Core\Application\UseCase\DeleteBailUseCase;
+use App\Port\Out\BailRepositoryInterface;
 use App\Core\Domain\Entity\Bail;
 
 class BailController
 {
     private $addBailUseCase;
-    private $updateBailUseCase;
+    private $updateBailUseCase;    
+  	private $deleteBailUseCase;
+  	private $bailRepository;
+
 
     public function __construct(
         AddBailUseCase $addBailUseCase,
         updateBailUseCase $updateBailUseCase,    
-
+		deleteBailUseCase $deleteBailUseCase,
     )
     {
 
         $this->addBailUseCase = $addBailUseCase;
         $this->updateBailUseCase = $updateBailUseCase;
+      	$this->deleteBailUseCase = $deleteBailUseCase;
 
     }
 
@@ -63,7 +69,7 @@ class BailController
             echo json_encode([
                 'success' => true,
                 'data' => [
-                    'id' => $createdBail->getId(),
+        
                     'message' => 'Bail créé avec succès'
                 ]
             ]);
@@ -77,45 +83,61 @@ class BailController
             ]);
         }
     }
-    public function update($idBien): void
+      public function update($idBien): void
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+  try {
+          $data = json_decode(file_get_contents('php://input'), true);
 
-        $userId = $_SESSION['user_id'] ?? null;
+          $userId = 2;
+          if (!$userId) {
+              throw new \Exception("L'utilisateur n'est pas authentifié.");
+          }
+          $bailImmobilier = $this->updateBailUseCase->execute($idBien, $data, $userId);
+
+          // Préparer et envoyer la réponse
+          header('Content-Type: application/json');
+          http_response_code(200); // Code HTTP pour succès
+          echo json_encode([
+              'success' => true,
+              'message' => 'Bien mis à jour avec succès',
+              'bail_immobilier' => $bailImmobilier
+          ]);
+      } catch (\Exception $e) {
+          header('Content-Type: application/json');
+          http_response_code(400);
+          echo json_encode([
+              'success' => false,
+              'error' => $e->getMessage()
+          ]);
+      }
+    }
+public function delete($id)
+{
+    try {
+        $userId = 2; 
         if (!$userId) {
             throw new \Exception("L'utilisateur n'est pas authentifié.");
         }
-        $bailImmobilier = $this->updateBailUseCase->execute($idBien, $data, $userId);
 
-        $response = [
-            'message' => 'Bien mis à jour enregistré avec succès',
-            'bail_immobilier' => $bailImmobilier
-        ];
+        $isDeleted = $this->deleteBailUseCase->execute($id, $userId);
 
-        $this->sendResponse($response, 201);
-    }
-    public function delete($id, $userId)
-    {
-        try {
-            $isDeleted = $this->deleteBailUseCase->execute($id, $userId);
-
-            if ($isDeleted) {
-                return [
-                    'success' => true,
-                    'message' => "Le bail avec l'ID {$id} a été supprimé."
-                ];
-            }
-
-            return [
-                'success' => false,
-                'message' => "Impossible de supprimer le bail avec l'ID {$id}."
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage()
-            ];
+        if ($isDeleted) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => "Le bail avec l'ID {$id} a été supprimé."
+            ]);
+        } else {
+            throw new \Exception("Impossible de supprimer le bail avec l'ID {$id}.");
         }
+    } catch (\Exception $e) {
+        header('Content-Type: application/json');
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
     }
+}
 
 }

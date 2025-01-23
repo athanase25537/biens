@@ -81,13 +81,18 @@ class BailRepository implements BailRepositoryInterface
         return array_map([$this, 'mapToEntity'], $rows);
     }
 
-    public function delete(int $id): void
+    public function delete(int $id): bool
     {
-        $this->db->execute(
-            "DELETE FROM baux WHERE id = ?",
-            [$id]
-        );
+    try {
+        $this->db->execute("DELETE FROM baux WHERE id = ?", [$id]);
+        return true;
+    } catch (\Exception $e) {
+        error_log("Erreur SQL lors de la suppression du bail : " . $e->getMessage());
+        throw new \Exception("Erreur lors de la suppression du bail.");
     }
+    }
+
+
 
     private function mapToEntity(array $row): Bail
     {

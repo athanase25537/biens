@@ -1,11 +1,9 @@
 <?php
-
-namespace App\Port\Out;
-
-use App\Core\Domain\Entity\Signature;
+namespace Port\Out;
 
 interface SignatureRepositoryInterface
 {
-    public function save(Signature $signature): int;
+    public function save(Signature $signature): void;
     public function findById(int $id): ?Signature;
+    public function findByBailId(int $bauxId): array;
 }

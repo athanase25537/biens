@@ -22,7 +22,6 @@ class HistoriqueModificationRepository
             'type_modification' => $historique->getTypeModification(),
             'details' => $historique->getDetails(),
         ];
-
         $this->db->persist('historique_modifications', $data);
     }
 }

@@ -8,5 +8,5 @@ interface BailRepositoryInterface
     public function save(Bail $bail): Bail;
     public function findById(int $id): ?Bail;
     public function findAll(): array;
-    public function delete(int $id): void;
+    public function delete(int $id): bool;
 }

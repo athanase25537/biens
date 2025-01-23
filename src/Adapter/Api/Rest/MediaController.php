@@ -22,7 +22,6 @@ class MediaController
         }
 
         $file = $_FILES['file'];
-        $file = $_FILES['file'];
         $uploadDir = realpath(__DIR__ . '/../../../uploads');
         if (!$uploadDir) {
             mkdir(__DIR__ . '/../../../uploads', 0775, true);
@@ -30,6 +29,7 @@ class MediaController
         }
 
         $filePath = $uploadDir . '/' . basename($file['name']);
+
 
         if (!move_uploaded_file($file['tmp_name'], $filePath)) {
             http_response_code(500);
@@ -46,15 +46,14 @@ class MediaController
             'description' => $_POST['description'] ?? '',
             'position' => $_POST['position'] ?? null,
         ];
-        // $createdMedia = $this->addMediaUseCase->execute($mediaData);
+//$createdMedia = $this->addMediaUseCase->execute($mediaData);
         if ($this->addMediaUseCase->execute($mediaData)) {
             http_response_code(200);
-
-                        header('Content-Type: application/json');
+            header('Content-Type: application/json');
                         echo json_encode([
                             'success' => true,
                             'data' => [
-                                // 'id' => $createdMedia->getId(),
+                                //'id' => $createdMedia->getId(),
                                 'message' => 'Media ajouté avec succès'
                             ]
                         ]);

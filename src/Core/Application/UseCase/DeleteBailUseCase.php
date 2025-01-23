@@ -19,28 +19,24 @@ class DeleteBailUseCase
     }
 
     public function execute(int $id, int $userId): bool
-    {
-        // Trouver les détails avant suppression, si nécessaire
-        $bail = $this->bailRepository->findById($id);
+    {/*
+		$bail = $this->bailRepository->findById($id);
 
         if (!$bail) {
             throw new \Exception("Bail avec l'ID {$id} non trouvé.");
-        }
+        }*/
+        $delete = $this->bailRepository->delete($id);
 
-        // Suppression de l'entité
-        $isDeleted = $this->bailRepository->delete($id);
-
-        if ($isDeleted) {
-            // Enregistrement de la suppression dans l'historique
+        if ($delete) {
             $this->historiqueService->enregistrerModification(
-                'bail',          // La table cible
-                $id,             // L'ID de l'entité supprimée
-                $userId,         // L'utilisateur qui a effectué l'action
-                'suppression',   // Type de modification
-                json_encode($bail) // Détails de l'entité supprimée (si besoin)
+                'bail',
+                $id,
+                $userId,
+                'suppression',
+                json_encode(['status' => 'deleted'])
             );
         }
+        return $delete; 
 
-        return $isDeleted;
     }
 }

@@ -4,7 +4,7 @@ namespace App\Core\Application\UseCase;
 
 use App\Core\Domain\Entity\Garant;
 use App\Port\In\UpdateGarantImmobilierInputPort;
-use App\Port\Out\GaranytRepositoryInterface;
+use App\Port\Out\GarantRepositoryInterface;
 use App\Core\Application\Service\HistoriqueService;
 
 class UpdateGarantUseCase
@@ -18,7 +18,7 @@ class UpdateGarantUseCase
       	$this->historiqueService = $historiqueService;
     }
 
-    public function execute(int $id, arraGarant, int $userId): ?array
+    public function execute(int $id, array $updatedGarant, int $userId): ?array
     {
 
         $update = $this->garantRepository->update($id, $updatedGarant);

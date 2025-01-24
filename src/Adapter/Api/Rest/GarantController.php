@@ -8,7 +8,7 @@ use App\Core\Application\UseCase\DeleteGarantUseCase;
 use App\Port\Out\GarantRepositoryInterface;
 use App\Core\Domain\Entity\Garant;
 
-class BailController
+class GarantController
 {
     private $addGarantUseCase;
     private $updateGarantUseCase;    
@@ -49,7 +49,7 @@ class BailController
                 'success' => true,
                 'data' => [
         
-                    'message' => 'Bail créé avec succès'
+                    'message' => 'Garant créé avec succès'
                 ]
             ]);
 
@@ -78,7 +78,7 @@ class BailController
           http_response_code(200); // Code HTTP pour succès
           echo json_encode([
               'success' => true,
-              'message' => 'Bien mis à jour avec succès',
+              'message' => 'Garant mis à jour avec succès',
               'bail_immobilier' => $garantImmobilier
           ]);
       } catch (\Exception $e) {
@@ -104,10 +104,10 @@ public function delete($id)
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => true,
-                'message' => "Le bail avec l'ID {$id} a été supprimé."
+                'message' => "Garant avec l'ID {$id} a été supprimé."
             ]);
         } else {
-            throw new \Exception("Impossible de supprimer le bail avec l'ID {$id}.");
+            throw new \Exception("Impossible de supprimer le Garant avec l'ID {$id}.");
         }
     } catch (\Exception $e) {
         header('Content-Type: application/json');

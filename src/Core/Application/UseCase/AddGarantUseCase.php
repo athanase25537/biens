@@ -16,13 +16,13 @@ class AddGarantUseCase
       	$this->historiqueService = $historiqueService;
     }
 
-      public function execute(Bail $garant, int $userId): Bail
+      public function execute(Garant $garant, int $userId): Garant
     {
         $savedGarant = $this->garantRepository->save($garant);
 
         $this->historiqueService->enregistrerModification(
-            'bail',
-            $savedBail->getId(),
+            'garant_user',
+            $savedGarant->getId(),
             $userId,     
             'création',
             json_encode([

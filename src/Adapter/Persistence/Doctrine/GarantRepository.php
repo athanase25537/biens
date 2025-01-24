@@ -36,7 +36,7 @@ class GarantRepository implements GarantRepositoryInterface
     {
         $setClause = implode(', ', array_map(fn($key) => "$key = ?", array_keys($data)));
 
-        $query = "UPDATE garant_user SET $setClause, updated_at = NOW() WHERE id = ?";
+        $query = "UPDATE garant_user SET $setClause WHERE id = ?";
         $params = array_values($data);
         $params[] = $idGarant;
 
@@ -75,31 +75,13 @@ class GarantRepository implements GarantRepositoryInterface
 
 
 
-    private function mapToEntity(array $row): Bail
+    private function mapToEntity(array $row): Garant
     {
-        $bail = new Bail();
-        $bail->setId($row['id']);
-        $bail->setGarantId($row['garant_id']);
-        $bail->setBienImmobilierId($row['bien_immobilier_id']);
-        $bail->setMontantLoyer($row['montant_loyer']);
-        $bail->setMontantCharge($row['montant_charge']);
-        $bail->setMontantCaution($row['montant_caution']);
-        $bail->setEcheancePaiement($row['echeance_paiement']);
-        $bail->setDateDebut(new \DateTime($row['date_debut']));
-        $bail->setDateFin(new \DateTime($row['date_fin']));
-        $bail->setDureePreavis($row['duree_preavis']);
-        $bail->setStatut($row['statut']);
-        $bail->setEngagementAttestationAssurance($row['engagement_attestation_assurance']);
-        $bail->setModePaiement($row['mode_paiement']);
-        $bail->setConditionsSpeciales($row['conditions_speciales']);
-        $bail->setReferencesLegales($row['references_legales']);
-        $bail->setIndexationAnnuelle($row['indexation_annuelle']);
-        $bail->setIndiceReference($row['indice_reference']);
-        $bail->setCautionRemboursee($row['caution_remboursee']);
-        $bail->setDateRemboursementCaution($row['date_remboursement_caution'] ? new \DateTime($row['date_remboursement_caution']) : null);
-        $bail->setCreatedAt(new \DateTime($row['created_at']));
-        $bail->setUpdatedAt(new \DateTime($row['updated_at']));
+        $garant = new Garant();
+        $garant->setId($row['id']);
+        $garant->setUserId($row['user_id']);
+        $garant->setUserIdGarant($row['user_id_garant']);
 
-        return $bail;
+        return $garant;
     }
 }

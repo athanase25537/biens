@@ -82,7 +82,7 @@ $garantRepository = new GarantRepository($dbAdapter);
 $createGarant = new AddGarantUseCase($garantRepository, $historiqueService);
 $updateGarant = new UpdateGarantUseCase($garantRepository, $historiqueService);
 $deleteGarant = new DeleteGarantUseCase($garantRepository, $historiqueService);
-
+$garantController = new GarantController($createGarant, $updateGarant, $deleteGarant);
 // user
 $userRepository = new UserRepository($dbAdapter);
 $loginUseCase = new LoginUserUseCase($userRepository);
@@ -104,6 +104,8 @@ if ($requestUri === '/login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->register();
 } elseif ($requestUri === '/bail/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $bailController->create();
+}elseif ($requestUri === '/garant/create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $garantController->create();
 }elseif ($requestUri === '/media/upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $mediaController->upload();
 }
@@ -115,6 +117,20 @@ elseif ($requestUri === '/bien-immobilier/create' && $_SERVER['REQUEST_METHOD'] 
         $bailController->update($idBail);
     } catch (Exception $e) {
         echo "Erreur : " . $e->getMessage();
+    }
+}elseif (preg_match('#^/garant/update/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idGarant = $matches[1];
+    try {
+        $garantController->update($idGarant);
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
+}elseif (preg_match('#^/garant/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $idGarant = $matches[1];
+    try{
+        $garantController->delete($idGarant);
+    } catch(Exception $e) {
+        echo "Erreur: " . $e;
     }
 } elseif (preg_match('#^/bail/delete/(\d+)$#', $requestUri, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $idBail = $matches[1];

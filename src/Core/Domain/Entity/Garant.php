@@ -2,7 +2,7 @@
 
 namespace App\Core\Domain\Entity;
 
-class Bail
+class Garant
 {
     private $id;
     private $userId;

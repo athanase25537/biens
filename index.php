@@ -27,6 +27,8 @@ use App\Core\Application\UseCase\DeleteBailUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\AddBailUseCase;
 use App\Core\Application\UseCase\AddGarantUseCase;
+use App\Core\Application\UseCase\DeleteGarantUseCase;
+use App\Core\Application\UseCase\UpdateGarantUseCase;
 use App\Core\Application\UseCase\AddMediaUseCase;
 
 // repositories
@@ -74,6 +76,13 @@ $updateBail = new UpdateBailUseCase($bailRepository, $historiqueService);
 $deleteBail = new DeleteBailUseCase($bailRepository, $historiqueService);
 
 $bailController = new BailController($createBail, $updateBail, $deleteBail);
+
+//Garant
+$garantRepository = new GarantRepository($dbAdapter);
+$createGarant = new AddGarantUseCase($garantRepository, $historiqueService);
+$updateGarant = new UpdateGarantUseCase($garantRepository, $historiqueService);
+$deleteGarant = new DeleteGarantUseCase($garantRepository, $historiqueService);
+
 // user
 $userRepository = new UserRepository($dbAdapter);
 $loginUseCase = new LoginUserUseCase($userRepository);

@@ -222,7 +222,7 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
 
         $db = $this->db->connect($this->config);
         $stmt = $db->prepare($query);
-        echo $bailId;
+
         if (!$stmt) {
             throw new \Exception("Failed to prepare statement: " . $db->error);
         }

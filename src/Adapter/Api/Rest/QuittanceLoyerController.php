@@ -97,14 +97,31 @@ class QuittanceLoyerController
     public function selectLastQuittanceByBailId(int $bailId): void 
     {
         $quittanceLoyer = $this->selectLastQuittanceByBailIdUseCase->execute($bailId);
-
-        // Structure de la réponse
+    
+        // Structure de la réponse JSON
         $response = [
-            'message' => 'Selection dernir quittance reussi avec succès',
+            'message' => 'Selection dernier quittance réussi avec succès',
             'quittance_loyer' => $quittanceLoyer
         ];
+    
+        // Préparation des données pour le PDF
+        $dateEmission = (new \DateTime($quittanceLoyer['date_emission']))->format('m/Y');
+        $filename = (new \DateTime($quittanceLoyer['date_emission']))->format('m_Y');
+        $montant = $quittanceLoyer['montant'];
+        $montantCharge = $quittanceLoyer['montant_charge'];
+        $montantImpayer = $quittanceLoyer['montant_impayer'];
+        $montantLoyerPayer = $montant;
+        $montantChargePayer = 0.00;
+        $reste = $montant - $montantChargePayer;
+        $resteAPayerMoisPrecedent = 122.14;
+        $resteAPayer = $resteAPayerMoisPrecedent + $reste;
+        $createdAt = (new \DateTime($quittanceLoyer['created_at']))->format('d/m/Y');
+        $datePaiement = $createdAt;
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponseController::sendResponse($response, 201);
+        require_once('tcpdf.php');
+    
+        // // Envoi de la réponse JSON après la génération PDF
+        // $this->sendResponseController::sendResponse($response, 201);
     }
+    
 }

@@ -13,6 +13,7 @@ use App\Adapter\Api\Rest\AuthController;
 use App\Adapter\Api\Rest\BienImmobilierController;
 use App\Adapter\Api\Rest\TypeBienController;
 use App\Adapter\Api\Rest\BailController;
+use App\Adapter\Api\Rest\GarantController;
 use App\Adapter\Api\Rest\MediaController;
 
 // useCases
@@ -25,10 +26,12 @@ use App\Core\Application\UseCase\DeleteBienImmobilierUseCase;
 use App\Core\Application\UseCase\DeleteBailUseCase;
 use App\Core\Application\UseCase\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\AddBailUseCase;
+use App\Core\Application\UseCase\AddGarantUseCase;
 use App\Core\Application\UseCase\AddMediaUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
+use App\Adapter\Persistence\Doctrine\GarantRepository;
 use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
 use App\Adapter\Persistence\Doctrine\BailRepository;

@@ -212,4 +212,47 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
 
     //     return $incident;
     // }
+
+    public function selectLastQuittanceByBailId(int $bailId): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM quittances_loyer
+                    WHERE bail_id = ?
+                    ORDER BY id DESC LIMIT 1";
+
+        $db = $this->db->connect($this->config);
+        $stmt = $db->prepare($query);
+        echo $bailId;
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
+
+        // Assignation de la valeur du paramètre
+        $id = $bailId;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun Type Bien trouvé");
+        }
+
+        // Traitement du résultat
+        $row = $result->fetch_assoc();
+
+        // Remplissage de l'objet EtatLieuxItems avec les données récupérées
+        $quittanceLoyer = $row;
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $quittanceLoyer;
+    }
 }

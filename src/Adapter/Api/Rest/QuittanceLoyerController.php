@@ -5,6 +5,7 @@ namespace App\Adapter\Api\Rest;
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
 // use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
 // use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
+use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class QuittanceLoyerController
@@ -12,18 +13,21 @@ class QuittanceLoyerController
     private $createQuittanceLoyerUseCase;
     // private $updateQuittanceLoyerUseCase;
     // private $deleteQuittanceLoyerUseCase;
+    private $selectLastQuittanceByBailIdUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateQuittanceLoyerUseCase $createQuittanceLoyerUseCase,
         // UpdateIncidentUseCase $updateQuittanceLoyerUseCase,
         // DeleteIncidentUseCase $deleteQuittanceLoyerUseCase
+        SelectLastQuittanceByBailIdUseCase $selectLastQuittanceByBailIdUseCase
     
     )
     {
         $this->createQuittanceLoyerUseCase = $createQuittanceLoyerUseCase;
         // $this->updateQuittanceLoyerUseCase = $updateQuittanceLoyerUseCase;
         // $this->deleteQuittanceLoyerUseCase = $deleteQuittanceLoyerUseCase;
+        $this->selectLastQuittanceByBailIdUseCase = $selectLastQuittanceByBailIdUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -89,4 +93,18 @@ class QuittanceLoyerController
         $this->sendResponseController::sendResponse($response, 201);   
     }
     */
+
+    public function selectLastQuittanceByBailId(int $bailId): void 
+    {
+        $quittanceLoyer = $this->selectLastQuittanceByBailIdUseCase->execute($bailId);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Selection dernir quittance reussi avec succès',
+            'quittance_loyer' => $quittanceLoyer
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponseController::sendResponse($response, 201);
+    }
 }

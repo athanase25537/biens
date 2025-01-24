@@ -30,6 +30,7 @@ use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
 // use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
 // use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
+use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
 
 // user
 use App\Core\Application\UseCase\User\LoginUserUseCase;
@@ -102,11 +103,13 @@ $quittanceLoyerRepository = new QuittanceLoyerRepository($dbAdapter);
 $createQuittanceLoyerUseCase = new CreateQuittanceLoyerUseCase($quittanceLoyerRepository);
 // $updateQuittanceLoyerUseCase = new UpdateQuittanceLoyerUseCase($quittanceLoyerRepository);
 // $deleteQuittanceLoyerUseCase = new DeleteQuittanceLoyerUseCase($quittanceLoyerRepository);
+$selectLastQuittanceByBailIdUseCase = new SelectLastQuittanceByBailIdUseCase($quittanceLoyerRepository);
 
 $quittanceLoyer = new QuittanceLoyerController(
     $createQuittanceLoyerUseCase,
     // $updateQuittanceLoyerUseCase,
     // $deleteQuittanceLoyerUseCase,
+    $selectLastQuittanceByBailIdUseCase
 );
 
 // Incident
@@ -186,6 +189,7 @@ $router->addRoute('POST', '#^/suivi-paiement/create$#', [$suivi, 'create']);
 // $router->addRoute('PATCH', '#^/quittance-loyer/update/(\d+)$#', [$quittanceLoyer, 'update']);
 // $router->addRoute('DELETE', '#^/quittance-loyer/delete/(\d+)/(\d+)/(\d+)$#', [$quittanceLoyer, 'destroy']);
 $router->addRoute('POST', '#^/quittance-loyer/create$#', [$quittanceLoyer, 'create']);
+$router->addRoute('GET', '#^/quittance-loyer/select-by-bail-id/(\d+)$#', [$quittanceLoyer, 'selectLastQuittanceByBailId']);
 
 // incident
 $router->addRoute('PATCH', '#^/incident/update/(\d+)$#', [$incident, 'update']);

@@ -10,4 +10,5 @@ interface QuittanceLoyerRepositoryInterface
     // public function update(int $incidentId, array $data): bool;
     // public function destroy(int $incidentId, int $bienId, int $bailId): bool;
     // public function getIncident(int $incidentId): ?array;
+    public function selectLastQuittanceByBailId(int $bailId): ?array;
 }

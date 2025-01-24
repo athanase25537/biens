@@ -119,6 +119,8 @@ class BailRepository implements BailRepositoryInterface
         $bail->setCreatedAt(new \DateTime($row['created_at']));
         $bail->setUpdatedAt(new \DateTime($row['updated_at']));
 
+        $bail->setProprietaireId($row['garant_id']);
+
         return $bail;
     }
 }

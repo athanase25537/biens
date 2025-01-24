@@ -30,6 +30,7 @@ use App\Core\Application\UseCase\AddGarantUseCase;
 use App\Core\Application\UseCase\DeleteGarantUseCase;
 use App\Core\Application\UseCase\UpdateGarantUseCase;
 use App\Core\Application\UseCase\AddMediaUseCase;
+use App\Core\Application\UseCase\SendNotificationUseCase;
 
 // repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
@@ -37,6 +38,7 @@ use App\Adapter\Persistence\Doctrine\GarantRepository;
 use App\Adapter\Persistence\Doctrine\BienImmobilierRepository;
 use App\Adapter\Persistence\Doctrine\TypeBienRepository;
 use App\Adapter\Persistence\Doctrine\BailRepository;
+use App\Adapter\Persistence\Doctrine\NotificationRepository;
 use App\Adapter\Persistence\Doctrine\MediaRepository;
 
 // Chargement de la configuration
@@ -71,11 +73,13 @@ $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
 $typeBien = new TypeBienController($createTypeBienUseCase);
 // Bau
 $bailRepository = new BailRepository($dbAdapter);
+$notificationRepository = new NotificationRepository($dbAdapter);
 $createBail = new AddBailUseCase($bailRepository, $historiqueService);
 $updateBail = new UpdateBailUseCase($bailRepository, $historiqueService);
 $deleteBail = new DeleteBailUseCase($bailRepository, $historiqueService);
+$notificationBail = new SendNotificationUseCase($notificationRepository );
 
-$bailController = new BailController($createBail, $updateBail, $deleteBail);
+$bailController = new BailController($createBail, $updateBail, $deleteBail, $notificationBail);
 
 //Garant
 $garantRepository = new GarantRepository($dbAdapter);

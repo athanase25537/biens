@@ -7,6 +7,7 @@ class Bail
     private $id;
     private $garantId;
     private $bienImmobilierId;
+    private int $proprietaireId;
     private $montantLoyer;
     private $montantCharge;
     private $montantCaution;
@@ -49,6 +50,9 @@ class Bail
     public function getCreatedAt() { return $this->createdAt; }
     public function getUpdatedAt() { return $this->updatedAt; }
 
+    /*Notification*/
+    public function getProprietaireId() { return $this->proprietaireId; }
+
     // Setters
     public function setId($id) { $this->id = $id; }
     public function setGarantId($garantId) { $this->garantId = $garantId; }
@@ -71,4 +75,7 @@ class Bail
     public function setDateRemboursementCaution($dateRemboursementCaution) { $this->dateRemboursementCaution = $dateRemboursementCaution; }
     public function setCreatedAt($createdAt) { $this->createdAt = $createdAt; }
     public function setUpdatedAt($updatedAt) { $this->updatedAt = $updatedAt; }
+    
+    /*Notification*/
+    public function setProprietaireId($proprietaireId) { $this->proprietaireId = $proprietaireId; }
 }

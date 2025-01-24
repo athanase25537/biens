@@ -17,17 +17,18 @@ class NotificationRepository implements NotificationRepositoryInterface
 
     public function save(Notification $notification): Notification
     {
-        $query = "INSERT INTO notifications (user_id, type_notification, contenu, statut, token_portable, date_creation)
-                  VALUES (?, ?, ?, ?, ?, NOW())";
-        $this->db->execute($query, [
-            $notification->getUserId(),
-            $notification->getTypeNotification(),
-            $notification->getContenu(),
-            $notification->getStatut(),
-            $notification->getTokenPortable()
-        ]);
+        $this->db->execute(
+            "INSERT INTO notifications (user_id, type_notification, contenu, statut, token_portable, date_creation)
+                  VALUES (?, ?, ?, ?, ?, NOW())",
+            [
+                $notification->getUserId(),
+                $notification->getTypeNotification(),
+                $notification->getContenu(),
+                $notification->getStatut(),
+                $notification->getTokenPortable()
+            ]
+        );
 
-        $notification->setId((int)$this->db->lastInsertId());
         return $notification;
     }
 

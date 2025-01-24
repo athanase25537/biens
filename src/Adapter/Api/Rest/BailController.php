@@ -5,6 +5,7 @@ namespace App\Adapter\Api\Rest;
 use App\Core\Application\UseCase\AddBailUseCase;
 use App\Core\Application\UseCase\UpdateBailUseCase;
 use App\Core\Application\UseCase\DeleteBailUseCase;
+use App\Core\Application\UseCase\SendNotificationUseCase;
 use App\Port\Out\BailRepositoryInterface;
 use App\Core\Domain\Entity\Bail;
 
@@ -14,19 +15,19 @@ class BailController
     private $updateBailUseCase;    
   	private $deleteBailUseCase;
   	private $bailRepository;
+    private $sendNotificationUseCase;
 
 
     public function __construct(
         AddBailUseCase $addBailUseCase,
-        updateBailUseCase $updateBailUseCase,    
-		deleteBailUseCase $deleteBailUseCase,
-    )
-    {
-
+        UpdateBailUseCase $updateBailUseCase,    
+        DeleteBailUseCase $deleteBailUseCase,
+        SendNotificationUseCase $sendNotificationUseCase
+    ) {
         $this->addBailUseCase = $addBailUseCase;
         $this->updateBailUseCase = $updateBailUseCase;
-      	$this->deleteBailUseCase = $deleteBailUseCase;
-
+        $this->deleteBailUseCase = $deleteBailUseCase;
+        $this->sendNotificationUseCase = $sendNotificationUseCase;
     }
 
     public function create()
@@ -83,34 +84,88 @@ class BailController
             ]);
         }
     }
-      public function update($idBien): void
-    {
-  try {
-          $data = json_decode(file_get_contents('php://input'), true);
+    public function update($idBien): void
+{
+    try {
+        $data = json_decode(file_get_contents('php://input'), true);
 
-          $userId = 2;
-          if (!$userId) {
-              throw new \Exception("L'utilisateur n'est pas authentifié.");
-          }
-          $bailImmobilier = $this->updateBailUseCase->execute($idBien, $data, $userId);
+        $userId = 2; // Simulation d'un utilisateur connecté
+        if (!$userId) {
+            throw new \Exception("L'utilisateur n'est pas authentifié.");
+        }
 
-          // Préparer et envoyer la réponse
-          header('Content-Type: application/json');
-          http_response_code(200); // Code HTTP pour succès
-          echo json_encode([
-              'success' => true,
-              'message' => 'Bien mis à jour avec succès',
-              'bail_immobilier' => $bailImmobilier
-          ]);
-      } catch (\Exception $e) {
-          header('Content-Type: application/json');
-          http_response_code(400);
-          echo json_encode([
-              'success' => false,
-              'error' => $e->getMessage()
-          ]);
-      }
+        // Mise à jour du bail
+        $bailImmobilier = $this->updateBailUseCase->execute($idBien, $data, $userId);
+
+        if (!$bailImmobilier) {
+            throw new \Exception("Le bail avec l'ID {$idBien} n'a pas pu être trouvé ou mis à jour.");
+        }
+
+        // Envoyer une notification au propriétaire
+        $notification = $this->sendNotificationUseCase->execute(
+            $bailImmobilier->getProprietaireId(),
+            'modification_bail',
+            "Votre bail pour le bien immobilier {$bailImmobilier->getBienImmobilierId()} a été modifié par un administrateur.",
+            $bailImmobilier->getProprietaireTokenPortable() // Token pour une notification mobile
+        );
+
+        // Préparer et envoyer la réponse
+        header('Content-Type: application/json');
+        http_response_code(200); // Code HTTP pour succès
+        echo json_encode([
+            'success' => true,
+            'message' => 'Bien mis à jour avec succès',
+            'bail_immobilier' => $bailImmobilier,
+            'notification' => $notification
+        ]);
+    } catch (\Exception $e) {
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
     }
+}
+
+//       public function update($idBien): void
+//     {
+//   try {
+//           $data = json_decode(file_get_contents('php://input'), true);
+
+//           $userId = 2;
+//           if (!$userId) {
+//               throw new \Exception("L'utilisateur n'est pas authentifié.");
+//           }
+
+//           $bailImmobilier = $this->updateBailUseCase->execute($idBien, $data, $userId);
+//             // Envoyer une notification au propriétaire du bail
+
+//             $notification = $this->sendNotificationUseCase->execute(
+//                 $bailImmobilier->getProprietaireId(),
+//                 'modification_bail',
+//                 "Votre bail pour le bien immobilier {$bailImmobilier->getBienImmobilierId()} a été modifié par un administrateur.",
+//                 $bailImmobilier->getProprietaireTokenPortable() // Token pour une notification mobile, si nécessaire
+//             );
+
+//           // Préparer et envoyer la réponse
+//           header('Content-Type: application/json');
+//           http_response_code(200); // Code HTTP pour succès
+//           echo json_encode([
+//               'success' => true,
+//               'message' => 'Bien mis à jour avec succès',
+//               'bail_immobilier' => $bailImmobilier,
+//               'notification' => $notification
+//           ]);
+//       } catch (\Exception $e) {
+//           header('Content-Type: application/json');
+//           http_response_code(400);
+//           echo json_encode([
+//               'success' => false,
+//               'error' => $e->getMessage()
+//           ]);
+//       }
+//     }
 public function delete($id)
 {
     try {
@@ -122,6 +177,17 @@ public function delete($id)
         $isDeleted = $this->deleteBailUseCase->execute($id, $userId);
 
         if ($isDeleted) {
+
+            $bail = $this->bailRepository->findById($id);
+
+            if ($bail) {
+                $notification = $this->sendNotificationUseCase->execute(
+                    $bail->getProprietaireId(), 
+                    'suppression_bail', 
+                    "Votre bail pour le bien immobilier {$bail->getBienImmobilierId()} a été supprimé par un administrateur.",
+                    $bail->getProprietaireTokenPortable() 
+                );
+            }
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => true,

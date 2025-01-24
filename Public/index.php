@@ -17,8 +17,14 @@ use App\Adapter\Api\Rest\EtatLieuxController;
 use App\Adapter\Api\Rest\EtatLieuxItemsController;
 use App\Adapter\Api\Rest\IncidentController;
 use App\Adapter\Api\Rest\QuittanceLoyerController;
+use App\Adapter\Api\Rest\SuiviController;
 
 // useCases
+
+// suivi
+use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
+// use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
+// use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 
 // quittance loyer
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
@@ -62,6 +68,7 @@ use App\Adapter\Persistence\Doctrine\EtatLieuxRepository;
 use App\Adapter\Persistence\Doctrine\EtatLieuxItemsRepository;
 use App\Adapter\Persistence\Doctrine\IncidentRepository;
 use App\Adapter\Persistence\Doctrine\QuittanceLoyerRepository;
+use App\Adapter\Persistence\Doctrine\SuiviRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
@@ -77,6 +84,18 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// Suivi
+$suiviRepository = new SuiviRepository($dbAdapter);
+$createSuiviUseCase = new CreateSuiviUseCase($suiviRepository);
+// $updateSuiviUseCase = new UpdateSuiviUseCase($suiviRepository);
+// $deleteSuiviUseCase = new DeleteSuiviUseCase($suiviRepository);
+
+$suivi = new SuiviController(
+    $createSuiviUseCase,
+    // $updateSuiviUseCase,
+    // $deleteSuiviUseCase,
+);
 
 // Quittance Loyer
 $quittanceLoyerRepository = new QuittanceLoyerRepository($dbAdapter);
@@ -157,6 +176,11 @@ $router = new Router();
 // Define routes
 $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
 $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
+
+// suivi
+// $router->addRoute('PATCH', '#^/suivi-paiement/update/(\d+)$#', [$suivi, 'update']);
+// $router->addRoute('DELETE', '#^/suivi-paiement/delete/(\d+)/(\d+)/(\d+)$#', [$suivi, 'destroy']);
+$router->addRoute('POST', '#^/suivi-paiement/create$#', [$suivi, 'create']);
 
 // quittance loyer
 // $router->addRoute('PATCH', '#^/quittance-loyer/update/(\d+)$#', [$quittanceLoyer, 'update']);

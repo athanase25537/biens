@@ -18,8 +18,14 @@ use App\Adapter\Api\Rest\EtatLieuxItemsController;
 use App\Adapter\Api\Rest\IncidentController;
 use App\Adapter\Api\Rest\QuittanceLoyerController;
 use App\Adapter\Api\Rest\SuiviController;
+use App\Adapter\Api\Rest\UserAbonnementController;
 
 // useCases
+
+// user abonnement
+use App\Core\Application\UseCase\UserAbonnement\CreateUserAbonnementUseCase;
+// use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
+// use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 
 // suivi
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
@@ -70,6 +76,7 @@ use App\Adapter\Persistence\Doctrine\EtatLieuxItemsRepository;
 use App\Adapter\Persistence\Doctrine\IncidentRepository;
 use App\Adapter\Persistence\Doctrine\QuittanceLoyerRepository;
 use App\Adapter\Persistence\Doctrine\SuiviRepository;
+use App\Adapter\Persistence\Doctrine\UserAbonnementRepository;
 
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
@@ -85,6 +92,19 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// User Abonnement
+$userAbonnementRepository = new UserAbonnementRepository($dbAdapter);
+$createUserAbonnementUseCase = new CreateUserAbonnementUseCase($userAbonnementRepository);
+// $updateSuiviUseCase = new UpdateSuiviUseCase($suiviRepository);
+// $deleteSuiviUseCase = new DeleteSuiviUseCase($suiviRepository);
+
+$userAbonnement = new UserAbonnementController(
+    $createUserAbonnementUseCase,
+    // $updateSuiviUseCase,
+    // $deleteSuiviUseCase,
+);
+
 
 // Suivi
 $suiviRepository = new SuiviRepository($dbAdapter);
@@ -179,6 +199,9 @@ $router = new Router();
 // Define routes
 $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
 $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
+
+// user abonnement
+$router->addRoute('POST', '#^/user-abonnement/create$#', [$userAbonnement, 'create']);
 
 // suivi
 // $router->addRoute('PATCH', '#^/suivi-paiement/update/(\d+)$#', [$suivi, 'update']);

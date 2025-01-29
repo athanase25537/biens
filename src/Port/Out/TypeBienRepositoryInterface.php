@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 
 namespace App\Port\Out;
@@ -11,15 +10,4 @@ interface TypeBienRepositoryInterface
     public function update(int $typeBienId, array $data): bool;
     public function getTypeBien(int $typeBienId): ?array;
     public function destroy(int $typeBienId): bool;
-=======
-<?php
-
-namespace App\Port\Out;
-
-use App\Core\Domain\Entity\TypeBien;
-
-interface TypeBienRepositoryInterface
-{
-    public function save(TypeBien $typeBien): TypeBien;
->>>>>>> bajoh
 }

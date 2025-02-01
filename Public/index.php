@@ -24,7 +24,7 @@ use App\Adapter\Api\Rest\UserAbonnementController;
 
 // user abonnement
 use App\Core\Application\UseCase\UserAbonnement\CreateUserAbonnementUseCase;
-// use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
+use App\Core\Application\UseCase\UserAbonnement\UpdateUserAbonnementUseCase;
 // use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 
 // suivi
@@ -96,12 +96,12 @@ $dbAdapter->connect($dbConfig);
 // User Abonnement
 $userAbonnementRepository = new UserAbonnementRepository($dbAdapter);
 $createUserAbonnementUseCase = new CreateUserAbonnementUseCase($userAbonnementRepository);
-// $updateSuiviUseCase = new UpdateSuiviUseCase($suiviRepository);
+$updateUserAbonnementUserCase = new UpdateUserAbonnementUseCase($userAbonnementRepository);
 // $deleteSuiviUseCase = new DeleteSuiviUseCase($suiviRepository);
 
 $userAbonnement = new UserAbonnementController(
     $createUserAbonnementUseCase,
-    // $updateSuiviUseCase,
+    $updateUserAbonnementUserCase,
     // $deleteSuiviUseCase,
 );
 
@@ -202,6 +202,7 @@ $router->addRoute('POST', '#^/register$#', [$controller, 'register']);
 
 // user abonnement
 $router->addRoute('POST', '#^/user-abonnement/create$#', [$userAbonnement, 'create']);
+$router->addRoute('PATCH', '#^/user-abonnement/update/(\d+)$#', [$userAbonnement, 'update']);
 
 // suivi
 // $router->addRoute('PATCH', '#^/suivi-paiement/update/(\d+)$#', [$suivi, 'update']);

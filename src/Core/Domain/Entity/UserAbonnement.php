@@ -8,7 +8,7 @@ class UserAbonnement
     private int $user_id;
     private int $abonnement_id;
     private ?int $payments_id;
-    private string $type_formule;
+    private int $type_formule;
     private float $prix_ht;
     private float $tva_rate;
     private float $montant_tva;
@@ -25,7 +25,7 @@ class UserAbonnement
         int $user_id,
         int $abonnement_id,
         ?int $payments_id,
-        string $type_formule,
+        int $type_formule,
         float $prix_ht,
         float $tva_rate,
         float $montant_tva,
@@ -70,7 +70,7 @@ class UserAbonnement
         return $this->payments_id;
     }
 
-    public function getTypeFormule(): string
+    public function getTypeFormule(): int
     {
         return $this->type_formule;
     }
@@ -142,7 +142,7 @@ class UserAbonnement
         $this->payments_id = $payments_id;
     }
 
-    public function setTypeFormule(string $type_formule): void
+    public function setTypeFormule(int  $type_formule): void
     {
         $this->type_formule = $type_formule;
     }

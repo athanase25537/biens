@@ -16,12 +16,12 @@ class UserAbonnementController
 
     public function __construct(
         CreateUserAbonnementUseCase $createUserAbonnementUseCase,
-        // UpdateUserAbonnementUseCase $updateUserAbonnementUseCase,
+        UpdateUserAbonnementUseCase $updateUserAbonnementUseCase,
         // DeleteUserAbonnementUseCase $deleteUserAbonnementUseCase,
         )
     {
         $this->createUserAbonnementUseCase = $createUserAbonnementUseCase;
-        // $this->updateUserAbonnementUseCase = $updateUserAbonnementUseCase;
+        $this->updateUserAbonnementUseCase = $updateUserAbonnementUseCase;
         // $this->deleteUserAbonnementUseCase = $deleteUserAbonnementUseCase;
         $this->sendResponseController = new SendResponseController();
     }
@@ -60,4 +60,21 @@ class UserAbonnementController
         $this->sendResponseController::sendResponse($response, 201);                
     }
 
+    public function update($userAbonnementId): void
+    {
+        // Récupération des données de la requête
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        // Création du etat lieux items via le use case ou service
+        $userAbonnement = $this->updateUserAbonnementUseCase->execute($userAbonnementId, $data);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Etat lieux mis a jour avec succès',
+            'etat_lieux'=> $userAbonnement
+        ];
+
+        // Envoi de la réponse avec un statut HTTP 201 (Créé)
+        $this->sendResponseController::sendResponse($response, 201);
+    }
 }

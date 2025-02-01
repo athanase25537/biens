@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 23 jan. 2025 à 08:41
+-- Généré le : sam. 01 fév. 2025 à 06:22
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.0.30
 
@@ -37,6 +37,22 @@ CREATE TABLE `abonnement` (
   `actif` tinyint(1) DEFAULT 1,
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Déchargement des données de la table `abonnement`
+--
+
+INSERT INTO `abonnement` (`id`, `nom`, `description`, `prix_mensuel`, `prix_annuel`, `tva_rate`, `actif`, `created_at`) VALUES
+(1, 'Abonnement Basic', 'Accès à du contenu de base', 9.99, 99.90, 20.00, 1, '2025-01-01 07:00:00'),
+(2, 'Abonnement Premium', 'Accès à du contenu premium avec plus de fonctionnalités', 19.99, 199.90, 20.00, 1, '2025-01-02 09:30:00'),
+(3, 'Abonnement Pro', 'Pour les professionnels avec des outils avancés', 29.99, 299.90, 20.00, 1, '2025-01-03 11:00:00'),
+(4, 'Abonnement Entreprise', 'Accès pour les grandes entreprises', 49.99, 499.90, 20.00, 1, '2025-01-04 06:15:00'),
+(5, 'Abonnement Étudiant', 'Réduction pour les étudiants avec accès limité', 4.99, 49.90, 10.00, 1, '2025-01-05 08:45:00'),
+(6, 'Abonnement Test', 'Essai gratuit pour 30 jours', 0.00, 0.00, 0.00, 1, '2025-01-06 10:20:00'),
+(7, 'Abonnement VIP', 'Accès exclusif à des événements et contenu', 39.99, 399.90, 20.00, 1, '2025-01-07 12:00:00'),
+(8, 'Abonnement Club', 'Accès au club avec des avantages spéciaux', 24.99, 249.90, 20.00, 1, '2025-01-08 13:40:00'),
+(9, 'Abonnement Famille', 'Accès pour toute la famille', 14.99, 149.90, 20.00, 1, '2025-01-09 14:25:00'),
+(10, 'Abonnement Silver', 'Accès limité à certaines ressources', 11.99, 119.90, 20.00, 0, '2025-01-10 15:05:00');
 
 -- --------------------------------------------------------
 
@@ -356,7 +372,10 @@ CREATE TABLE `incidents` (
 --
 
 INSERT INTO `incidents` (`id`, `bien_id`, `bail_id`, `description`, `statut`, `date_signalement`, `date_resolution`) VALUES
-(2, 3, 4, 'Fuite d\'eau dans la salle de bain', '', '2025-01-20 00:00:00', '2025-01-25 00:00:00');
+(3, 3, 4, 'Description du problème signalé', 'signalé', '2025-01-23 12:34:56', '2025-01-23 12:34:56'),
+(4, 3, 4, 'Description du problème signalé', 'signalé', '2025-01-23 12:34:56', '2025-01-23 12:34:56'),
+(5, 3, 4, 'Coupure tous les jours', 'en_cours', '2025-01-23 12:34:56', '2025-01-23 12:34:56'),
+(6, 3, 4, 'Coupure tous les jours', 'en_cours', '2025-01-23 12:34:56', '2025-01-23 12:34:56');
 
 -- --------------------------------------------------------
 
@@ -440,6 +459,22 @@ CREATE TABLE `payments` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+--
+-- Déchargement des données de la table `payments`
+--
+
+INSERT INTO `payments` (`id`, `stripe_payment_id`, `amount`, `currency`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'ch_1JYZh2JYpJhVJ6h1d4ds8vEJ', 29.99, 'USD', '', '2025-01-01 07:00:00', '2025-01-01 07:00:00'),
+(2, 'ch_1JYZi1JYpJhVJ6h1d4ds8vEI', 19.99, 'EUR', '', '2025-01-02 09:30:00', '2025-01-02 09:30:00'),
+(3, 'ch_1JYZhHJYpJhVJ6h1d4ds8vEJ', 49.99, 'GBP', '', '2025-01-03 11:00:00', '2025-01-03 11:00:00'),
+(4, 'ch_1JYZfQJYpJhVJ6h1d4ds8vEK', 9.99, 'USD', '', '2025-01-04 06:15:00', '2025-01-04 06:15:00'),
+(5, 'ch_1JYZgFJYpJhVJ6h1d4ds8vEL', 99.99, 'USD', '', '2025-01-05 08:45:00', '2025-01-05 08:45:00'),
+(6, 'ch_1JYZh2JYpJhVJ6h1d4ds8vEN', 39.99, 'EUR', '', '2025-01-06 10:20:00', '2025-01-06 10:20:00'),
+(7, 'ch_1JYZrHJYpJhVJ6h1d4ds8vEO', 24.99, 'GBP', '', '2025-01-07 12:00:00', '2025-01-07 12:00:00'),
+(8, 'ch_1JYZdLJYpJhVJ6h1d4ds8vEP', 59.99, 'USD', '', '2025-01-08 13:40:00', '2025-01-08 13:40:00'),
+(9, 'ch_1JYZqFJYpJhVJ6h1d4ds8vEQ', 14.99, 'USD', '', '2025-01-09 14:25:00', '2025-01-09 14:25:00'),
+(10, 'ch_1JYZs1JYpJhVJ6h1d4ds8vER', 79.99, 'EUR', '', '2025-01-10 15:05:00', '2025-01-10 15:05:00');
+
 -- --------------------------------------------------------
 
 --
@@ -454,9 +489,19 @@ CREATE TABLE `quittances_loyer` (
   `statut` enum('brouillon','en_attente','payée','annulée') DEFAULT NULL,
   `description` text DEFAULT NULL,
   `moyen_paiement` enum('virement','chèque','espèces','carte') DEFAULT NULL,
+  `montant_charge` decimal(10,2) NOT NULL,
+  `montant_impayer` decimal(10,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `quittances_loyer`
+--
+
+INSERT INTO `quittances_loyer` (`id`, `bail_id`, `montant`, `date_emission`, `statut`, `description`, `moyen_paiement`, `montant_charge`, `montant_impayer`, `created_at`, `updated_at`) VALUES
+(1, 4, 10.50, '2025-01-23 12:34:56', 'brouillon', 'Some description to describe the situation', 'virement', 12.30, 12.30, '2025-01-23 09:34:56', '2025-01-23 09:34:56'),
+(2, 4, 10.50, '2025-01-23 12:34:56', 'brouillon', 'Some descriptions to describe the situation more and more', 'virement', 12.30, 12.30, '2025-01-23 09:34:56', '2025-01-23 09:34:56');
 
 -- --------------------------------------------------------
 
@@ -491,6 +536,14 @@ CREATE TABLE `suivis_paiements` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Déchargement des données de la table `suivis_paiements`
+--
+
+INSERT INTO `suivis_paiements` (`id`, `quittance_id`, `montant`, `date_paiement`, `statut`, `created_at`, `updated_at`) VALUES
+(1, 1, 10.20, '2025-01-24 00:00:00', 'en_attente', '2025-01-23 21:00:00', '2025-01-23 21:00:00'),
+(2, 1, 10.20, '2025-01-24 00:00:00', 'en_attente', '2025-01-23 21:00:00', '2025-01-23 21:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -510,9 +563,6 @@ CREATE TABLE `types_bien` (
 --
 
 INSERT INTO `types_bien` (`id`, `type`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'lease', 'Méthode pour récupérer l\'ID du bail', '2025-01-17 09:08:30', '2025-01-23 09:34:56'),
-(2, 'Appartement', 'Un appartement spacieux avec vue sur la mer.', '2025-01-17 09:09:51', '2025-01-17 09:09:51'),
-(3, 'Appartement', 'Un appartement spacieux avec vue sur la mer.', '2025-01-17 09:12:05', '2025-01-17 09:12:05'),
 (4, 'Appartement', 'Un appartement spacieux avec vue sur la mer.', '2025-01-17 09:16:35', '2025-01-17 09:16:35'),
 (5, 'Appartement', 'Un appartement spacieux avec vue sur la mer.', '2025-01-17 14:28:30', '2025-01-17 14:28:30'),
 (6, 'lease', 'Nouveau méthode pour récupérer l\'ID du bail', '2025-01-23 07:26:34', '2025-01-23 07:26:34'),
@@ -576,6 +626,14 @@ CREATE TABLE `users_abonnements` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Déchargement des données de la table `users_abonnements`
+--
+
+INSERT INTO `users_abonnements` (`id`, `user_id`, `abonnement_id`, `payments_id`, `type_formule`, `prix_ht`, `tva_rate`, `montant_tva`, `montant_ttc`, `date_acquisition`, `date_expiration`, `statut`, `suivi`, `created_at`, `updated_at`) VALUES
+(1, 67890, 2, 15, 'mensuel', 49.99, 20.00, 9.99, 59.98, '0000-00-00', '2026-01-31', '', 'en cours', '2025-01-01 07:00:00', '2025-02-01 03:26:22'),
+(2, 67890, 1, 15, '', 49.99, 20.00, 9.99, 59.98, '0000-00-00', '2026-01-31', '', 'en cours', '2025-01-31 16:39:00', '2025-02-01 02:41:51');
 
 -- --------------------------------------------------------
 
@@ -795,7 +853,7 @@ ALTER TABLE `user_facturation_info`
 -- AUTO_INCREMENT pour la table `abonnement`
 --
 ALTER TABLE `abonnement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `assurances`
@@ -873,7 +931,7 @@ ALTER TABLE `historique_modifications`
 -- AUTO_INCREMENT pour la table `incidents`
 --
 ALTER TABLE `incidents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `medias`
@@ -897,13 +955,13 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT pour la table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `quittances_loyer`
 --
 ALTER TABLE `quittances_loyer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `signature`
@@ -915,7 +973,7 @@ ALTER TABLE `signature`
 -- AUTO_INCREMENT pour la table `suivis_paiements`
 --
 ALTER TABLE `suivis_paiements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `types_bien`
@@ -933,7 +991,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `users_abonnements`
 --
 ALTER TABLE `users_abonnements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `user_facturation_info`

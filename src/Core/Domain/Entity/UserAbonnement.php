@@ -146,7 +146,7 @@ class UserAbonnement
     {
         $this->type_formule = $type_formule;
     }
-
+ 
     public function setPrixHt(float $prix_ht): void
     {
         $this->prix_ht = $prix_ht;

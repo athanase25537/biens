@@ -1,91 +1,82 @@
 <?php
-namespace App\Adapter\Api\Rest;
 
-use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
-use App\Core\Application\UseCase\TypeBien\UpdateTypeBienUseCase;
-use App\Core\Application\UseCase\TypeBien\DeleteTypeBienUseCase;
-use App\Adapter\Api\Rest\SendResponseController;
+namespace App\Controller;
 
-class StripeController
+use App\Adapter\Persistence\Stripe\SubscriptionStripe;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+class StripeController extends AbstractController
 {
+    private SubscriptionStripe $subscriptionStripe;
 
-    private $createTypeBienUseCase;
-    private $updateTypeBienUseCase;
-    private $deleteTypeBienUseCase;
-    private SendResponseController $sendResponseController;
-
-    public function __construct(
-        CreateTypeBienUseCase $createTypeBienUseCase,
-        UpdateTypeBienUseCase $updateTypeBienUseCase,
-        DeleteTypeBienUseCase $deleteTypeBienUseCase,
-        )
+    public function __construct(SubscriptionStripe $subscriptionStripe)
     {
-        $this->createTypeBienUseCase = $createTypeBienUseCase;
-        $this->updateTypeBienUseCase = $updateTypeBienUseCase;
-        $this->deleteTypeBienUseCase = $deleteTypeBienUseCase;
-        $this->sendResponseController = new SendResponseController();
+        $this->subscriptionStripe = $subscriptionStripe;
     }
 
-    public function create()
+    public function createCustomer(Request $request): Response
     {
-        // Récupération des données de la requête
-        $data = json_decode(file_get_contents('php://input'), true);
+        $email = $request->get('email');
+        $name = $request->get('name');
 
-        // Création du bien immobilier via le use case ou service
-        $typeBien = $this->createTypeBienUseCase->execute($data);
-
-        // Structure de la réponse
-        $response = [
-            'message' => 'Type Bien enregistré avec succès',
-            'type_bien' => [
-                'type' => $typeBien->getType(),
-                'description' => $typeBien->getDescription(),
-                'created_at' => $typeBien->getCreatedAt(),
-                'updated_at' => $typeBien->getUpdatedAt(),
-            ],
-        ];
-
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponseController::sendResponse($response, 201);                
+        try {
+            $customer = $this->subscriptionStripe->createCustomer($email, $name);
+            return $this->json(['customerId' => $customer->id]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public function update(int $typeBienId)
+    public function addPaymentMethod(Request $request): Response
     {
-        // Récupération des données de la requête
-        $data = json_decode(file_get_contents('php://input'), true);
+        $paymentMethodId = $request->get('paymentMethodId');
+        $customerId = $request->get('customerId');
 
-        // Création du bien immobilier via le use case ou service
-        $typeBien = $this->updateTypeBienUseCase->execute($typeBienId, $data);
-
-        // Structure de la réponse
-        $response = [
-            'message' => 'Type Bien mis a jour avec succès',
-            'type_bien' => [
-                'type' => $typeBien['type'],
-                'description' => $typeBien['description'],
-                'created_at' => $typeBien['created_at'],
-                'updated_at' => $typeBien['updated_at'],
-            ],
-        ];
-
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponseController::sendResponse($response, 201);                
+        try {
+            $this->subscriptionStripe->addPaymentMethod($paymentMethodId, $customerId);
+            return $this->json(['status' => 'Payment method added successfully']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public function destroy(int $typeBienId): void 
+    public function createSubscription(Request $request): Response
     {
-        // Récupération des données de la requête
-        $data = json_decode(file_get_contents('php://input'), true);
+        $customerId = $request->get('customerId');
+        $priceId = $request->get('priceId');
 
-        // Création du bien immobilier via le use case ou service
-        $this->deleteTypeBienUseCase->execute($typeBienId);
+        try {
+            $subscription = $this->subscriptionStripe->createSubscription($customerId, $priceId);
+            return $this->json(['subscriptionId' => $subscription->id]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-        // Structure de la réponse
-        $response = [
-            'message' => 'Type Bien supprimer avec succès',
-        ];
+    public function cancelSubscription(Request $request): Response
+    {
+        $subscriptionId = $request->get('subscriptionId');
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponseController::sendResponse($response, 201);
+        try {
+            $subscription = $this->subscriptionStripe->cancelSubscription($subscriptionId);
+            return $this->json(['status' => 'Subscription cancelled']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function handleWebhook(Request $request): Response
+    {
+        $payload = $request->getContent();
+        $sigHeader = $request->headers->get('Stripe-Signature');
+
+        try {
+            $this->subscriptionStripe->handleWebhook($payload, $sigHeader);
+            return new Response('Webhook handled successfully');
+        } catch (\Exception $e) {
+            return new Response('Webhook handling failed: ' . $e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
 }

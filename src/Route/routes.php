@@ -10,9 +10,28 @@ use App\Adapter\Api\Rest\IncidentController;
 use App\Adapter\Api\Rest\QuittanceLoyerController;
 use App\Adapter\Api\Rest\SuiviController;
 use App\Adapter\Api\Rest\UserAbonnementController;
+use App\Adapter\Persistence\Stripe\SubscritionStripe;
+
+$stripeService = new SubscritionStripe('sk_test_VePHdqKTYQjKNInc7u56JBrQ');
+
+$customer = $stripeService->createCustomer('client@example.com', 'Jenny Rosen');
+$stripeService->addPaymentMethod('pm_card_visa', $customer->id);
+$subscription = $stripeService->createSubscription($customer->id, 'price_12345');
+
 
 // Define routes
-function defineRoutes($router, $controller, $userAbonnement, $suivi, $quittanceLoyer, $incident, $etatLieuxItems, $etatLieux, $bienImmobilier, $typeBien) {
+function defineRoutes(
+    $router, 
+    $controller, 
+    $userAbonnement, 
+    $suivi, 
+    $quittanceLoyer, 
+    $incident, 
+    $etatLieuxItems, 
+    $etatLieux, 
+    $bienImmobilier, 
+    $typeBien
+) {
     // Auth routes
     $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
     $router->addRoute('POST', '#^/register$#', [$controller, 'register']);

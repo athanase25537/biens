@@ -32,28 +32,31 @@ try {
             'token' => 'tok_visa'
         ],
         'billing_details' => ['name' => 'Jenny Rosen'],
-      ]);
+    ]);
 
-    $paymentMethodId = $paymentMethods->id; 
+    $paymentId = $paymentMethods->id; 
 
-    // 3. Vérifier et attacher le moyen de paiement au client
-    $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentMethodId);
+    $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentId);
     if ($paymentMethod) {
         $paymentMethod->attach(['customer' => $customer->id]);
     } else {
         throw new Exception("Le moyen de paiement est introuvable.");
     }
 
-    // 4. Définir le moyen de paiement par défaut
     \Stripe\Customer::update($customer->id, [
-        'invoice_settings' => ['default_payment_method' => $paymentMethodId]
+        'invoice_settings' => ['default_payment_method' => $paymentId]
     ]);
 
-    // 5. Créer l'abonnement
     $price = 'price_1QorkEJyueeXhqQIbKDjOlGW';
     $subscription = $stripeService->createSubscription($customer->id, $price);
     
-    echo "Abonnement créé avec succès !";
+    $created_at = date('Y-m-d H:i:s', $subscription->created);
+    $period_end = date('Y-m-d H:i:s', $subscription->current_period_end);
+    $period_start = date('Y-m-d H:i:s', $subscription->current_period_start);
+    $items = $subscription->items;
+    $plan = $items->data[0]->plan;
+    print($subscription->status);
+    exit();
 
 } catch (\Exception $e) {
     echo "Erreur : " . $e->getMessage();

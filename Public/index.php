@@ -146,6 +146,9 @@ $controller = new AuthController($registerUseCase, $loginUseCase);
 
 $router = new Router();
 
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
 // Include the routes file
 require_once '../src/Route/routes.php';
 defineRoutes(

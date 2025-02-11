@@ -12,11 +12,13 @@ use App\Adapter\Api\Rest\SuiviController;
 use App\Adapter\Api\Rest\UserAbonnementController;
 use App\Adapter\Persistence\Stripe\SubscriptionStripe;
 
-\Stripe\Stripe::setApiKey('sk_test_51OI9wrJyueeXhqQIuM0r0JB0NSMVIdSd5WPX6wsLRr3Zzhx08jRDYQXVLFnw6CXDLo99HAQz3fGsh6ofuxx8JKf900w9BL4z3S');
+$apiKey = $_ENV['STRIPE_SECRET_KEY'];
+$endPointKey = $_ENV['SECRET_KEY'];
+\Stripe\Stripe::setApiKey($apiKey);
 
 $stripeService = new SubscriptionStripe(
-    'sk_test_51OI9wrJyueeXhqQIuM0r0JB0NSMVIdSd5WPX6wsLRr3Zzhx08jRDYQXVLFnw6CXDLo99HAQz3fGsh6ofuxx8JKf900w9BL4z3S',
-    '20b93d0bd157a8c23ab28df71458a894'
+    $apiKey,
+    $endPointKey
 );
 
 try {

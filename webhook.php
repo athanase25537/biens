@@ -14,20 +14,20 @@ try {
     switch ($event->type) {
         case 'invoice.payment_succeeded':
             $invoice = $event->data->object;
-            error_log("✅ Paiement réussi pour l'abonnement : " . $invoice->subscription);
+            error_log("Paiement réussi pour l'abonnement : " . $invoice->subscription);
             break;
         case 'invoice.payment_failed':
             $invoice = $event->data->object;
-            error_log("❌ Échec du paiement pour l'abonnement : " . $invoice->subscription);
+            error_log("Échec du paiement pour l'abonnement : " . $invoice->subscription);
             break;
         case 'customer.subscription.deleted':
-            error_log("🔴 Abonnement annulé !");
+            error_log("Abonnement annulé !");
             break;
         default:
-            error_log("📌 Événement non géré : " . $event->type);
+            error_log("Événement non géré : " . $event->type);
     }
 } catch (\Exception $e) {
-    error_log("🚨 Erreur Webhook : " . $e->getMessage());
+    error_log("Erreur Webhook : " . $e->getMessage());
     http_response_code(400);
     exit();
 }

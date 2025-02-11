@@ -14,8 +14,14 @@ class SubscriptionStripe
 
     public function __construct(string $apiKey, string $endpointSecret)
     {
+        \Stripe\Stripe::setApiKey('sk_test_51OI9wrJyueeXhqQIuM0r0JB0NSMVIdSd5WPX6wsLRr3Zzhx08jRDYQXVLFnw6CXDLo99HAQz3fGsh6ofuxx8JKf900w9BL4z3S');
         $this->stripe = new StripeClient($apiKey);
         $this->endpointSecret = $endpointSecret;
+    }
+
+    public function getStripe(): \Stripe\StripeClient
+    {
+        return $this->stripe;
     }
 
     public function createCustomer(string $email, string $name): \Stripe\Customer

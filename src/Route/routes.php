@@ -10,14 +10,52 @@ use App\Adapter\Api\Rest\IncidentController;
 use App\Adapter\Api\Rest\QuittanceLoyerController;
 use App\Adapter\Api\Rest\SuiviController;
 use App\Adapter\Api\Rest\UserAbonnementController;
-use App\Adapter\Persistence\Stripe\SubscritionStripe;
+use App\Adapter\Persistence\Stripe\SubscriptionStripe;
 
-$stripeService = new SubscritionStripe('sk_test_VePHdqKTYQjKNInc7u56JBrQ');
+\Stripe\Stripe::setApiKey('sk_test_51OI9wrJyueeXhqQIuM0r0JB0NSMVIdSd5WPX6wsLRr3Zzhx08jRDYQXVLFnw6CXDLo99HAQz3fGsh6ofuxx8JKf900w9BL4z3S');
 
-$customer = $stripeService->createCustomer('client@example.com', 'Jenny Rosen');
-$stripeService->addPaymentMethod('pm_card_visa', $customer->id);
-$subscription = $stripeService->createSubscription($customer->id, 'price_12345');
+$stripeService = new SubscriptionStripe(
+    'sk_test_51OI9wrJyueeXhqQIuM0r0JB0NSMVIdSd5WPX6wsLRr3Zzhx08jRDYQXVLFnw6CXDLo99HAQz3fGsh6ofuxx8JKf900w9BL4z3S',
+    '20b93d0bd157a8c23ab28df71458a894'
+);
 
+try {
+    // 1. Créer le client
+    $customer = $stripeService->createCustomer('client@example.com', 'Jenny Rosen');
+
+    // 2. Définir un moyen de paiement valide
+    $paymentMethods = $stripeService->getStripe()->paymentMethods->create([
+        'type' => 'card',
+        'card' => [
+            'token' => 'tok_visa'
+        ],
+        'billing_details' => ['name' => 'Jenny Rosen'],
+      ]);
+
+    $paymentMethodId = $paymentMethods->id; 
+
+    // 3. Vérifier et attacher le moyen de paiement au client
+    $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentMethodId);
+    if ($paymentMethod) {
+        $paymentMethod->attach(['customer' => $customer->id]);
+    } else {
+        throw new Exception("Le moyen de paiement est introuvable.");
+    }
+
+    // 4. Définir le moyen de paiement par défaut
+    \Stripe\Customer::update($customer->id, [
+        'invoice_settings' => ['default_payment_method' => $paymentMethodId]
+    ]);
+
+    // 5. Créer l'abonnement
+    $price = 'price_1QorkEJyueeXhqQIbKDjOlGW';
+    $subscription = $stripeService->createSubscription($customer->id, $price);
+    
+    echo "Abonnement créé avec succès !";
+
+} catch (\Exception $e) {
+    echo "Erreur : " . $e->getMessage();
+}
 
 // Define routes
 function defineRoutes(

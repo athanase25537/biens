@@ -22,13 +22,26 @@ use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
 use App\Core\Application\UseCase\User\LoginUserUseCase;
 use App\Core\Application\UseCase\User\RegisterUserUseCase;
+
 use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
+
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
 use App\Core\Application\UseCase\TypeBien\UpdateTypeBienUseCase;
+use App\Core\Application\UseCase\TypeBien\DeleteTypeBienUseCase;
+
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\UpdateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\DeleteEtatLieuxUseCase;
+
 use App\Core\Application\UseCase\EtatLieuxItems\CreateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\UpdateEtatLieuxItemsUseCase;
+use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
+
 use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\UpdateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\DeleteIncidentUseCase;
 
 // Repositories
 use App\Adapter\Persistence\Doctrine\UserRepository;
@@ -77,23 +90,53 @@ $quittanceLoyer = new QuittanceLoyerController(
 
 $incidentRepository = new IncidentRepository($dbAdapter);
 $createIncidentUseCase = new CreateIncidentUseCase($incidentRepository);
-$incident = new IncidentController($createIncidentUseCase);
+$updateIncidentUseCase = new UpdateIncidentUseCase($incidentRepository);
+$deleteIncidentUseCase = new DeleteIncidentUseCase($incidentRepository);
+$incident = new IncidentController(
+    $createIncidentUseCase,
+    $updateIncidentUseCase,
+    $deleteIncidentUseCase
+);
 
 $etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
 $createEtatLieuxItemsUseCase = new CreateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
-$etatLieuxItems = new EtatLieuxItemsController($createEtatLieuxItemsUseCase);
+$updateEtatLieuxItemsUseCase = new UpdateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
+$deleteEtatLieuxItemsUseCase = new DeleteEtatLieuxItemsUseCase($etatLieuxItemsRepository);
+$etatLieuxItems = new EtatLieuxItemsController(
+    $createEtatLieuxItemsUseCase,
+    $updateEtatLieuxItemsUseCase,
+    $deleteEtatLieuxItemsUseCase
+);
 
 $etatLieuxRepository = new EtatLieuxRepository($dbAdapter);
 $createEtatLieuxUseCase = new CreateEtatLieuxUseCase($etatLieuxRepository);
-$etatLieux = new EtatLieuxController($createEtatLieuxUseCase);
+$updateEtatLieuxUseCase = new UpdateEtatLieuxUseCase($etatLieuxRepository);
+$deleteEtatLieuxUseCase = new DeleteEtatLieuxUseCase($etatLieuxRepository);
+$etatLieux = new EtatLieuxController(
+    $createEtatLieuxUseCase,
+    $updateEtatLieuxUseCase,
+    $deleteEtatLieuxUseCase,
+);
 
 $bienImmobilierRepository = new BienImmobilierRepository($dbAdapter);
 $createBienImmobilierUseCase = new CreateBienImmobilierUseCase($bienImmobilierRepository);
-$bienImmobilier = new BienImmobilierController($createBienImmobilierUseCase);
+$updateBienImmobilierUseCase = new UpdateBienImmobilierUseCase($bienImmobilierRepository);
+$deleteBienImmobilierUseCase = new DeleteBienImmobilierUseCase($bienImmobilierRepository);
+$bienImmobilier = new BienImmobilierController(
+    $createBienImmobilierUseCase,
+    $updateBienImmobilierUseCase,
+    $deleteBienImmobilierUseCase,
+);
 
 $typeBienRepository = new TypeBienRepository($dbAdapter);
 $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
-$typeBien = new TypeBienController($createTypeBienUseCase);
+$updateTypeBienUseCase = new UpdateTypeBienUseCase($typeBienRepository);
+$deleteTypeBienUseCase = new DeleteTypeBienUseCase($typeBienRepository);
+$typeBien = new TypeBienController(
+    $createTypeBienUseCase,
+    $updateTypeBienUseCase,
+    $deleteTypeBienUseCase
+);
 
 // AuthController
 $userRepository = new UserRepository($dbAdapter);
@@ -105,6 +148,18 @@ $router = new Router();
 
 // Include the routes file
 require_once '../src/Route/routes.php';
+defineRoutes(
+    $router, 
+    $controller, 
+    $userAbonnement, 
+    $suivi, 
+    $quittanceLoyer, 
+    $incident, 
+    $etatLieuxItems, 
+    $etatLieux, 
+    $bienImmobilier, 
+    $typeBien
+);
 
 // Handle the request
 $router->handleRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

@@ -8,11 +8,15 @@ class MySQLAdapter implements DatabaseAdapterInterface {
     private $connection;
 
     public function connect(array $config) {
+		
+		$port = isset($config['port']) ? (int)$config['port'] : 3306;
+
         $this->connection = new \mysqli(
             $config['host'],
             $config['user'],
-            $config['password'],
-            $config['dbname']
+	    $config['password'],
+            $config['dbname'],
+	    $port
         );
 
         if ($this->connection->connect_error) {

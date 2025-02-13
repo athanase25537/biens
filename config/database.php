@@ -1,8 +1,9 @@
 <?php
 return [
     'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-    'host' => 'localhost',
-    'dbname' => 'bailonline',
-    'user' => 'root',
-    'password' => '',
+    'host' => '192.168.224.1',
+    'port'    => '8099',
+    'dbname' => 'monbail',
+    'user' => 'monbail',
+    'password' => 'M7AV9n8lmDijoFMj',
 ];

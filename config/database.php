@@ -1,7 +1,7 @@
 <?php
 return [
     'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-    'host' => '192.168.224.1',
+    'host' => '192.168.48.1',
     'port'    => '8099',
     'dbname' => 'monbail',
     'user' => 'monbail',

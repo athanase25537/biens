@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  php-apache:
+    build: .
+    container_name: mon-bail-php
+    restart: always
+    ports:
+      - "8085:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data

@@ -54,6 +54,11 @@ use App\Adapter\Persistence\Doctrine\QuittanceLoyerRepository;
 use App\Adapter\Persistence\Doctrine\SuiviRepository;
 use App\Adapter\Persistence\Doctrine\UserAbonnementRepository;
 
+
+
+// Twig
+use App\Controller\HomeController;
+
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
 
@@ -149,6 +154,12 @@ $router = new Router();
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
+
+
+
+// Instanciez le contrôleur d'accueil en utilisant la même casse partout
+$homeController = new HomeController();
+
 // Include the routes file
 require_once '../src/Route/routes.php';
 defineRoutes(
@@ -161,7 +172,8 @@ defineRoutes(
     $etatLieuxItems, 
     $etatLieux, 
     $bienImmobilier, 
-    $typeBien
+    $typeBien,
+	$homeController
 );
 
 // Handle the request

@@ -12,6 +12,11 @@ use App\Adapter\Api\Rest\SuiviController;
 use App\Adapter\Api\Rest\UserAbonnementController;
 use App\Adapter\Persistence\Stripe\SubscriptionStripe;
 
+use App\Controller\HomeController;
+
+
+$homeController = new HomeController();
+
 // Define routes
 function defineRoutes(
     $router, 
@@ -23,7 +28,8 @@ function defineRoutes(
     $etatLieuxItems, 
     $etatLieux, 
     $bienImmobilier, 
-    $typeBien
+    $typeBien,
+	$homeController
 ) {
     // Auth routes
     $router->addRoute('POST', '#^/login$#', [$controller, 'login']);
@@ -63,4 +69,10 @@ function defineRoutes(
     $router->addRoute('POST', '#^/admin/type-bien/create$#', [$typeBien, 'create']);
     $router->addRoute('PATCH', '#^/admin/type-bien/update/(\d+)$#', [$typeBien, 'update']);
     $router->addRoute('DELETE', '#^/admin/type-bien/delete/(\d+)$#', [$typeBien, 'destroy']);
+	
+	 
+
+	// Page d'accueil (GET /)
+	$router->addRoute('GET', '#^/$#', [$homeController, 'index']);
+
 }

@@ -30,7 +30,7 @@ class EtatLieuxController
         // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Create etat lieux by create use case
+        // Create Etat des lieux by create use case
         try {
             $etatLieux = $this->createEtatLieuxUseCase->execute($data);
         } catch(\Exception $e) {
@@ -40,7 +40,7 @@ class EtatLieuxController
 
         // Structure response data
         $response = [
-            'message' => 'Etat lieux enregistré avec succès',
+            'message' => 'Etat des lieux enregistré avec succès',
         ];
 
         $this->sendResponseController::sendResponse($response, 201);        
@@ -51,7 +51,7 @@ class EtatLieuxController
         // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Update etat lieux by update use case
+        // Update Etat des lieux by update use case
         try {
             $etatLieux = $this->updateEtatLieuxUseCase->execute($etatLieuxId, $data);
         } catch(\Exception $e) {
@@ -61,7 +61,7 @@ class EtatLieuxController
 
         // Structure response data
         $response = [
-            'message' => 'Etat lieux mis a jour avec succès',
+            'message' => 'Etat des lieux mis a jour avec succès',
             'etat_lieux'=> $etatLieux
         ];
 
@@ -71,7 +71,7 @@ class EtatLieuxController
     public function destroy(int $etatLieuxId, int $bauxId): void
     {
         try {
-            // Delete etat lieux by delete use case
+            // Delete Etat des lieux by delete use case
             $etatLieux = $this->deleteEtatLieuxUseCase->execute($etatLieuxId, $bauxId);
         } catch(\Exception $e) {
             echo "Erreur: " . $e->getMessage();
@@ -79,7 +79,7 @@ class EtatLieuxController
 
         // Structure response data
         $response = [
-            'message' => 'Etat lieux supprimer avec succès',
+            'message' => 'Etat des lieux supprimer avec succès',
         ];
 
         $this->sendResponseController::sendResponse($response, 201);

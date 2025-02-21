@@ -41,7 +41,7 @@ class UserAbonnementController
 
         // Structure response data
         $response = [
-            'message' => 'User Abonnement enregistré avec succès',
+            'message' => 'Votre abonnement a bien été enregistré avec succès',
             'user_abonnement' => [
                 'user_id' => $userAbonnement->getUserId(),
                 'abonnement_id' => $userAbonnement->getAbonnementId(),
@@ -78,8 +78,8 @@ class UserAbonnementController
 
         // Structure response data
         $response = [
-            'message' => 'Etat lieux mis a jour avec succès',
-            'etat_lieux'=> $userAbonnement
+            'message' => 'Votre abonnement a bien été mis à jour',
+            'user_abonnement'=> $userAbonnement
         ];
 
         $this->sendResponseController::sendResponse($response, 201);

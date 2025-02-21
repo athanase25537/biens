@@ -8,11 +8,11 @@ use App\Port\Out\DatabaseAdapterInterface;
 
 class NotificationRepository implements NotificationRepositoryInterface
 {
+    
     private $db;
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(DatabaseAdapterInterface $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(Notification $notification): Notification

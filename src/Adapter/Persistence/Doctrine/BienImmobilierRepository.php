@@ -10,16 +10,9 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
 {
 
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(BienImmobilier $bienImmobilier): BienImmobilier
@@ -33,11 +26,9 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
         
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-        
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
         
         // Liaison des paramètres
@@ -128,17 +119,9 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
                     updated_at = NOW() 
                     WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-        
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
-        }
-
-        // Récupération des données de l'enregistrement
-        $bienImmobilier = $this->getBienImmobilier($idBienImmobilier);
-        if (!$bienImmobilier) {
-            return false;
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Assignation des valeurs
@@ -203,11 +186,9 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM biens_immobiliers WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre
@@ -243,11 +224,9 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         // Préparation de la connexion et de la requête
         $query = "DELETE  FROM biens_immobiliers WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre

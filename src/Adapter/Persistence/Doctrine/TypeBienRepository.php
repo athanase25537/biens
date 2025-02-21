@@ -9,17 +9,9 @@ use App\Port\Out\TypeBienRepositoryInterface;
 class TypeBienRepository implements TypeBienRepositoryInterface
 {
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(TypeBien $typeBien): TypeBien
@@ -27,11 +19,9 @@ class TypeBienRepository implements TypeBienRepositoryInterface
         $query = "INSERT INTO types_bien (type, description, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-        
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
         
         // Liaison des paramètres
@@ -65,11 +55,9 @@ class TypeBienRepository implements TypeBienRepositoryInterface
                 updated_at = ?
             WHERE id = ?";
     
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Assignation des valeurs à partir des données
@@ -99,11 +87,7 @@ class TypeBienRepository implements TypeBienRepositoryInterface
 
     public function destroy(int $typeBienId): bool
     {
-        try{
-            $t = $this->getTypeBien($typeBienId);
-        } catch(Exception $e) {
-            echo "Erreur: $e.getMessage()";
-        }
+        $t = $this->getTypeBien($typeBienId);
         if($t == null) {
             throw new \Exception("Ce type bien n'existe pas: ");
             return false;
@@ -113,12 +97,9 @@ class TypeBienRepository implements TypeBienRepositoryInterface
         FROM types_bien
         WHERE id = ?';
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-        var_dump($stmt);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         
@@ -144,11 +125,9 @@ class TypeBienRepository implements TypeBienRepositoryInterface
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM types_bien WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre
@@ -165,7 +144,7 @@ class TypeBienRepository implements TypeBienRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun Type Bien trouvé");
+            throw new \Exception("Aucun Type Bien trouvé, l'ID: $typeBienId n'existe pas");
         }
 
         // Traitement du résultat

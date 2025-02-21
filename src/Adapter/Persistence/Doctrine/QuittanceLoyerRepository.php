@@ -10,17 +10,9 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
 {
 
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(QuittanceLoyer $quittanceLoyer): QuittanceLoyer
@@ -39,11 +31,10 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
         
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
         
 
@@ -85,61 +76,68 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
         return $quittanceLoyer;     
     }
 
-    // public function update(int $incidentId, array $data): bool 
-    // {
-    //     $query = "UPDATE incidents AS inc
-    //         INNER JOIN biens_immobiliers AS bi ON bi.id = inc.bien_id
-    //         INNER JOIN baux AS b ON b.id = inc.bail_id
-    //         SET 
-    //             inc.bien_id = ?,
-    //             inc.bail_id = ?,
-    //             inc.description = ?,
-    //             inc.statut = ?,
-    //             inc.date_signalement = ?,
-    //             inc.date_resolution = ?
-    //         WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
-    
-    //     $db = $this->db->connect($this->config);
-    //     $stmt = $db->prepare($query);
+    public function update(int $quittanceLoyerId, array $data): bool 
+    {
+        $query = "UPDATE quittances_loyer AS ql
+            INNER JOIN baux AS b ON b.id = ql.bail_id
+            SET 
+                ql.bail_id = ?,
+                ql.montant = ?,
+                ql.date_emission = ?,
+                ql.statut = ?,
+                ql.description = ?,
+                ql.moyen_paiement = ?,
+                ql.montant_charge = ?,
+                ql.montant_impayer = ?,
+                ql.updated_at = ?
+            WHERE ql.id = ? AND ql.bail_id = ? AND b.id = ?";
+        
+        $stmt = $this->db->prepare($query);
 
-    //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $db->error);
-    //     }
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $db->error);
+        }
 
-    //     // Assignation des valeurs à partir des données
-    //     $bien_id = $data['bien_id'];
-    //     $bail_id = $data['bail_id'];
-    //     $description = $data['description'];
-    //     $statut = $data['statut'];
-    //     $date_signalement = $data['date_signalement'];
-    //     $date_resolution = $data['date_resolution'];
-    //     $inc_id = $incidentId;
+        // Assignation des valeurs à partir des données
+        $bailId = $data['bail_id'];
+        $montant = $data['montant'];
+        $dateEmission = $data['date_emission'];
+        $statut = $data['statut'];
+        $description = $data['description'];
+        $moyenPaiement = $data['moyen_paiement'];
+        $montantCharge = $data['montant_charge'];
+        $montantImpayer = $data['montant_impayer'];
+        $updatedAt = $data['updated_at'];
+        $id = $quittanceLoyerId;
 
-    //     // Liaison des paramètres
-    //     $stmt->bind_param(
-    //         "iissssiii", // Types des paramètres (i = integer, s = string, d = double)
-    //         $bien_id,
-    //         $bail_id,
-    //         $description,
-    //         $statut,
-    //         $date_signalement,
-    //         $date_resolution,
-    //         $inc_id,
-    //         $bien_id,
-    //         $bail_id
-    //     );
+        // Liaison des paramètres
+        $stmt->bind_param(
+            "idsssiddsiii", // Types des paramètres
+            $bailId,
+            $montant,
+            $dateEmission,
+            $statut,
+            $description,
+            $moyenPaiement,
+            $montantCharge,
+            $montantImpayer,
+            $updatedAt,
+            $quittanceLoyerId,
+            $bailId,
+            $quittanceLoyerId
+        );
 
-    //     // Exécution de la requête
-    //     if (!$stmt->execute()) {
-    //         throw new \Exception("Failed to execute statement: " . $stmt->error);
-    //     }
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
 
-    //     $stmt->close();
+        $stmt->close();
+        return true;
+    }
 
-    //     return true;
-    // }
 
-    // public function destroy(int $incidentId, int $bienId, int $bailId): bool 
+    // public function destroy(int $quittanceLoyerId, int $bienId, int $bailId): bool 
     // {
     //     $query = "DELETE inc
     //         FROM incidents AS inc
@@ -147,17 +145,15 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
     //         INNER JOIN baux AS b ON b.id = inc.bail_id
     //         WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
     
-    //     $db = $this->db->connect($this->config);
-    //     $stmt = $db->prepare($query);
-
+    //     $stmt = $this->db->prepare($query);
     //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $db->error);
+    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
     //     }
 
     //     // Liaison des paramètres
     //     $stmt->bind_param(
     //         "iii", // Types des paramètres (i = integer, s = string, d = double)
-    //         $incidentId,
+    //         $quittanceLoyerId,
     //         $bienId,
     //         $bailId
     //     );
@@ -172,46 +168,44 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
     //     return true;
     // }
     
-    // public function getIncident(int $incidentId): ?array
-    // {
-    //     // Préparation de la connexion et de la requête
-    //     $query = "SELECT * FROM incidents WHERE id = ?";
+    public function getQuittanceLoyer(int $quittanceLoyerId): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM quittances_loyer WHERE id = ?";
 
-    //     $db = $this->db->connect($this->config);
-    //     $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
 
-    //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $db->error);
-    //     }
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
 
-    //     // Liaison du paramètre
-    //     $stmt->bind_param("i", $id);
+        // Assignation de la valeur du paramètre
+        $id = $quittanceLoyerId;
 
-    //     // Assignation de la valeur du paramètre
-    //     $id = $incidentId;
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
 
-    //     // Exécution de la requête
-    //     if (!$stmt->execute()) {
-    //         throw new \Exception("Failed to execute statement: " . $stmt->error);
-    //     }
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun quittance loyer trouvé, l'ID: $quittanceLoyerId n'existe pas");
+        }
 
-    //     // Récupération des résultats
-    //     $result = $stmt->get_result();
-    //     if ($result->num_rows === 0) {
-    //         throw new \Exception("Aucun Type Bien trouvé");
-    //     }
+        // Traitement du résultat
+        $row = $result->fetch_assoc();
 
-    //     // Traitement du résultat
-    //     $row = $result->fetch_assoc();
+        // Remplissage de l'objet EtatLieuxItems avec les données récupérées
+        $quittanceLoyer = $row;
 
-    //     // Remplissage de l'objet EtatLieuxItems avec les données récupérées
-    //     $incident = $row;
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
 
-    //     // Fermeture du statement et retour de l'objet
-    //     $stmt->close();
-
-    //     return $incident;
-    // }
+        return $quittanceLoyer;
+    }
 
     public function selectLastQuittanceByBailId(int $bailId): ?array
     {
@@ -220,11 +214,9 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
                     WHERE bail_id = ?
                     ORDER BY id DESC LIMIT 1";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre

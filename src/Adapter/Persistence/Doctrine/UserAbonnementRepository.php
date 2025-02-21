@@ -8,18 +8,11 @@ use App\Core\Domain\Entity\UserAbonnement;
 
 class UserAbonnementRepository implements UserAbonnementRepositoryInterface
 {
-    private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
 
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    private $db;
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(UserAbonnement $userAbonnement): UserAbonnement
@@ -42,10 +35,9 @@ class UserAbonnementRepository implements UserAbonnementRepositoryInterface
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Extraction des données de l'objet UserAbonnement
@@ -112,11 +104,9 @@ class UserAbonnementRepository implements UserAbonnementRepositoryInterface
             ua.updated_at = NOW()
         WHERE ua.id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Assignation des valeurs à partir des données
@@ -165,11 +155,9 @@ class UserAbonnementRepository implements UserAbonnementRepositoryInterface
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM users_abonnements WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre
@@ -186,7 +174,7 @@ class UserAbonnementRepository implements UserAbonnementRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun etat lieux items trouvé");
+            throw new \Exception("Aucun user abonnement trouvé, l'ID: $userAbonnementId n'existe pas");
         }
 
         // Traitement du résultat

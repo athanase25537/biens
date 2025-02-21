@@ -9,17 +9,10 @@ use App\Core\Domain\Entity\EtatLieuxItems;
 class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
 {
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
 
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(EtatLieuxItems $etatLieuxItems): EtatLieuxItems
@@ -27,10 +20,9 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         $query = "INSERT INTO etat_lieux_items (etat_lieux_id, titre, etat, plinthes, murs, sol, plafond, portes, huisseries, radiateurs, placards, aerations, interrupteurs, prises_electriques, tableau_electrique, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         $etatLieuxId = $etatLieuxItems->getEtatLieuxId();
@@ -83,11 +75,9 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM etat_lieux_items WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre
@@ -104,7 +94,7 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun etat lieux items trouvé");
+            throw new \Exception("Aucun etat lieux items trouvé, l'ID: $etatLieuxItemsId n'existe pas");
         }
 
         // Traitement du résultat
@@ -141,11 +131,9 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
           description = ?
           WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Assignation des valeurs
@@ -207,12 +195,9 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         ON el.id = eli.etat_lieux_id 
         WHERE eli.id = ? AND el.id = ?';
 
-
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         

@@ -28,15 +28,20 @@ class UserAbonnementController
 
     public function create()
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $userAbonnement = $this->createUserAbonnementUseCase->execute($data);
+        // Create user abonnement by user abonnement use case
+        try {
+            $userAbonnement = $this->createUserAbonnementUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
-            'message' => 'User Abonnement enregistré avec succès',
+            'message' => 'Votre abonnement a bien été enregistré avec succès',
             'user_abonnement' => [
                 'user_id' => $userAbonnement->getUserId(),
                 'abonnement_id' => $userAbonnement->getAbonnementId(),
@@ -55,26 +60,28 @@ class UserAbonnementController
             ],
         ];
         
-
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);                
     }
 
     public function update($userAbonnementId): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du etat lieux items via le use case ou service
-        $userAbonnement = $this->updateUserAbonnementUseCase->execute($userAbonnementId, $data);
+        // Update user abonnement by user abonnement use case
+        try {
+            $userAbonnement = $this->updateUserAbonnementUseCase->execute($userAbonnementId, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
-            'message' => 'Etat lieux mis a jour avec succès',
-            'etat_lieux'=> $userAbonnement
+            'message' => 'Votre abonnement a bien été mis à jour',
+            'user_abonnement'=> $userAbonnement
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 }

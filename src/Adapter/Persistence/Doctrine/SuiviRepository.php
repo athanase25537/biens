@@ -10,17 +10,9 @@ class SuiviRepository implements SuiviRepositoryInterface
 {
 
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(Suivi $suivi): Suivi
@@ -36,11 +28,9 @@ class SuiviRepository implements SuiviRepositoryInterface
                   VALUES (?, ?, ?, ?, ?, ?)";
         
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-        
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
         
 
@@ -88,11 +78,9 @@ class SuiviRepository implements SuiviRepositoryInterface
     //             inc.date_resolution = ?
     //         WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
     
-    //     $db = $this->db->connect($this->config);
-    //     $stmt = $db->prepare($query);
-
+    //     $stmt = $this->db->prepare($query);
     //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $db->error);
+    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
     //     }
 
     //     // Assignation des valeurs à partir des données
@@ -136,11 +124,9 @@ class SuiviRepository implements SuiviRepositoryInterface
     //         INNER JOIN baux AS b ON b.id = inc.bail_id
     //         WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
     
-    //     $db = $this->db->connect($this->config);
-    //     $stmt = $db->prepare($query);
-
+    //     $stmt = $this->db->prepare($query);
     //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $db->error);
+    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
     //     }
 
     //     // Liaison des paramètres
@@ -166,11 +152,9 @@ class SuiviRepository implements SuiviRepositoryInterface
     //     // Préparation de la connexion et de la requête
     //     $query = "SELECT * FROM incidents WHERE id = ?";
 
-    //     $db = $this->db->connect($this->config);
-    //     $stmt = $db->prepare($query);
-
+    //     $stmt = $this->db->prepare($query);
     //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $db->error);
+    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
     //     }
 
     //     // Liaison du paramètre

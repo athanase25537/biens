@@ -8,18 +8,24 @@ class AuthController
 {
     private $registerUserUseCase;
     private $loginUserUseCase;
+    private SendResponseController $sendResponseController;
 
     public function __construct(RegisterUserUseCase $registerUserUseCase, LoginUserUseCase $loginUserUseCase)
     {
         $this->registerUserUseCase = $registerUserUseCase;
         $this->loginUserUseCase = $loginUserUseCase;
+        $this->sendResponseController = new SendResponseController();
     }
 
     public function register()
     {
-
         $data = json_decode(file_get_contents('php://input'), true);
-        $user = $this->registerUserUseCase->execute($data);
+        try {
+            $user = $this->registerUserUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
         
         // Response structure
         $response = [
@@ -36,27 +42,28 @@ class AuthController
         ];
 
         // Sending response
-        $this->sendResponse($response, 201);
+        $this->sendResponseController::sendResponse($response, 201);
     }
 
     public function login()
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        
-        $user = $this->loginUserUseCase->execute($data['email'], $data['password']);
+        try {
+            $user = $this->loginUserUseCase->execute($data['email'], $data['password']);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
         if ($user) {
-            $this->sendResponse('Login successful', 200);
+            $response = 'Login successful';
+            $statusCode = 200;
         } else {
-            $this->sendResponse('Invalid credentials', 401);
+            $response = 'Email or password incorrect';
+            $statusCode = 401;
         }
+
+        $this->sendResponseController::sendResponse($response, $statusCode);
     }
 
-    private function sendResponse($message, $statusCode)
-    {
-        header('Content-Type: application/json');
-        http_response_code($statusCode);
-
-        echo json_encode(['message' => $message]);
-    }
 }

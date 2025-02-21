@@ -14,11 +14,17 @@ class LoginUserUseCase implements LoginUserInputPort
         $this->userRepository = $userRepository;
     }
 
-    public function execute(string $email, string $password): ?User
+    public function execute(string $email, string $password): ?array
     {
         $user = $this->userRepository->findByEmail($email);
-        
-        if ($user && password_verify($password, $user->getPassword())) {
+        if ($user && password_verify($password, $user['password'])) {
+            // session_start();
+            $_SESSION['user'] = [
+                $user['id'],
+                $user['email'],
+                $user['nom'],
+                $user['username'],
+            ];
             return $user;
         }
 

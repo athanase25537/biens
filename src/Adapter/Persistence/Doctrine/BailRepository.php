@@ -9,10 +9,9 @@ use App\Port\Out\DatabaseAdapterInterface;
 class BailRepository implements BailRepositoryInterface
 {
     private $db;
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
 	public function save(Bail $bail): Bail

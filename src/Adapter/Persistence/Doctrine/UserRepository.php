@@ -6,18 +6,30 @@ use App\Core\Domain\Entity\User;
 use App\Port\Out\UserRepositoryInterface;
 use App\Port\Out\DatabaseAdapterInterface;
 
-class UserRepository implements UserRepositoryInterface {
+class UserRepository implements UserRepositoryInterface 
+{
+    
     private $db;
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter) {
-        $this->db = $dbAdapter;
+    public function __construct(\mysqli $db) 
+    {
+        $this->db = $db;
     }
 
-    public function findByEmail(string $email): ?array {
-        return $this->db->findOne(
-            "SELECT * FROM users WHERE email = ?",
-            [$email]
-        );
+    public function findByEmail(string $email): ?array 
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
+        if (!$stmt) {
+            throw new Exception("Erreur de préparation de la requête : " . $this->db->error);
+        }
+    
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+    
+        $stmt->close();
+    
+        return $user ?: null;
     }
 
     public function save(User $user): User
@@ -35,11 +47,10 @@ class UserRepository implements UserRepositoryInterface {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison des paramètres (type "s" pour string, "i" pour integer, "d" pour double, "b" pour blob)
@@ -75,7 +86,7 @@ class UserRepository implements UserRepositoryInterface {
         }
 
         // Récupération de l'ID inséré
-        $lastInsertedId = $db->insert_id;
+        $lastInsertedId = $this->db->insert_id;
         $user->setId((int)$lastInsertedId);
 
         // Fermeture du statement

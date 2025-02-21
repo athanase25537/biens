@@ -10,9 +10,9 @@ class MediaRepository implements MediaRepositoryInterface
 {
     private $db;
 
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(DatabaseAdapterInterface $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function saveMedia(Media $media): Media

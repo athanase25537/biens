@@ -9,17 +9,9 @@ use App\Port\Out\EtatLieuxRepositoryInterface;
 class EtatLieuxRepository implements EtatLieuxRepositoryInterface
 {
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(EtatLieux $etatLieux): EtatLieux
@@ -27,11 +19,10 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         $query = "INSERT INTO etat_lieux (baux_id, date, etat_entree, etat_sortie, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())";
 
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
         
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
         
         // Assignation des valeurs à partir des données
@@ -73,11 +64,9 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
                 el.updated_at = NOW()
             WHERE el.id = ? AND b.id = ?";
     
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Assignation des valeurs à partir des données
@@ -111,12 +100,9 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
     {
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM etat_lieux WHERE id = ?";
-
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre
@@ -133,7 +119,7 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun etat lieux trouvé");
+            throw new \Exception("Aucun etat lieux trouvé, l'ID: $etatLieuxId n'existe pas");
         }
 
         // Traitement du résultat
@@ -158,11 +144,9 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         WHERE el.id = ? AND b.id = ?';
 
 
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         

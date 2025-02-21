@@ -28,13 +28,18 @@ class TypeBienController
 
     public function create()
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $typeBien = $this->createTypeBienUseCase->execute($data);
+        // Create type bien by type bien use case
+        try {
+            $typeBien = $this->createTypeBienUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Type Bien enregistré avec succès',
             'type_bien' => [
@@ -45,19 +50,23 @@ class TypeBienController
             ],
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);                
     }
 
     public function update(int $typeBienId)
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $typeBien = $this->updateTypeBienUseCase->execute($typeBienId, $data);
+        // Update type bien by type bien use case
+        try {
+            $typeBien = $this->updateTypeBienUseCase->execute($typeBienId, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Type Bien mis a jour avec succès',
             'type_bien' => [
@@ -68,24 +77,24 @@ class TypeBienController
             ],
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);                
     }
 
     public function destroy(int $typeBienId): void 
     {
-        // Récupération des données de la requête
-        $data = json_decode(file_get_contents('php://input'), true);
+        try {
+            // delete type bien by type bien use case
+            $this->deleteTypeBienUseCase->execute($typeBienId);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Création du bien immobilier via le use case ou service
-        $this->deleteTypeBienUseCase->execute($typeBienId);
-
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Type Bien supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 }

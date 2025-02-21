@@ -10,17 +10,9 @@ class IncidentRepository implements IncidentRepositoryInterface
 {
 
     private $db;
-    private $config = [
-        'db_type' => 'mysql', // Peut être 'mysql', 'postgresql', etc.
-        'host' => 'localhost',
-        'dbname' => 'bailonline',
-        'user' => 'root',
-        'password' => '',
-    ];
-
-    public function __construct(DatabaseAdapterInterface $dbAdapter)
+    public function __construct(\mysqli $db)
     {
-        $this->db = $dbAdapter;
+        $this->db = $db;
     }
 
     public function save(Incident $incident): Incident
@@ -29,11 +21,9 @@ class IncidentRepository implements IncidentRepositoryInterface
                   VALUES (?, ?, ?, ?, ?, ?)";
         
         // Initialisation de la connexion MySQLi
-        $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
-        
+        $stmt = $this->db->prepare($query);
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
         
 
@@ -82,10 +72,10 @@ class IncidentRepository implements IncidentRepositoryInterface
             WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
     
         $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Assignation des valeurs à partir des données
@@ -130,10 +120,10 @@ class IncidentRepository implements IncidentRepositoryInterface
             WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
     
         $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison des paramètres
@@ -160,10 +150,10 @@ class IncidentRepository implements IncidentRepositoryInterface
         $query = "SELECT * FROM incidents WHERE id = ?";
 
         $db = $this->db->connect($this->config);
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
-            throw new \Exception("Failed to prepare statement: " . $db->error);
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
         }
 
         // Liaison du paramètre
@@ -180,7 +170,7 @@ class IncidentRepository implements IncidentRepositoryInterface
         // Récupération des résultats
         $result = $stmt->get_result();
         if ($result->num_rows === 0) {
-            throw new \Exception("Aucun Type Bien trouvé");
+            throw new \Exception("Aucun incident trouvé, l'ID: $incidentId n'existe pas");
         }
 
         // Traitement du résultat

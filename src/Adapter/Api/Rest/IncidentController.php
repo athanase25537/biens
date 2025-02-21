@@ -29,13 +29,18 @@ class IncidentController
 
     public function create(): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $incident = $this->createIncidentUseCase->execute($data);
+        // Create incident by create incident use case
+        try {
+            $incident = $this->createIncidentUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure responce data
         $response = [
             'message' => 'Incident enregistré avec succès',
             'incident' => [
@@ -48,39 +53,47 @@ class IncidentController
             ]
         ];        
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
         
     }
 
     public function update(int $incidentId): void 
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du etat lieux items via le use case ou service
-        $etatLieux = $this->updateIncidentUseCase->execute($incidentId, $data);
+        // Update incident by udate incident use case
+        try {
+            $incident = $this->updateIncidentUseCase->execute($incidentId, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Incident mis a jour avec succès',
-            'etat_lieux'=> $etatLieux
+            'etat_lieux'=> $incident
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 
     public function destroy(int $incidentId, int $bienId, int $bailId): void 
     {
-        $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
+        try {
+            // Delete incident by delete incident use case
+            $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Incident supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);   
     }
 }

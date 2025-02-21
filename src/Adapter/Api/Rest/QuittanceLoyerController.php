@@ -3,7 +3,7 @@
 namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
-// use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
+use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
 // use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
@@ -11,21 +11,21 @@ use App\Adapter\Api\Rest\SendResponseController;
 class QuittanceLoyerController
 {
     private $createQuittanceLoyerUseCase;
-    // private $updateQuittanceLoyerUseCase;
+    private $updateQuittanceLoyerUseCase;
     // private $deleteQuittanceLoyerUseCase;
     private $selectLastQuittanceByBailIdUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateQuittanceLoyerUseCase $createQuittanceLoyerUseCase,
-        // UpdateIncidentUseCase $updateQuittanceLoyerUseCase,
+        UpdateQuittanceLoyerUseCase $updateQuittanceLoyerUseCase,
         // DeleteIncidentUseCase $deleteQuittanceLoyerUseCase
         SelectLastQuittanceByBailIdUseCase $selectLastQuittanceByBailIdUseCase
     
     )
     {
         $this->createQuittanceLoyerUseCase = $createQuittanceLoyerUseCase;
-        // $this->updateQuittanceLoyerUseCase = $updateQuittanceLoyerUseCase;
+        $this->updateQuittanceLoyerUseCase = $updateQuittanceLoyerUseCase;
         // $this->deleteQuittanceLoyerUseCase = $deleteQuittanceLoyerUseCase;
         $this->selectLastQuittanceByBailIdUseCase = $selectLastQuittanceByBailIdUseCase;
         $this->sendResponseController = new SendResponseController();
@@ -33,13 +33,18 @@ class QuittanceLoyerController
 
     public function create(): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $quittanceLoyer = $this->createQuittanceLoyerUseCase->execute($data);
+        // Create quittance loyer by create quittance loyer use case
+        try {
+            $quittanceLoyer = $this->createQuittanceLoyerUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Quittance Loyer enregistré avec succès',
             'quittance_loyer' => [
@@ -56,30 +61,33 @@ class QuittanceLoyerController
             ]
         ];        
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
         
     }
 
-    /*
     public function update(int $quittanceLoyerId): void 
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du etat lieux items via le use case ou service
-        $etatLieux = $this->UdateQuittanceLoyerUseCase->execute($incidentId, $data);
+        // Update quittance loyer by update quittance loyer use case
+        try {
+            $quittanceLoyer = $this->updateQuittanceLoyerUseCase->execute($quittanceLoyerId, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
-            'message' => 'Incident mis a jour avec succès',
-            'etat_lieux'=> $etatLieux
+            'message' => 'Quittance mis a jour avec succès',
+            'etat_lieux'=> $quittanceLoyer
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 
+    /*
     public function destroy(int $incidentId, int $bienId, int $bailId): void 
     {
         $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
@@ -96,7 +104,12 @@ class QuittanceLoyerController
 
     public function selectLastQuittanceByBailId(int $bailId): void 
     {
-        $quittanceLoyer = $this->selectLastQuittanceByBailIdUseCase->execute($bailId);
+        try{
+            $quittanceLoyer = $this->selectLastQuittanceByBailIdUseCase->execute($bailId);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
     
         // Structure de la réponse JSON
         $response = [

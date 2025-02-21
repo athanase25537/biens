@@ -11,6 +11,7 @@ class BienImmobilierController
     private $createBienImmobilierUseCase;
     private $updateBienImmobilierUseCase;
     private $deleteBienImmobilierUseCase;
+    private $sendResponseController;
 
     public function __construct(
         CreateBienImmobilierUseCase $createBienImmobilierUseCase,
@@ -22,18 +23,23 @@ class BienImmobilierController
         $this->createBienImmobilierUseCase = $createBienImmobilierUseCase;
         $this->updateBienImmobilierUseCase = $updateBienImmobilierUseCase;
         $this->deleteBienImmobilierUseCase = $deleteBienImmobilierUseCase;
-
+        $this->sendResponseController = new SendResponseController();
     }
 
     public function create(): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $bienImmobilier = $this->createBienImmobilierUseCase->execute($data);
+        // Create bien immobilier by create use case
+        try {
+            $bienImmobilier = $this->createBienImmobilierUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Bien immobilier enregistré avec succès',
             'bien_immobilier' => [
@@ -63,49 +69,47 @@ class BienImmobilierController
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponse($response, 201);
-        
+        $this->sendResponseController::sendResponse($response, 201);
     }
 
     public function update($idBien): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $bienImmobilier = $this->updateBienImmobilierUseCase->execute($idBien, $data);
+        // Update bien immobilier by update use case
+        try {
+            $bienImmobilier = $this->updateBienImmobilierUseCase->execute($idBien, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Bien mis à jour avec succès',
             'bien_immobilier' => $bienImmobilier
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponse($response, 201);
+        $this->sendResponseController::sendResponse($response, 201);
     }
 
     public function destroy(int $idBienImmobilier): void
     {
 
-        // Création du bien immobilier via le use case ou service
-        $bienImmobilier = $this->deleteBienImmobilierUseCase->execute($idBienImmobilier);
-
-        // Structure de la réponse
+        try {
+            // Delete bien immobilier by delete use case
+            $bienImmobilier = $this->deleteBienImmobilierUseCase->execute($idBienImmobilier);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
+        // Structure response data
         $response = [
             'message' => 'Bien immobilier supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
-        $this->sendResponse($response, 201);
-    }
-
-    private function sendResponse($message, $statusCode)
-    {
-        header('Content-Type: application/json');
-        http_response_code($statusCode);
-
-        echo json_encode(['message' => $message]);
+        $this->sendResponseController::sendResponse($response, 201);
     }
 
 }

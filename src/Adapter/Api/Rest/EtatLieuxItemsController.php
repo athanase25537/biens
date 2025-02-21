@@ -28,50 +28,58 @@ class EtatLieuxItemsController
 
     public function create(): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $etatLieuxItems = $this->createEtatLieuxItemsUseCase->execute($data);
+        // Create etat lieux items by create etat lieux items use case
+        try {
+            $etatLieuxItems = $this->createEtatLieuxItemsUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Etat lieux items enregistré avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
         
     }
 
     public function update($etatLieuxItemsId): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du etat lieux items via le use case ou service
-        $etatLieuxItems = $this->updateEtatLieuxItemsUseCase->execute($etatLieuxItemsId, $data);
-
-        // Structure de la réponse
+        // Update etat lieux items by update etat lieux items use case
+        try {
+            $etatLieuxItems = $this->updateEtatLieuxItemsUseCase->execute($etatLieuxItemsId, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
+        // Structure response data
         $response = [
             'message' => 'Etat lieux items mis a jour avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
         
     }
 
     public function destroy(int $etatLieuxItemsId, int $etatLieuxId): void 
     {
-        $this->deleteEtatLieuxItemsUseCase->execute($etatLieuxItemsId, $etatLieuxId);
+        try {
+            $this->deleteEtatLieuxItemsUseCase->execute($etatLieuxItemsId, $etatLieuxId);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Etat lieux items supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 }

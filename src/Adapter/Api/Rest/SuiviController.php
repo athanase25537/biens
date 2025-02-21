@@ -29,13 +29,18 @@ class SuiviController
 
     public function create(): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $suivi = $this->createSuiviUseCase->execute($data);
+        // Create suivi by create suivi use case
+        try {
+            $suivi = $this->createSuiviUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Suivi paiement enregistré avec succès',
             'suivi' => [
@@ -48,7 +53,6 @@ class SuiviController
             ]
         ];        
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
         
     }

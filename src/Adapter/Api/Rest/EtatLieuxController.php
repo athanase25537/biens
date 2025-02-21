@@ -27,50 +27,61 @@ class EtatLieuxController
 
     public function create(): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du bien immobilier via le use case ou service
-        $etatLieux = $this->createEtatLieuxUseCase->execute($data);
+        // Create etat lieux by create use case
+        try {
+            $etatLieux = $this->createEtatLieuxUseCase->execute($data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Etat lieux enregistré avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);        
     }
 
     public function update(int $etatLieuxId): void
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du etat lieux items via le use case ou service
-        $etatLieux = $this->updateEtatLieuxUseCase->execute($etatLieuxId, $data);
+        // Update etat lieux by update use case
+        try {
+            $etatLieux = $this->updateEtatLieuxUseCase->execute($etatLieuxId, $data);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Etat lieux mis a jour avec succès',
             'etat_lieux'=> $etatLieux
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 
     public function destroy(int $etatLieuxId, int $bauxId): void
     {
-        // Création du etat lieux items via le use case ou service
-        $etatLieux = $this->deleteEtatLieuxUseCase->execute($etatLieuxId, $bauxId);
+        try {
+            // Delete etat lieux by delete use case
+            $etatLieux = $this->deleteEtatLieuxUseCase->execute($etatLieuxId, $bauxId);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
             'message' => 'Etat lieux supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 }

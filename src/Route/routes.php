@@ -21,7 +21,6 @@ $homeController = new HomeController();
 
 // Define routes
 function defineRoutes(
-
     $router, 
 	$homeController,
     $controller, 

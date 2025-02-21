@@ -171,13 +171,14 @@ $loginUseCase = new LoginUserUseCase($userRepository);
 $registerUseCase = new RegisterUserUseCase($userRepository);
 $controller = new AuthController($registerUseCase, $loginUseCase);
 
+// MailJet
+$mailJetUseCase = new MailJetUseCase($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE']);
+$mailJet = new MailJetController($mailJetUseCase);
+
 $router = new Router();
 
 $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
-
-
-
 
 // Instanciez le contrôleur d'accueil en utilisant la même casse partout
 $homeController = new HomeController();
@@ -186,6 +187,7 @@ $homeController = new HomeController();
 require_once '../src/Route/routes.php';
 defineRoutes(
     $router, 
+	$homeController,
     $controller, 
     $userAbonnement, 
     $suivi, 
@@ -195,7 +197,7 @@ defineRoutes(
     $etatLieux, 
     $bienImmobilier, 
     $typeBien,
-	$homeController
+    $mailJet
 );
 
 // Handle the request

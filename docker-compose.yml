@@ -12,15 +12,3 @@ services:
     environment:
       - APACHE_RUN_USER=www-data
       - APACHE_RUN_GROUP=www-data
-
-# Data base local: remove it for the prod 
-  db:
-    image: mysql:latest
-    env_file:
-      - .env
-    volumes:
-      - "./db:/docker-entrypoint-initdb.d"
-      - "mysql_data:/var/lib/mysql"
-
-volumes:
-  mysql_data:

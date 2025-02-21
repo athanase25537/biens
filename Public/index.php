@@ -76,6 +76,7 @@ use App\Adapter\Persistence\Doctrine\IncidentRepository;
 use App\Adapter\Persistence\Doctrine\QuittanceLoyerRepository;
 use App\Adapter\Persistence\Doctrine\SuiviRepository;
 use App\Adapter\Persistence\Doctrine\UserAbonnementRepository;
+
 // Twig
 use App\Controller\HomeController;
 

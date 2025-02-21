@@ -82,6 +82,10 @@ use App\Controller\HomeController;
 // Chargement de la configuration
 $dbConfig = require __DIR__ . '/../config/database.php';
 
+// Charge .env file
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
 // Création de l'adaptateur de base de données approprié
 $dbAdapterClass = match($dbConfig['db_type']) {
     'mysql' => MySQLAdapter::class,
@@ -176,9 +180,6 @@ $mailJetUseCase = new MailJetUseCase($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY
 $mailJet = new MailJetController($mailJetUseCase);
 
 $router = new Router();
-
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
 
 // Instanciez le contrôleur d'accueil en utilisant la même casse partout
 $homeController = new HomeController();

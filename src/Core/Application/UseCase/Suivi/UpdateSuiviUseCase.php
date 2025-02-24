@@ -19,6 +19,6 @@ class UpdateSuiviUseCase implements UpdateSuiviInputPort
     public function execute(int $suiviId, array $data): ?array
     {
         $update = $this->suiviRepository->update($suiviId, $data);
-        return ($update) ? $this->suiviRepository->getQuittanceLoyer($suiviId) : null;
+        return ($update) ? $this->suiviRepository->getSuivi($suiviId) : null;
     }
 }

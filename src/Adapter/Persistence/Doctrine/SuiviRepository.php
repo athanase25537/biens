@@ -108,13 +108,12 @@ class SuiviRepository implements SuiviRepositoryInterface
         return true;
     }
 
-    // public function destroy(int $incidentId, int $bienId, int $bailId): bool 
+    // public function destroy(int $suiviId, int $bailId): bool 
     // {
-    //     $query = "DELETE inc
-    //         FROM incidents AS inc
-    //         INNER JOIN biens_immobiliers AS bi ON bi.id = inc.bien_id
-    //         INNER JOIN baux AS b ON b.id = inc.bail_id
-    //         WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
+    //     $query = "DELETE s
+    //         FROM suivis_paiements AS s
+    //         INNER JOIN baux AS b ON b.id = s.bail_id
+    //         WHERE inc.id = ? AND b.id = ?";
     
     //     $stmt = $this->db->prepare($query);
     //     if (!$stmt) {
@@ -139,42 +138,42 @@ class SuiviRepository implements SuiviRepositoryInterface
     //     return true;
     // }
     
-    // public function getIncident(int $incidentId): ?array
-    // {
-    //     // Préparation de la connexion et de la requête
-    //     $query = "SELECT * FROM incidents WHERE id = ?";
+    public function getSuivi(int $suiviId): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM suivis_paiements WHERE id = ?";
 
-    //     $stmt = $this->db->prepare($query);
-    //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
-    //     }
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
 
-    //     // Liaison du paramètre
-    //     $stmt->bind_param("i", $id);
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
 
-    //     // Assignation de la valeur du paramètre
-    //     $id = $incidentId;
+        // Assignation de la valeur du paramètre
+        $id = $suiviId;
 
-    //     // Exécution de la requête
-    //     if (!$stmt->execute()) {
-    //         throw new \Exception("Failed to execute statement: " . $stmt->error);
-    //     }
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
 
-    //     // Récupération des résultats
-    //     $result = $stmt->get_result();
-    //     if ($result->num_rows === 0) {
-    //         throw new \Exception("Aucun Type Bien trouvé");
-    //     }
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun suivi paiement trouvé");
+        }
 
-    //     // Traitement du résultat
-    //     $row = $result->fetch_assoc();
+        // Traitement du résultat
+        $row = $result->fetch_assoc();
 
-    //     // Remplissage de l'objet EtatLieuxItems avec les données récupérées
-    //     $incident = $row;
+        // Remplissage de l'objet EtatLieuxItems avec les données récupérées
+        $incident = $row;
 
-    //     // Fermeture du statement et retour de l'objet
-    //     $stmt->close();
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
 
-    //     return $incident;
-    // }
+        return $incident;
+    }
 }

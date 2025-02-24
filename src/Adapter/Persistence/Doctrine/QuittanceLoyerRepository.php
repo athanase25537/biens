@@ -136,37 +136,34 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
         return true;
     }
 
-
-    // public function destroy(int $quittanceLoyerId, int $bienId, int $bailId): bool 
-    // {
-    //     $query = "DELETE inc
-    //         FROM incidents AS inc
-    //         INNER JOIN biens_immobiliers AS bi ON bi.id = inc.bien_id
-    //         INNER JOIN baux AS b ON b.id = inc.bail_id
-    //         WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
+    public function destroy(int $quittanceLoyerId, int $bailId): bool 
+    {
+        $query = "DELETE ql
+            FROM quittances_loyer AS ql
+            INNER JOIN baux AS b ON b.id = ql.bail_id
+            WHERE bl.id = ? AND b.id = ?";
     
-    //     $stmt = $this->db->prepare($query);
-    //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
-    //     }
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
 
-    //     // Liaison des paramètres
-    //     $stmt->bind_param(
-    //         "iii", // Types des paramètres (i = integer, s = string, d = double)
-    //         $quittanceLoyerId,
-    //         $bienId,
-    //         $bailId
-    //     );
+        // Liaison des paramètres
+        $stmt->bind_param(
+            "iii", // Types des paramètres (i = integer, s = string, d = double)
+            $quittanceLoyerId,
+            $bailId
+        );
 
-    //     // Exécution de la requête
-    //     if (!$stmt->execute()) {
-    //         throw new \Exception("Failed to execute statement: " . $stmt->error);
-    //     }
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
 
-    //     $stmt->close();
+        $stmt->close();
 
-    //     return true;
-    // }
+        return true;
+    }
     
     public function getQuittanceLoyer(int $quittanceLoyerId): ?array
     {

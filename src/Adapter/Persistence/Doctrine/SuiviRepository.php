@@ -168,11 +168,11 @@ class SuiviRepository implements SuiviRepositoryInterface
         $row = $result->fetch_assoc();
 
         // Remplissage de l'objet EtatLieuxItems avec les données récupérées
-        $incident = $row;
+        $suivi = $row;
 
         // Fermeture du statement et retour de l'objet
         $stmt->close();
 
-        return $incident;
+        return $suivi;
     }
 }

@@ -26,12 +26,13 @@ use App\Core\Application\UseCase\UserAbonnement\UpdateUserAbonnementUseCase;
 
 // Suivi
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
 
 // Quittance Loyer
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
-// use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
+use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
 
 
 // Login
@@ -108,15 +109,18 @@ $userAbonnement = new UserAbonnementController(
 
 $suiviRepository = new SuiviRepository($dbAdapter);
 $createSuiviUseCase = new CreateSuiviUseCase($suiviRepository);
+$updateSuiviUseCase = new UpdateSuiviUseCase($suiviRepository);
 $suivi = new SuiviController($createSuiviUseCase);
 
 $quittanceLoyerRepository = new QuittanceLoyerRepository($dbAdapter);
 $createQuittanceLoyerUseCase = new CreateQuittanceLoyerUseCase($quittanceLoyerRepository);
 $updateQuittanceLoyerUseCase = new UpdateQuittanceLoyerUseCase($quittanceLoyerRepository);
+$deleteQuittanceLoyerUseCase = new DeleteQuittanceLoyerUseCase($quittanceLoyerRepository);
 $selectLastQuittanceByBailIdUseCase = new SelectLastQuittanceByBailIdUseCase($quittanceLoyerRepository);
 $quittanceLoyer = new QuittanceLoyerController(
     $createQuittanceLoyerUseCase,
     $updateQuittanceLoyerUseCase,
+    $deleteQuittanceLoyerUseCase,
     $selectLastQuittanceByBailIdUseCase
 );
 

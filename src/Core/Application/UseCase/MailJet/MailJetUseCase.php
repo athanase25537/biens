@@ -29,12 +29,25 @@ class MailJetUseCase implements MailJetInputPort
                         ]
                     ],
                     'Subject' => $data['subject'],
-                    'TextPart' => $data['text_part'],
+                    'TextPart' => "fdlkjfdlfjdkls['text_part']",
                     'HTMLPart' => $data['html_part']
                 ]
             ]
         ];
+
         $response = $this->mailJet->post(Resources::$Email, ['body' => $body]);
         return $response->success() ? $response->getData() : null;
+
+        /*
+         * 
+         * For debug
+         * 
+         * return $response->success() ? $response->getData() : [
+         *   * 'error' => $response->getReasonPhrase(),
+         *   * 'status' => $response->getStatus(),
+         *   * 'body' => $response->getBody()
+         * ];
+         * 
+        */
     }
 }

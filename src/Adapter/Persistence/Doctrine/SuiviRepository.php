@@ -108,35 +108,34 @@ class SuiviRepository implements SuiviRepositoryInterface
         return true;
     }
 
-    // public function destroy(int $suiviId, int $bailId): bool 
-    // {
-    //     $query = "DELETE s
-    //         FROM suivis_paiements AS s
-    //         INNER JOIN baux AS b ON b.id = s.bail_id
-    //         WHERE inc.id = ? AND b.id = ?";
+    public function destroy(int $suiviId, int $bailId): bool 
+    {
+        $query = "DELETE s
+            FROM suivis_paiements AS s
+            INNER JOIN baux AS b ON b.id = s.bail_id
+            WHERE s.id = ? AND b.id = ?";
     
-    //     $stmt = $this->db->prepare($query);
-    //     if (!$stmt) {
-    //         throw new \Exception("Failed to prepare statement: " . $this->db->error);
-    //     }
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
 
-    //     // Liaison des paramètres
-    //     $stmt->bind_param(
-    //         "iii", // Types des paramètres (i = integer, s = string, d = double)
-    //         $incidentId,
-    //         $bienId,
-    //         $bailId
-    //     );
+        // Liaison des paramètres
+        $stmt->bind_param(
+            "ii", // Types des paramètres (i = integer, s = string, d = double)
+            $suiviId,
+            $bailId
+        );
 
-    //     // Exécution de la requête
-    //     if (!$stmt->execute()) {
-    //         throw new \Exception("Failed to execute statement: " . $stmt->error);
-    //     }
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
 
-    //     $stmt->close();
+        $stmt->close();
 
-    //     return true;
-    // }
+        return true;
+    }
     
     public function getSuivi(int $suiviId): ?array
     {

@@ -129,9 +129,6 @@ class QuittanceLoyerController
         $datePaiement = $createdAt;
 
         require_once('tcpdf.php');
-    
-        // // Envoi de la réponse JSON après la génération PDF
-        // $this->sendResponseController::sendResponse($response, 201);
     }
     
 }

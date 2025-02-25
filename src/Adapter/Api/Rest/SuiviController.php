@@ -84,7 +84,6 @@ class SuiviController
             'message' => 'Suivi supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);   
     }
 }

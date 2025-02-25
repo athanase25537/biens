@@ -4,26 +4,26 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
 use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
-// use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class SuiviController
 {
     private $createSuiviUseCase;
     private $updateSuiviUseCase;
-    // private $deleteSuiviUseCase;
+    private $deleteSuiviUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateSuiviUseCase $createSuiviUseCase,
         UpdateSuiviUseCase $updateSuiviUseCase,
-        // DeleteSuiviUseCase $deleteSuiviUseCase
+        DeleteSuiviUseCase $deleteSuiviUseCase
     
     )
     {
         $this->createSuiviUseCase = $createSuiviUseCase;
         $this->updateSuiviUseCase = $updateSuiviUseCase;
-        // $this->deleteSuiviUseCase = $deleteSuiviUseCase;
+        $this->deleteSuiviUseCase = $deleteSuiviUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -77,7 +77,7 @@ class SuiviController
 
     public function destroy(int $suiviId, int $bailId): void 
     {
-        $this->deleteIncidentUseCase->execute($suiviId, $bailId);
+        $this->deleteSuiviUseCase->execute($suiviId, $bailId);
 
         // Structure de la réponse
         $response = [

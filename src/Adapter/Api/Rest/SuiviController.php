@@ -75,18 +75,16 @@ class SuiviController
         $this->sendResponseController::sendResponse($response, 201);
     }
 
-    /*
-    public function destroy(int $incidentId, int $bienId, int $bailId): void 
+    public function destroy(int $suiviId, int $bailId): void 
     {
-        $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
+        $this->deleteIncidentUseCase->execute($suiviId, $bailId);
 
         // Structure de la réponse
         $response = [
-            'message' => 'Incident supprimer avec succès',
+            'message' => 'Suivi supprimer avec succès',
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);   
     }
-    */
 }

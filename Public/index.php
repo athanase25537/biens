@@ -23,6 +23,7 @@ use App\Adapter\Api\Rest\MailJetController;
 // UserAbonnement
 use App\Core\Application\UseCase\UserAbonnement\CreateUserAbonnementUseCase;
 use App\Core\Application\UseCase\UserAbonnement\UpdateUserAbonnementUseCase;
+use App\Core\Application\UseCase\UserAbonnement\DeleteUserAbonnementUseCase;
 
 // Suivi
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
@@ -100,12 +101,15 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter = $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+// User Abonnement
 $userAbonnementRepository = new UserAbonnementRepository($dbAdapter);
 $createUserAbonnementUseCase = new CreateUserAbonnementUseCase($userAbonnementRepository);
 $updateUserAbonnementUserCase = new UpdateUserAbonnementUseCase($userAbonnementRepository);
+$deleteUserAbonnementUserCase = new DeleteUserAbonnementUseCase($userAbonnementRepository);
 $userAbonnement = new UserAbonnementController(
     $createUserAbonnementUseCase,
-    $updateUserAbonnementUserCase
+    $updateUserAbonnementUserCase,
+    $deleteUserAbonnementUseCase
 );
 
 // Suivi

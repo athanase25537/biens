@@ -27,6 +27,7 @@ use App\Core\Application\UseCase\UserAbonnement\UpdateUserAbonnementUseCase;
 // Suivi
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
 use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 
 // Quittance Loyer
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
@@ -107,11 +108,18 @@ $userAbonnement = new UserAbonnementController(
     $updateUserAbonnementUserCase
 );
 
+// Suivi
 $suiviRepository = new SuiviRepository($dbAdapter);
 $createSuiviUseCase = new CreateSuiviUseCase($suiviRepository);
 $updateSuiviUseCase = new UpdateSuiviUseCase($suiviRepository);
-$suivi = new SuiviController($createSuiviUseCase);
+$deleteSuiviUseCase = new DeleteSuiviUseCase($suiviRepository);
+$suivi = new SuiviController(
+    $createSuiviUseCase,
+    $updateSuiviUseCase,
+    $deleteSuiviUseCase
+);
 
+// Quittance Loyer
 $quittanceLoyerRepository = new QuittanceLoyerRepository($dbAdapter);
 $createQuittanceLoyerUseCase = new CreateQuittanceLoyerUseCase($quittanceLoyerRepository);
 $updateQuittanceLoyerUseCase = new UpdateQuittanceLoyerUseCase($quittanceLoyerRepository);
@@ -124,6 +132,7 @@ $quittanceLoyer = new QuittanceLoyerController(
     $selectLastQuittanceByBailIdUseCase
 );
 
+// Incident
 $incidentRepository = new IncidentRepository($dbAdapter);
 $createIncidentUseCase = new CreateIncidentUseCase($incidentRepository);
 $updateIncidentUseCase = new UpdateIncidentUseCase($incidentRepository);
@@ -134,6 +143,7 @@ $incident = new IncidentController(
     $deleteIncidentUseCase
 );
 
+// Etat des Lieux Items
 $etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
 $createEtatLieuxItemsUseCase = new CreateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
 $updateEtatLieuxItemsUseCase = new UpdateEtatLieuxItemsUseCase($etatLieuxItemsRepository);

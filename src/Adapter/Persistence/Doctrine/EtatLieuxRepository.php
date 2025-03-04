@@ -5,13 +5,17 @@ namespace App\Adapter\Persistence\Doctrine;
 use App\Core\Domain\Entity\EtatLieux;
 use App\Port\Out\DatabaseAdapterInterface;
 use App\Port\Out\EtatLieuxRepositoryInterface;
+use App\Adapter\Persistence\Doctrine\BailRepository;
 
 class EtatLieuxRepository implements EtatLieuxRepositoryInterface
 {
     private $db;
+    private $bailRepository;
+
     public function __construct(\mysqli $db)
     {
         $this->db = $db;
+        $this->bailRepository = new BailRepository($db);
     }
 
     public function save(EtatLieux $etatLieux): EtatLieux
@@ -54,10 +58,14 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
 
     public function update(int $etatLieuxId, array $data): bool
     {
+        $bailId = $data['baux_id'];
+
+        $this->getEtatLieux($etatLieuxId);
+        $bail = $this->bailRepository->getBail($bailId);
+
         $query = "UPDATE etat_lieux AS el
             INNER JOIN baux AS b ON b.id = el.baux_id
             SET 
-                el.baux_id = ?,
                 el.date = ?,
                 el.etat_entree = ?,
                 el.etat_sortie = ?,
@@ -78,8 +86,7 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
 
         // Liaison des paramètres
         $stmt->bind_param(
-            "isiiii", // Types des paramètres (i = integer, s = string, d = double)
-            $bauxId,
+            "siiii", // Types des paramètres (i = integer, s = string, d = double)
             $date,
             $etatEntree,
             $etatSortie,
@@ -90,6 +97,10 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         // Exécution de la requête
         if (!$stmt->execute()) {
             throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        if ($stmt->affected_rows === 0) {
+            throw new \Exception("Aucun mis à jour n'a été effectuer. etat des lieux id: " . $etatLieuxId . " n'as pas un bail id: " . $bailId . " , veuillez vérifier vos informations.");
         }
 
         $stmt->close();
@@ -134,15 +145,53 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         return $etatLieux;
     }
 
-    public function destroy(int $etatLieuxId, int $bauxId): bool
+    public function getAllEtatLieux(int $offset): ?array
     {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM etat_lieux LIMIT 10 OFFSET ?";
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $offset);
+
+        // Assignation de la valeur du paramètre
+        $id = $offset;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun etat lieux trouvé.");
+        }
+
+        // Traitement du résultat
+        $etatLieux = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $etatLieux;
+    }
+
+    public function destroy(int $etatLieuxId, int $bailId): bool
+    {
+
+        $this->getEtatLieux($etatLieuxId);
+        $bail = $this->bailRepository->getBail($bailId);
+
         // Préparation de la connexion et de la requête
         $query = 'DELETE el
         FROM etat_lieux AS el 
         INNER JOIN baux AS b 
         ON b.id = el.baux_id 
         WHERE el.id = ? AND b.id = ?';
-
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
@@ -152,7 +201,7 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         
         // Assignation de la valeur du paramètre
         $el_id = $etatLieuxId;
-        $b_id = $bauxId;
+        $b_id = $bailId;
 
         // Liaison du paramètre
         $stmt->bind_param("ii", $el_id, $b_id);
@@ -160,6 +209,10 @@ class EtatLieuxRepository implements EtatLieuxRepositoryInterface
         // Exécution de la requête
         if (!$stmt->execute()) {
             throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        if ($stmt->affected_rows === 0) {
+            throw new \Exception("Aucun etat des lieux n'a été supprimer. etat des lieux id: " . $etatLieuxId . " n'as pas un bail id: " . $bailId . " , veuillez vérifier vos informations.");
         }
 
         // Fermeture du statement et retour de l'objet

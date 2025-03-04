@@ -18,6 +18,6 @@ class DeleteQuittanceLoyerUseCase implements DeleteQuittanceLoyerInputPort
 
     public function execute(int $quittanceLoyerId, int $bailId): void
     {
-        $this->quittanceLoyerRepository->destroy($quittanceLoyerId, $baiLid);
+        $this->quittanceLoyerRepository->destroy($quittanceLoyerId, $bailId);
     }
 }

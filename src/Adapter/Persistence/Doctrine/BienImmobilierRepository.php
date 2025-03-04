@@ -93,7 +93,7 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
     }
 
 
-    public function update(int $idBienImmobilier, array $data): bool
+    public function update(int $bienImmobilierId, array $data): bool
     {   
         $query = "UPDATE biens_immobiliers 
                     SET 
@@ -145,7 +145,7 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         $ville = $bienImmobilier['ville'];
         $codePostal = $bienImmobilier['code_postal'];
         $pays = $bienImmobilier['pays'];
-        $id = $idBienImmobilier;
+        $id = $bienImmobilierId;
 
         // Liaison des paramètres
         $stmt->bind_param(
@@ -181,7 +181,7 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         return true;
     }
 
-    public function getBienImmobilier($idBienImmobilier): ?array
+    public function getBienImmobilier($bienImmobilierId): ?array
     {
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM biens_immobiliers WHERE id = ?";
@@ -195,7 +195,7 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         $stmt->bind_param("i", $id);
 
         // Assignation de la valeur du paramètre
-        $id = $idBienImmobilier;
+        $id = $bienImmobilierId;
 
         // Exécution de la requête
         if (!$stmt->execute()) {
@@ -219,10 +219,13 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         return $bienImmobilier;
     }
 
-    public function destroy(int $idBienImmobilier): bool
+    public function destroy(int $bienImmobilierId): bool
     {
+        // Check if bien immobilier exist: if exist we continue else we have an exception
+        $this->getBienImmobilier($bienImmobilierId);
+
         // Préparation de la connexion et de la requête
-        $query = "DELETE  FROM biens_immobiliers WHERE id = ?";
+        $query = "DELETE FROM biens_immobiliers WHERE id = ?";
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
@@ -233,7 +236,7 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         $stmt->bind_param("i", $id);
 
         // Assignation de la valeur du paramètre
-        $id = $idBienImmobilier;
+        $id = $bienImmobilierId;
 
         // Exécution de la requête
         if (!$stmt->execute()) {
@@ -244,5 +247,38 @@ class BienImmobilierRepository implements BienImmobilierRepositoryInterface
         $stmt->close();
 
         return true;       
+    }
+
+    public function getAllBienImmobilier(int $offset): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM biens_immobiliers LIMIT 10 OFFSET ?";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $offset);
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun bien immobilier trouvé.");
+        }
+
+        // Traitement du résultat
+        $bienImmobilier = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $bienImmobilier;
     }
 }

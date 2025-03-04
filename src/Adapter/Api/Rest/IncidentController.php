@@ -4,6 +4,7 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
 use App\Core\Application\UseCase\Incident\UpdateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\GetAllIncidentUseCase;
 use App\Core\Application\UseCase\Incident\DeleteIncidentUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
@@ -11,18 +12,21 @@ class IncidentController
 {
     private $createIncidentUseCase;
     private $updateIncidentUseCase;
+    private $getAllIncidentUseCase;
     private $deleteIncidentUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateIncidentUseCase $createIncidentUseCase,
         UpdateIncidentUseCase $updateIncidentUseCase,
+        GetAllIncidentUseCase $getAllIncidentUseCase,
         DeleteIncidentUseCase $deleteIncidentUseCase
     
     )
     {
         $this->createIncidentUseCase = $createIncidentUseCase;
         $this->updateIncidentUseCase = $updateIncidentUseCase;
+        $this->getAllIncidentUseCase = $getAllIncidentUseCase;
         $this->deleteIncidentUseCase = $deleteIncidentUseCase;
         $this->sendResponseController = new SendResponseController();
     }
@@ -36,6 +40,10 @@ class IncidentController
         try {
             $incident = $this->createIncidentUseCase->execute($data);
         } catch(\Exception $e) {
+            if($e->getCode() == 1452) {
+                echo "Erreur: bail id: " . $data['bail_id'] . " et/ou bien id " . $data['bien_id'] . " n'existe pas. Entrer un bail valide !";
+                return;
+            }
             echo "Erreur: " . $e->getMessage();
             return;
         }
@@ -66,6 +74,10 @@ class IncidentController
         try {
             $incident = $this->updateIncidentUseCase->execute($incidentId, $data);
         } catch(\Exception $e) {
+            if($e->getCode() == 1452) {
+                echo "Erreur: bail id: " . $data['bail_id'] . " et/ou bien id " . $data['bien_id'] . " n'existe pas. Entrer un bail valide !";
+                return;
+            }
             echo "Erreur: " . $e->getMessage();
             return;
         }
@@ -95,5 +107,23 @@ class IncidentController
         ];
 
         $this->sendResponseController::sendResponse($response, 201);   
+    }
+
+    public function getAll(int $offset=0): void
+    {
+        try {
+            // Get all incident by use case
+            $incident = $this->getAllIncidentUseCase->execute($offset);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
+
+        // Structure response data
+        $response = [
+            'message' => 'On a les 10 (ou inférieurs) incidents depuis ' . $offset,
+            'incident' => $incident
+        ];
+
+        $this->sendResponseController::sendResponse($response, 201);
     }
 }

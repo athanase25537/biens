@@ -57,13 +57,13 @@ class SuiviController
         
     }
 
-    public function update(int $quittanceLoyerId): void 
+    public function update(int $suiviId): void 
     {
         // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
         // Update suivi
-        $suivi = $this->UdateQuittanceLoyerUseCase->execute($suiviId, $data);
+        $suivi = $this->updateSuiviUseCase->execute($suiviId, $data);
 
         // Structure response data
         $response = [

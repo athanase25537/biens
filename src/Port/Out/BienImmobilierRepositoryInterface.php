@@ -10,4 +10,5 @@ interface BienImmobilierRepositoryInterface
     public function getBienImmobilier($id): ?array;
     public function update(int $idBienImmobilier, array $data): bool;
     public function destroy(int $idBienImmobilier): bool;
+    public function getAllBienImmobilier(int $offset): ?array;
 }

@@ -70,8 +70,7 @@ class IncidentRepository implements IncidentRepositoryInterface
                 inc.date_signalement = ?,
                 inc.date_resolution = ?
             WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
-    
-        $db = $this->db->connect($this->config);
+
         $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
@@ -106,6 +105,10 @@ class IncidentRepository implements IncidentRepositoryInterface
             throw new \Exception("Failed to execute statement: " . $stmt->error);
         }
 
+        if ($stmt->affected_rows === 0) {
+            throw new \Exception("Aucun mis à jour n'a été effectuer.\nIncident id: {$incidentId} ne possede pas un bail id: {$data['bail_id']} et/ou un bien id: {$data['bien_id']}.\nVeuillez vérifier vos informations.");
+        }
+
         $stmt->close();
 
         return true;
@@ -118,8 +121,7 @@ class IncidentRepository implements IncidentRepositoryInterface
             INNER JOIN biens_immobiliers AS bi ON bi.id = inc.bien_id
             INNER JOIN baux AS b ON b.id = inc.bail_id
             WHERE inc.id = ? AND bi.id = ? AND b.id = ?";
-    
-        $db = $this->db->connect($this->config);
+
         $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
@@ -139,6 +141,10 @@ class IncidentRepository implements IncidentRepositoryInterface
             throw new \Exception("Failed to execute statement: " . $stmt->error);
         }
 
+        if ($stmt->affected_rows === 0) {
+            throw new \Exception("Aucun incident n'a été supprimer.\nIncident id: {$incidentId} ne possede pas un bail id: {$bailId} et/ou un bien id: {$bienId}.\nVeuillez vérifier vos informations.");
+        }
+
         $stmt->close();
 
         return true;
@@ -149,7 +155,6 @@ class IncidentRepository implements IncidentRepositoryInterface
         // Préparation de la connexion et de la requête
         $query = "SELECT * FROM incidents WHERE id = ?";
 
-        $db = $this->db->connect($this->config);
         $stmt = $this->db->prepare($query);
 
         if (!$stmt) {
@@ -178,6 +183,39 @@ class IncidentRepository implements IncidentRepositoryInterface
 
         // Remplissage de l'objet EtatLieuxItems avec les données récupérées
         $incident = $row;
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $incident;
+    }
+
+    public function getAllIncident(int $offset): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM incidents LIMIT 10 OFFSET ?";
+
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $offset);
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun incident trouvé.");
+        }
+
+        // Traitement du résultat
+        $incident = $result->fetch_all(MYSQLI_ASSOC);
 
         // Fermeture du statement et retour de l'objet
         $stmt->close();

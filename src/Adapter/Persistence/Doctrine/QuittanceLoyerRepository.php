@@ -150,7 +150,7 @@ class QuittanceLoyerRepository implements QuittanceLoyerRepositoryInterface
 
         // Liaison des paramètres
         $stmt->bind_param(
-            "iii", // Types des paramètres (i = integer, s = string, d = double)
+            "ii", // Types des paramètres (i = integer, s = string, d = double)
             $quittanceLoyerId,
             $bailId
         );

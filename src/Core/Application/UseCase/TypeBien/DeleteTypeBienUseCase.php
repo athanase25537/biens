@@ -18,10 +18,6 @@ class DeleteTypeBienUseCase implements DeleteTypeBienInputPort
 
     public function execute(int $typeBienId): void
     {
-        try{
-            $delete = $this->typeBienRepository->destroy($typeBienId);
-        } catch(Exception $e) {
-            echo "Erreur: $e.getMessage()";
-        }
+        $delete = $this->typeBienRepository->destroy($typeBienId);
     }
 }

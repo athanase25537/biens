@@ -8,7 +8,7 @@ class HistoriqueModificationRepository
 {
     private $db;
 
-    public function __construct(DatabaseAdapterInterface $db)
+    public function __construct(\mysqli $db)
     {
         $this->db = $db;
     }

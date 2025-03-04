@@ -17,12 +17,12 @@ class UserAbonnementController
     public function __construct(
         CreateUserAbonnementUseCase $createUserAbonnementUseCase,
         UpdateUserAbonnementUseCase $updateUserAbonnementUseCase,
-        // DeleteUserAbonnementUseCase $deleteUserAbonnementUseCase,
+        DeleteUserAbonnementUseCase $deleteUserAbonnementUseCase,
         )
     {
         $this->createUserAbonnementUseCase = $createUserAbonnementUseCase;
         $this->updateUserAbonnementUseCase = $updateUserAbonnementUseCase;
-        // $this->deleteUserAbonnementUseCase = $deleteUserAbonnementUseCase;
+        $this->deleteUserAbonnementUseCase = $deleteUserAbonnementUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -63,7 +63,7 @@ class UserAbonnementController
         $this->sendResponseController::sendResponse($response, 201);                
     }
 
-    public function update($userAbonnementId): void
+    public function update(int $userAbonnementId): void
     {
         // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
@@ -83,5 +83,17 @@ class UserAbonnementController
         ];
 
         $this->sendResponseController::sendResponse($response, 201);
+    }
+
+    public function destroy(int $userAbonnementId): void
+    {
+        $this->deleteUserAbonnementUseCase->execute($userAbonnementId);
+
+        // Structure de la réponse
+        $response = [
+            'message' => 'Abonnement supprimer avec succès',
+        ];
+
+        $this->sendResponseController::sendResponse($response, 201);  
     }
 }

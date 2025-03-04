@@ -188,4 +188,30 @@ class UserAbonnementRepository implements UserAbonnementRepositoryInterface
 
         return $userAbonnement;
     }
+
+    public function destroy(int $userAbonnementId): bool
+    {
+        $query = "DELETE FROM users_abonnements
+            WHERE id = ?";
+    
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
+
+        // Liaison des paramètres
+        $stmt->bind_param(
+            "i", // Types des paramètres (i = integer, s = string, d = double)
+            $userAbonnementId,
+        );
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        $stmt->close();
+
+        return true;
+    }
 } 

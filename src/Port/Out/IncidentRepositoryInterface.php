@@ -10,4 +10,5 @@ interface IncidentRepositoryInterface
     public function update(int $incidentId, array $data): bool;
     public function destroy(int $incidentId, int $bienId, int $bailId): bool;
     public function getIncident(int $incidentId): ?array;
+    public function getAllIncident(int $offset): ?array;
 }

@@ -122,4 +122,74 @@ class BailRepository implements BailRepositoryInterface
 
         return $bail;
     }
+
+    public function getAllBail(int $offset)
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM baux LIMIT 10 OFFSET ?";
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $offset);
+
+        // Assignation de la valeur du paramètre
+        $id = $offset;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun bail trouvé.");
+        }
+
+        // Traitement du résultat
+        $baux = $result->fetch_all(MYSQLI_ASSOC);
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $baux;
+    }
+
+    public function getBail(int $bailId): ?array
+    {
+        // Préparation de la connexion et de la requête
+        $query = "SELECT * FROM baux WHERE id = ?";
+        $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            throw new \Exception("Failed to prepare statement: " . $this->db->error);
+        }
+
+        // Liaison du paramètre
+        $stmt->bind_param("i", $id);
+
+        // Assignation de la valeur du paramètre
+        $id = $bailId;
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to execute statement: " . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
+            throw new \Exception("Aucun bail trouvé, l'ID: $bailId n'existe pas");
+        }
+
+        // Traitement du résultat
+        $bail = $result->fetch_assoc();
+
+        // Fermeture du statement et retour de l'objet
+        $stmt->close();
+
+        return $bail;
+    }
 }

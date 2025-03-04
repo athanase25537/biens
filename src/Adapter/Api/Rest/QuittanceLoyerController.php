@@ -4,7 +4,7 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
-// use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
+use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
@@ -12,21 +12,21 @@ class QuittanceLoyerController
 {
     private $createQuittanceLoyerUseCase;
     private $updateQuittanceLoyerUseCase;
-    // private $deleteQuittanceLoyerUseCase;
+    private $deleteQuittanceLoyerUseCase;
     private $selectLastQuittanceByBailIdUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateQuittanceLoyerUseCase $createQuittanceLoyerUseCase,
         UpdateQuittanceLoyerUseCase $updateQuittanceLoyerUseCase,
-        // DeleteIncidentUseCase $deleteQuittanceLoyerUseCase
+        DeleteQuittanceLoyerUseCase $deleteQuittanceLoyerUseCase,
         SelectLastQuittanceByBailIdUseCase $selectLastQuittanceByBailIdUseCase
     
     )
     {
         $this->createQuittanceLoyerUseCase = $createQuittanceLoyerUseCase;
         $this->updateQuittanceLoyerUseCase = $updateQuittanceLoyerUseCase;
-        // $this->deleteQuittanceLoyerUseCase = $deleteQuittanceLoyerUseCase;
+        $this->deleteQuittanceLoyerUseCase = $deleteQuittanceLoyerUseCase;
         $this->selectLastQuittanceByBailIdUseCase = $selectLastQuittanceByBailIdUseCase;
         $this->sendResponseController = new SendResponseController();
     }
@@ -87,20 +87,17 @@ class QuittanceLoyerController
         $this->sendResponseController::sendResponse($response, 201);
     }
 
-    /*
-    public function destroy(int $incidentId, int $bienId, int $bailId): void 
+    public function destroy(int $quittanceLoyerId, int $bailId): void 
     {
-        $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
+        $this->deleteQuittanceLoyer->execute($quittanceLoyerId, $bailId);
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
-            'message' => 'Incident supprimer avec succès',
+            'message' => 'Quittance loyer supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);   
     }
-    */
 
     public function selectLastQuittanceByBailId(int $bailId): void 
     {
@@ -132,9 +129,6 @@ class QuittanceLoyerController
         $datePaiement = $createdAt;
 
         require_once('tcpdf.php');
-    
-        // // Envoi de la réponse JSON après la génération PDF
-        // $this->sendResponseController::sendResponse($response, 201);
     }
     
 }

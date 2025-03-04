@@ -3,6 +3,7 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\GetAllBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 
 class BienImmobilierController
@@ -10,18 +11,21 @@ class BienImmobilierController
 
     private $createBienImmobilierUseCase;
     private $updateBienImmobilierUseCase;
+    private $getAllBienImmobilierUseCase;
     private $deleteBienImmobilierUseCase;
     private $sendResponseController;
 
     public function __construct(
         CreateBienImmobilierUseCase $createBienImmobilierUseCase,
         UpdateBienImmobilierUseCase $updateBienImmobilierUseCase,    
+        GetAllBienImmobilierUseCase $getAllBienImmobilierUseCase,    
         DeleteBienImmobilierUseCase $deleteBienImmobilierUseCase,    
     )
     {
 
         $this->createBienImmobilierUseCase = $createBienImmobilierUseCase;
         $this->updateBienImmobilierUseCase = $updateBienImmobilierUseCase;
+        $this->getAllBienImmobilierUseCase = $getAllBienImmobilierUseCase;
         $this->deleteBienImmobilierUseCase = $deleteBienImmobilierUseCase;
         $this->sendResponseController = new SendResponseController();
     }
@@ -95,18 +99,41 @@ class BienImmobilierController
         $this->sendResponseController::sendResponse($response, 201);
     }
 
-    public function destroy(int $idBienImmobilier): void
+    public function destroy(int $bienImmobilierId): void
     {
 
         try {
             // Delete bien immobilier by delete use case
-            $bienImmobilier = $this->deleteBienImmobilierUseCase->execute($idBienImmobilier);
+            $bienImmobilier = $this->deleteBienImmobilierUseCase->execute($bienImmobilierId);
         } catch(\Exception $e) {
+            if($e->getCode() == 1451) {
+                echo "Erreur: Le bien immobilier est déjà utilisé dans un bail";
+                return;
+            }
             echo "Erreur: " . $e->getMessage();
+            return;
         }
         // Structure response data
         $response = [
             'message' => 'Bien immobilier supprimer avec succès',
+        ];
+
+        $this->sendResponseController::sendResponse($response, 201);
+    }
+
+    public function getAll(int $offset=0): void
+    {
+        try {
+            // Get all bien immobilier by use case
+            $bienImmobilier = $this->getAllBienImmobilierUseCase->execute($offset);
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+        }
+
+        // Structure response data
+        $response = [
+            'message' => 'On a les 10 (ou inférieurs) biens immobiliers depuis ' . $offset,
+            'bien_immobilier' => $bienImmobilier
         ];
 
         $this->sendResponseController::sendResponse($response, 201);

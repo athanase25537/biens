@@ -23,8 +23,15 @@ class Router {
                 // Vérifier si l'utilisateur est connecté, sauf pour la route "login"
                 $callback = $route['callback'][1];
                 if ($callback !== 'login' && !isset($_SESSION['user'])) {
+                    /*
+                     * For redirection uncomment the following code
+                     * 
+                     * 
+                    */ 
+
                     // header("Location: /login");
-                    exit;
+
+                    throw new \Exception("Vous n'êtes pas connecté, veuillez vous connecté s'il vous plaît!");
                 }
                 
                 try {

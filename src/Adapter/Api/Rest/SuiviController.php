@@ -3,27 +3,27 @@
 namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
-// use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
-// use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 use App\Adapter\Api\Rest\SendResponseController;
 
 class SuiviController
 {
     private $createSuiviUseCase;
-    // private $updateSuiviUseCase;
-    // private $deleteSuiviUseCase;
+    private $updateSuiviUseCase;
+    private $deleteSuiviUseCase;
     private SendResponseController $sendResponseController;
 
     public function __construct(
         CreateSuiviUseCase $createSuiviUseCase,
-        // UpdateSuiviUseCase $updateSuiviUseCase,
-        // DeleteSuiviUseCase $deleteSuiviUseCase
+        UpdateSuiviUseCase $updateSuiviUseCase,
+        DeleteSuiviUseCase $deleteSuiviUseCase
     
     )
     {
         $this->createSuiviUseCase = $createSuiviUseCase;
-        // $this->updateSuiviUseCase = $updateSuiviUseCase;
-        // $this->deleteSuiviUseCase = $deleteSuiviUseCase;
+        $this->updateSuiviUseCase = $updateSuiviUseCase;
+        $this->deleteSuiviUseCase = $deleteSuiviUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -57,36 +57,33 @@ class SuiviController
         
     }
 
-    /*
-    public function update(int $quittanceLoyerId): void 
+    public function update(int $suiviId): void 
     {
-        // Récupération des données de la requête
+        // Get request data
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Création du etat lieux items via le use case ou service
-        $etatLieux = $this->UdateQuittanceLoyerUseCase->execute($incidentId, $data);
+        // Update suivi
+        $suivi = $this->updateSuiviUseCase->execute($suiviId, $data);
 
-        // Structure de la réponse
+        // Structure response data
         $response = [
-            'message' => 'Incident mis a jour avec succès',
-            'etat_lieux'=> $etatLieux
+            'message' => 'Suivi mis a jour avec succès',
+            'suivi'=> $suivi
         ];
 
         // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);
     }
 
-    public function destroy(int $incidentId, int $bienId, int $bailId): void 
+    public function destroy(int $suiviId, int $bailId): void 
     {
-        $this->deleteIncidentUseCase->execute($incidentId, $bienId, $bailId);
+        $this->deleteSuiviUseCase->execute($suiviId, $bailId);
 
         // Structure de la réponse
         $response = [
-            'message' => 'Incident supprimer avec succès',
+            'message' => 'Suivi supprimer avec succès',
         ];
 
-        // Envoi de la réponse avec un statut HTTP 201 (Créé)
         $this->sendResponseController::sendResponse($response, 201);   
     }
-    */
 }

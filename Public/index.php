@@ -7,6 +7,11 @@ use App\Adapter\Persistence\MySQLAdapter;
 use App\Adapter\Persistence\PostgreSQLAdapter;
 use App\Route\Router;
 
+// Services
+use App\Adapter\Persistence\Doctrine\HistoriqueModificationRepository;
+use App\Core\Application\Service\HistoriqueService;
+
+
 // Controllers
 use App\Adapter\Api\Rest\AuthController;
 use App\Adapter\Api\Rest\BienImmobilierController;
@@ -17,21 +22,34 @@ use App\Adapter\Api\Rest\IncidentController;
 use App\Adapter\Api\Rest\QuittanceLoyerController;
 use App\Adapter\Api\Rest\SuiviController;
 use App\Adapter\Api\Rest\UserAbonnementController;
+use App\Adapter\Api\Rest\BailController;
 use App\Adapter\Api\Rest\MailJetController;
 
 // UseCases
+
+// Bail
+use App\Core\Application\UseCase\Bail\AddBailUseCase;
+use App\Core\Application\UseCase\Bail\UpdateBailUseCase;
+use App\Core\Application\UseCase\Bail\DeleteBailUseCase;
+use App\Core\Application\UseCase\Bail\GetAllBailUseCase;
+use App\Core\Application\UseCase\SendNotificationUseCase;
+
+
 // UserAbonnement
 use App\Core\Application\UseCase\UserAbonnement\CreateUserAbonnementUseCase;
 use App\Core\Application\UseCase\UserAbonnement\UpdateUserAbonnementUseCase;
+use App\Core\Application\UseCase\UserAbonnement\DeleteUserAbonnementUseCase;
 
 // Suivi
 use App\Core\Application\UseCase\Suivi\CreateSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\UpdateSuiviUseCase;
+use App\Core\Application\UseCase\Suivi\DeleteSuiviUseCase;
 
 // Quittance Loyer
 use App\Core\Application\UseCase\QuittanceLoyer\CreateQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
 use App\Core\Application\UseCase\QuittanceLoyer\SelectLastQuittanceByBailIdUseCase;
-// use App\Core\Application\UseCase\QuittanceLoyer\UpdateQuittanceLoyerUseCase;
+use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
 
 
 // Login
@@ -41,6 +59,7 @@ use App\Core\Application\UseCase\User\RegisterUserUseCase;
 // Bien Immobilier
 use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\GetAllBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 
 // Type Bien
@@ -51,6 +70,7 @@ use App\Core\Application\UseCase\TypeBien\DeleteTypeBienUseCase;
 // Etat Lieux
 use App\Core\Application\UseCase\EtatLieux\CreateEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieux\UpdateEtatLieuxUseCase;
+use App\Core\Application\UseCase\EtatLieux\GetAllEtatLieuxUseCase;
 use App\Core\Application\UseCase\EtatLieux\DeleteEtatLieuxUseCase;
 
 // Etat Lieux Items
@@ -61,6 +81,7 @@ use App\Core\Application\UseCase\EtatLieuxItems\DeleteEtatLieuxItemsUseCase;
 // Incident
 use App\Core\Application\UseCase\Incident\CreateIncidentUseCase;
 use App\Core\Application\UseCase\Incident\UpdateIncidentUseCase;
+use App\Core\Application\UseCase\Incident\GetAllIncidentUseCase;
 use App\Core\Application\UseCase\Incident\DeleteIncidentUseCase;
 
 // MailJet
@@ -76,6 +97,9 @@ use App\Adapter\Persistence\Doctrine\IncidentRepository;
 use App\Adapter\Persistence\Doctrine\QuittanceLoyerRepository;
 use App\Adapter\Persistence\Doctrine\SuiviRepository;
 use App\Adapter\Persistence\Doctrine\UserAbonnementRepository;
+use App\Adapter\Persistence\Doctrine\BailRepository;
+use App\Adapter\Persistence\Doctrine\NotificationRepository;
+
 
 // Twig
 use App\Controller\HomeController;
@@ -98,38 +122,80 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter = $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
-$userAbonnementRepository = new UserAbonnementRepository($dbAdapter);
-$createUserAbonnementUseCase = new CreateUserAbonnementUseCase($userAbonnementRepository);
-$updateUserAbonnementUserCase = new UpdateUserAbonnementUseCase($userAbonnementRepository);
-$userAbonnement = new UserAbonnementController(
-    $createUserAbonnementUseCase,
-    $updateUserAbonnementUserCase
+
+// Historique Services
+$historiqueModificationRepository = new HistoriqueModificationRepository($dbAdapter);
+$historiqueService = new HistoriqueService($historiqueModificationRepository);
+
+
+// Bail
+$bailRepository = new BailRepository($dbAdapter);
+$notificationRepository = new NotificationRepository($dbAdapter);
+
+$addBailUseCase = new AddBailUseCase($bailRepository, $historiqueService);
+$updateBailUseCase = new UpdateBailUseCase($bailRepository, $historiqueService);
+$getAllBailUseCase = new getAllBailUseCase($bailRepository);
+$deleteBailUseCase = new DeleteBailUseCase($bailRepository, $historiqueService);
+$sendNotificationUseCase = new SendNotificationUseCase($notificationRepository);
+
+$bail = new BailController(
+    $addBailUseCase,
+    $updateBailUseCase,
+    $getAllBailUseCase, 
+    $deleteBailUseCase,
+    $sendNotificationUseCase
 );
 
+
+// User Abonnement
+$userAbonnementRepository = new UserAbonnementRepository($dbAdapter);
+$createUserAbonnementUseCase = new CreateUserAbonnementUseCase($userAbonnementRepository);
+$updateUserAbonnementUseCase = new UpdateUserAbonnementUseCase($userAbonnementRepository);
+$deleteUserAbonnementUseCase = new DeleteUserAbonnementUseCase($userAbonnementRepository);
+$userAbonnement = new UserAbonnementController(
+    $createUserAbonnementUseCase,
+    $updateUserAbonnementUseCase,
+    $deleteUserAbonnementUseCase
+);
+
+// Suivi
 $suiviRepository = new SuiviRepository($dbAdapter);
 $createSuiviUseCase = new CreateSuiviUseCase($suiviRepository);
-$suivi = new SuiviController($createSuiviUseCase);
+$updateSuiviUseCase = new UpdateSuiviUseCase($suiviRepository);
+$deleteSuiviUseCase = new DeleteSuiviUseCase($suiviRepository);
+$suivi = new SuiviController(
+    $createSuiviUseCase,
+    $updateSuiviUseCase,
+    $deleteSuiviUseCase
+);
 
+// Quittance Loyer
 $quittanceLoyerRepository = new QuittanceLoyerRepository($dbAdapter);
 $createQuittanceLoyerUseCase = new CreateQuittanceLoyerUseCase($quittanceLoyerRepository);
 $updateQuittanceLoyerUseCase = new UpdateQuittanceLoyerUseCase($quittanceLoyerRepository);
+$deleteQuittanceLoyerUseCase = new DeleteQuittanceLoyerUseCase($quittanceLoyerRepository);
 $selectLastQuittanceByBailIdUseCase = new SelectLastQuittanceByBailIdUseCase($quittanceLoyerRepository);
 $quittanceLoyer = new QuittanceLoyerController(
     $createQuittanceLoyerUseCase,
     $updateQuittanceLoyerUseCase,
+    $deleteQuittanceLoyerUseCase,
     $selectLastQuittanceByBailIdUseCase
 );
 
+// Incident
 $incidentRepository = new IncidentRepository($dbAdapter);
 $createIncidentUseCase = new CreateIncidentUseCase($incidentRepository);
 $updateIncidentUseCase = new UpdateIncidentUseCase($incidentRepository);
+$getAllIncidentUseCase = new GetAllIncidentUseCase($incidentRepository);
 $deleteIncidentUseCase = new DeleteIncidentUseCase($incidentRepository);
 $incident = new IncidentController(
     $createIncidentUseCase,
     $updateIncidentUseCase,
+    $getAllIncidentUseCase,
     $deleteIncidentUseCase
 );
 
+// Etat des Lieux Items
 $etatLieuxItemsRepository = new EtatLieuxItemsRepository($dbAdapter);
 $createEtatLieuxItemsUseCase = new CreateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
 $updateEtatLieuxItemsUseCase = new UpdateEtatLieuxItemsUseCase($etatLieuxItemsRepository);
@@ -140,26 +206,33 @@ $etatLieuxItems = new EtatLieuxItemsController(
     $deleteEtatLieuxItemsUseCase
 );
 
+// Etat des lieux
 $etatLieuxRepository = new EtatLieuxRepository($dbAdapter);
 $createEtatLieuxUseCase = new CreateEtatLieuxUseCase($etatLieuxRepository);
 $updateEtatLieuxUseCase = new UpdateEtatLieuxUseCase($etatLieuxRepository);
+$getAllEtatLieuxUseCase = new GetAllEtatLieuxUseCase($etatLieuxRepository);
 $deleteEtatLieuxUseCase = new DeleteEtatLieuxUseCase($etatLieuxRepository);
 $etatLieux = new EtatLieuxController(
     $createEtatLieuxUseCase,
     $updateEtatLieuxUseCase,
+    $getAllEtatLieuxUseCase,
     $deleteEtatLieuxUseCase,
 );
 
+// Bien immobilier
 $bienImmobilierRepository = new BienImmobilierRepository($dbAdapter);
 $createBienImmobilierUseCase = new CreateBienImmobilierUseCase($bienImmobilierRepository);
 $updateBienImmobilierUseCase = new UpdateBienImmobilierUseCase($bienImmobilierRepository);
+$getAllBienImmobilierUseCase = new GetAllBienImmobilierUseCase($bienImmobilierRepository);
 $deleteBienImmobilierUseCase = new DeleteBienImmobilierUseCase($bienImmobilierRepository);
 $bienImmobilier = new BienImmobilierController(
     $createBienImmobilierUseCase,
     $updateBienImmobilierUseCase,
+    $getAllBienImmobilierUseCase,
     $deleteBienImmobilierUseCase,
 );
 
+// Type Bien
 $typeBienRepository = new TypeBienRepository($dbAdapter);
 $createTypeBienUseCase = new CreateTypeBienUseCase($typeBienRepository);
 $updateTypeBienUseCase = new UpdateTypeBienUseCase($typeBienRepository);
@@ -199,8 +272,14 @@ defineRoutes(
     $etatLieux, 
     $bienImmobilier, 
     $typeBien,
+    $bail,
     $mailJet
 );
 
 // Handle the request
-$router->handleRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+try {
+    $router->handleRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+} catch(\Exception $e) {
+    echo "Erreur: " . $e->getMessage();
+    exit();
+}

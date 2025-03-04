@@ -5,14 +5,17 @@ namespace App\Adapter\Persistence\Doctrine;
 use App\Port\Out\EtatLieuxItemsRepositoryInterface;
 use App\Port\Out\DatabaseAdapterInterface;
 use App\Core\Domain\Entity\EtatLieuxItems;
+use App\Adapter\Persistence\Doctrine\EtatLieuxRepository;
 
 class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
 {
     private $db;
+    private $etatLieux;
 
     public function __construct(\mysqli $db)
     {
         $this->db = $db;
+        $this->etatLieux = new EtatLieuxRepository($db);
     }
 
     public function save(EtatLieuxItems $etatLieuxItems): EtatLieuxItems
@@ -67,6 +70,7 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
         }
         
         $stmt->close();
+        
         return $etatLieuxItems;
     }
 
@@ -111,6 +115,10 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
 
     public function update(int $etatLieuxItemsId, array $data): bool
     {
+
+        $this->getEtatLieuxItems($etatLieuxItemsId);
+        $this->etatLieux->getEtatLieux($etatLieuxId);
+        
         $query = "UPDATE etat_lieux_items 
           SET 
           etat_lieux_id = ?,
@@ -188,12 +196,15 @@ class EtatLieuxItemsRepository implements EtatLieuxItemsRepositoryInterface
 
     public function destroy(int $etatLieuxItemsId, int $etatLieuxId): bool
     {
+        $this->getEtatLieuxItems($etatLieuxItemsId);
+        $this->etatLieux->getEtatLieux($etatLieuxId);
+
         // Préparation de la connexion et de la requête
         $query = 'DELETE eli 
-        FROM etat_lieux_items AS eli 
-        INNER JOIN etat_lieux AS el 
-        ON el.id = eli.etat_lieux_id 
-        WHERE eli.id = ? AND el.id = ?';
+            FROM etat_lieux_items AS eli 
+            INNER JOIN etat_lieux AS el 
+            ON el.id = eli.etat_lieux_id 
+            WHERE eli.id = ? AND el.id = ?';
 
         $stmt = $this->db->prepare($query);
         if (!$stmt) {

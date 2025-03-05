@@ -17,19 +17,21 @@ class Router {
     public function handleRequest($requestUri, $requestMethod) 
     {
         session_start();
-        
+        session_destroy();
+
+        $allowed_end_point = explode(",", $_ENV['ALLOWED_END_POINT']);
         foreach ($this->routes as $route) {
             if ($route['method'] === $requestMethod && preg_match($route['pattern'], $requestUri, $matches)) {
                 // Vérifier si l'utilisateur est connecté, sauf pour la route "login"
                 $callback = $route['callback'][1];
-                if ($callback !== 'login' && !isset($_SESSION['user'])) {
+                if (!in_array($callback, $allowed_end_point) && !isset($_SESSION['user'])) {
                     /*
                      * For redirection uncomment the following code
                      * 
                      * 
                     */ 
 
-                    // header("Location: /login");
+                    // header("Location: /api/login");
 
                     throw new \Exception("Vous n'êtes pas connecté, veuillez vous connecté s'il vous plaît!");
                 }

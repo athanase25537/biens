@@ -36,11 +36,12 @@ function defineRoutes(
     $mailJet
 ) {
 	
-    $link = '#^';
+    $link = '#^/api';
 
     // Auth routes
     $router->addRoute('POST', $link.'/login$#', [$controller, 'login']);
     $router->addRoute('POST', $link.'/register$#', [$controller, 'register']);
+    // $router->addRoute('POST', $link.'/logout$#', [$controller, 'logout']);
 
     // User Abonnement routes
     $router->addRoute('POST', $link.'/user-abonnement/create$#', [$userAbonnement, 'create']);

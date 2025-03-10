@@ -29,7 +29,7 @@ class MailJetUseCase implements MailJetInputPort
                         ]
                     ],
                     'Subject' => $data['subject'],
-                    'TextPart' => $data['text_part'],
+                    'TextPart' => "fdlkjfdlfjdkls['text_part']",
                     'HTMLPart' => $data['html_part']
                 ]
             ]

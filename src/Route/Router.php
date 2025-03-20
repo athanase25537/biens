@@ -28,11 +28,9 @@ class Router {
                     /*
                      * For redirection uncomment the following code
                      * 
-                     * 
-                    */ 
-
+                    */
+                    
                     // header("Location: /api/login");
-
                     throw new \Exception("Vous n'êtes pas connecté, veuillez vous connecté s'il vous plaît!");
                 }
                 

@@ -3,17 +3,24 @@ namespace App\Adapter\Api\Rest;
 
 use App\Core\Application\UseCase\User\LoginUserUseCase;
 use App\Core\Application\UseCase\User\RegisterUserUseCase;
+use App\Core\Application\UseCase\User\AuthGoogleUseCase;
 
 class AuthController
 {
     private $registerUserUseCase;
     private $loginUserUseCase;
+    private $authGoogleUseCase;
     private SendResponseController $sendResponseController;
 
-    public function __construct(RegisterUserUseCase $registerUserUseCase, LoginUserUseCase $loginUserUseCase)
+    public function __construct(
+        RegisterUserUseCase $registerUserUseCase, 
+        LoginUserUseCase $loginUserUseCase,
+        AuthGoogleUseCase $authGoogleUseCase
+        )
     {
         $this->registerUserUseCase = $registerUserUseCase;
         $this->loginUserUseCase = $loginUserUseCase;
+        $this->authGoogleUseCase = $authGoogleUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -48,6 +55,10 @@ class AuthController
     public function login()
     {
         $data = json_decode(file_get_contents('php://input'), true);
+        $data = [
+                "email" => "andriamasy@gmail.com",
+                "password"=> "0000000"
+        ];
         try {
             $user = $this->loginUserUseCase->execute($data['email'], $data['password']);
         } catch(\Exception $e) {
@@ -66,4 +77,29 @@ class AuthController
         $this->sendResponseController::sendResponse($response, $statusCode);
     }
 
+    public function auth_google()
+    {
+        try {
+            $statusCode = 200;
+            $response = $this->authGoogleUseCase->connect();
+        } catch(\Exception $e) {
+            $statusCode = 401;
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
+
+        $this->sendResponseController::sendResponse($response, $statusCode);
+    }
+
+    public function auth_google_check()
+    {
+        try {
+            $response = $this->authGoogleUseCase->checkLogin();
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
+
+        $this->sendResponseController::sendResponse($response, $statusCode);
+    }
 }

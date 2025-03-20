@@ -14,9 +14,9 @@ class MySQLAdapter implements DatabaseAdapterInterface {
         $this->connection = new \mysqli(
             $config['host'],
             $config['user'],
-	    $config['password'],
+	        $config['password'],
             $config['dbname'],
-	    $port
+	        $port
         );
 
         if ($this->connection->connect_error) {

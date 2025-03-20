@@ -33,14 +33,23 @@ function defineRoutes(
     $bienImmobilier, 
     $typeBien,
     $bail,
-    $mailJet
+    $mailJet,
+    $recaptcha
 ) {
 	
     $link = '#^/api';
 
+    // Recaptcha routes
+    $router->addRoute('GET', $link.'/recaptcha$#', [$recaptcha, 'recaptcha']);
+    $router->addRoute('POST', $link.'/recaptcha-check$#', [$recaptcha, 'recaptchaCheck']);
+
     // Auth routes
     $router->addRoute('POST', $link.'/login$#', [$controller, 'login']);
     $router->addRoute('POST', $link.'/register$#', [$controller, 'register']);
+    
+    // Auth Google routes
+    $router->addRoute('GET', $link. '/auth-google$#', [$controller, 'auth_google']);
+    $router->addRoute('POST', $link. '/auth-google-check$#', [$controller, 'auth_google_check']);
     // $router->addRoute('POST', $link.'/logout$#', [$controller, 'logout']);
 
     // User Abonnement routes

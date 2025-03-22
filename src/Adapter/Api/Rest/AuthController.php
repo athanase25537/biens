@@ -55,10 +55,6 @@ class AuthController
     public function login()
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        $data = [
-                "email" => "andriamasy@gmail.com",
-                "password"=> "0000000"
-        ];
         try {
             $user = $this->loginUserUseCase->execute($data['email'], $data['password']);
         } catch(\Exception $e) {

@@ -663,7 +663,7 @@ body.dark-mode {
 .dark-mode .custom-control-input:disabled~.custom-control-label {
 	color: rgba(255, 255, 255, 0.7);
 }
-}
+
 .dark-mode .custom-control-input:disabled~.custom-control-label::before {
 	background-color: #120d23;
 }

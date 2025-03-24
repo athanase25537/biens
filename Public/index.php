@@ -1,7 +1,6 @@
 <?php
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
-
 // Adapters
 use App\Adapter\Persistence\MySQLAdapter;
 use App\Adapter\Persistence\PostgreSQLAdapter;
@@ -24,8 +23,13 @@ use App\Adapter\Api\Rest\SuiviController;
 use App\Adapter\Api\Rest\UserAbonnementController;
 use App\Adapter\Api\Rest\BailController;
 use App\Adapter\Api\Rest\MailJetController;
+use App\Adapter\Api\Rest\RecaptchaController;
 
 // UseCases
+
+// Recaptcha
+use App\Core\Application\UseCase\Recaptcha\RecaptchaFormUseCase;
+use App\Core\Application\UseCase\Recaptcha\RecaptchaCheckUseCase;
 
 // Bail
 use App\Core\Application\UseCase\Bail\AddBailUseCase;
@@ -55,6 +59,7 @@ use App\Core\Application\UseCase\QuittanceLoyer\DeleteQuittanceLoyerUseCase;
 // Login
 use App\Core\Application\UseCase\User\LoginUserUseCase;
 use App\Core\Application\UseCase\User\RegisterUserUseCase;
+use App\Core\Application\UseCase\User\AuthGoogleUseCase;
 
 // Bien Immobilier
 use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
@@ -122,6 +127,11 @@ $dbAdapter = new $dbAdapterClass();
 $dbAdapter = $dbAdapter->connect($dbConfig);
 
 // Initialisation des dépendances
+
+// Recaptcha
+$recaptchaFormUseCase = new RecaptchaFormUseCase($_ENV['RECAPTCHA_SITE_KEY']);
+$recaptchaCheckUseCase = new RecaptchaCheckUseCase($_ENV['RECAPTCHA_SECRET_KEY']);
+$recaptcha = new RecaptchaController($recaptchaFormUseCase, $recaptchaCheckUseCase);
 
 // Historique Services
 $historiqueModificationRepository = new HistoriqueModificationRepository($dbAdapter);
@@ -247,7 +257,14 @@ $typeBien = new TypeBienController(
 $userRepository = new UserRepository($dbAdapter);
 $loginUseCase = new LoginUserUseCase($userRepository);
 $registerUseCase = new RegisterUserUseCase($userRepository);
-$controller = new AuthController($registerUseCase, $loginUseCase);
+
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'authGoogleConfig.php';
+$authGoogleUseCase = new AuthGoogleUseCase($client);
+$controller = new AuthController(
+    $registerUseCase, 
+    $loginUseCase,
+    $authGoogleUseCase
+);
 
 // MailJet
 $mailJetUseCase = new MailJetUseCase($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE']);
@@ -273,7 +290,8 @@ defineRoutes(
     $bienImmobilier, 
     $typeBien,
     $bail,
-    $mailJet
+    $mailJet,
+    $recaptcha
 );
 
 // Handle the request

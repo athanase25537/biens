@@ -6,25 +6,26 @@ use App\Port\In\User\AuthGoogleInputPort;
 class AuthGoogleUseCase implements AuthGoogleInputPort
 {
     private $login_url;
+    private $client;
 
     public function __construct($client)
     {
         $this->login_url = $client->createAuthUrl();
+        $this->client = $client;
     }
 
     public function connect() 
     {
-        echo '
-            <a href="'.$this->login_url.'">Se connecter avec Google</a>';
+        return header('Location: ' . $this->login_url);
     }
 
     public function checkLogin()
     {
         if (isset($_GET['code'])) {
-            $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
-            $client->setAccessToken($token);
+            $token = $this->client->fetchAccessTokenWithAuthCode($_GET['code']);
+            $this->client->setAccessToken($token);
 
-            $oauth = new Google_Service_Oauth2($client);
+            $oauth = new \Google_Service_Oauth2($this->client);
             $userInfo = $oauth->userinfo->get();
 
             $_SESSION['user'] = [

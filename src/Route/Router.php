@@ -2,6 +2,8 @@
 
 namespace App\Route;
 
+use App\Controller\HomeController;
+
 class Router {
 
     private $routes = [];
@@ -21,30 +23,24 @@ class Router {
 
         $allowed_end_point = explode(",", $_ENV['ALLOWED_END_POINT']);
         foreach ($this->routes as $route) {
-            if ($route['method'] === $requestMethod && preg_match($route['pattern'], $requestUri, $matches)) {
-                // Vérifier si l'utilisateur est connecté, sauf pour la route "login"
-                $callback = $route['callback'][1];
-                if (!in_array($callback, $allowed_end_point) && !isset($_SESSION['user'])) {
-                    /*
-                     * For redirection uncomment the following code
-                     * 
-                    */
-                    
-                    // header("Location: /api/login");
-                    throw new \Exception("Vous n'êtes pas connecté, veuillez vous connecté s'il vous plaît!");
+            $uriWithoutQuery = strtok($requestUri, '?'); // Ignore les query strings
+            if ($route['method'] === $requestMethod && preg_match('#^' . $route['pattern'] . '$#', $uriWithoutQuery, $matches)) {
+                echo "eto";
+                if (!in_array($route['callback'][1], $allowed_end_point) && !isset($_SESSION['user'])) {
+                    return header('Location: /login');
                 }
                 
                 try {
-                    array_shift($matches);
                     call_user_func_array($route['callback'], $matches);
                 } catch (Exception $e) {
-                    $this->sendResponse(['success' => false, 'error' => $e->getMessage()], 500);
+                    $this->sendResponse(['error' => $e->getMessage()], 500);
                 }
                 return;
-            }            
+            }
         }
-
-        $this->sendResponse(['success' => false, 'error' => 'Route Not Found'], 404);
+        
+        $controller = new HomeController();
+        $controller->not_found();
 
     }
     

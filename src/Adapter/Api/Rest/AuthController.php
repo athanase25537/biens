@@ -57,17 +57,16 @@ class AuthController
         $data = json_decode(file_get_contents('php://input'), true);
         try {
             $user = $this->loginUserUseCase->execute($data['email'], $data['password']);
+            if ($user) {
+                $response = 'Login successful';
+                $statusCode = 200;
+            } else {
+                $response = 'Email or password incorrect';
+                $statusCode = 401;
+            }
         } catch(\Exception $e) {
-            echo "Erreur: " . $e->getMessage();
-            return;
-        }
-
-        if ($user) {
-            $response = 'Login successful';
-            $statusCode = 200;
-        } else {
-            $response = 'Email or password incorrect';
-            $statusCode = 401;
+            $response = "Erreur: " . $e->getMessage();
+            $statusCode = 404;
         }
 
         $this->sendResponseController::sendResponse($response, $statusCode);
@@ -83,14 +82,13 @@ class AuthController
             echo "Erreur: " . $e->getMessage();
             return;
         }
-
-        $this->sendResponseController::sendResponse($response, $statusCode);
     }
 
     public function auth_google_check()
     {
         try {
             $response = $this->authGoogleUseCase->checkLogin();
+            $statusCode = 200;
         } catch(\Exception $e) {
             echo "Erreur: " . $e->getMessage();
             return;

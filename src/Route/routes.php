@@ -47,6 +47,10 @@ function defineRoutes(
     $router->addRoute('GET', $link.'/recaptcha', [$recaptcha, 'recaptcha']);
     $router->addRoute('POST', $link.'/recaptcha-check', [$recaptcha, 'recaptchaCheck']);
 
+    // Recaptcha routes
+    $router->addRoute('GET', $link.'/recaptcha$#', [$recaptcha, 'recaptcha']);
+    $router->addRoute('POST', $link.'/recaptcha-check$#', [$recaptcha, 'recaptchaCheck']);
+
     // Auth routes
     $router->addRoute('POST', $link.'/verify', [$controller, 'login']);
     $router->addRoute('POST', $link.'/save', [$controller, 'register']);

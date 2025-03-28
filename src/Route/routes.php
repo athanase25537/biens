@@ -103,7 +103,12 @@ function defineRoutes(
     // Baux routes
     $router->addRoute('GET', $link.'/bail/get-all/(\d+)', [$bail, 'getAll']);
 
-	// Page d'accueil (GET /)
+    // Mail Jet
+	$router->addRoute('POST', $link.'/mailjet/send-message', [$mailJet, 'sendMessage']);
+	
+    // Render template
+
+    // Page d'accueil (GET /)
 	$router->addRoute('GET', '/', [$homeController, 'index']);
 
     // Login template
@@ -112,6 +117,6 @@ function defineRoutes(
     // Register template
     $router->addRoute('GET', '/register', [$homeController, 'register']);
 
-    // Mail Jet
-	$router->addRoute('POST', $link.'/mailjet/send-message', [$mailJet, 'sendMessage']);
+    // Biens template
+    $router->addRoute('GET', '/biens', [$homeController, 'biens']);
 }

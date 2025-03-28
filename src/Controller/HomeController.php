@@ -23,4 +23,17 @@ class HomeController {
         $twig = new TwigView();
         $twig->render('404.html.twig');
     }
+
+    public function biens(): void
+    {
+        $baseUrl = "http://localhost";
+        $url = $baseUrl . "/api/bien-immobilier/get-all/0";
+
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
+
+        $biens = $data['message']['bien_immobilier'];
+        $twig = new TwigView();
+        $twig->render('bien.html.twig', ['biens' => $biens]);
+    }
 }

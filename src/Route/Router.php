@@ -19,13 +19,12 @@ class Router {
     public function handleRequest($requestUri, $requestMethod) 
     {
         session_start();
-        session_destroy();
+        // session_destroy();
 
         $allowed_end_point = explode(",", $_ENV['ALLOWED_END_POINT']);
         foreach ($this->routes as $route) {
             $uriWithoutQuery = strtok($requestUri, '?'); // Ignore les query strings
             if ($route['method'] === $requestMethod && preg_match('#^' . $route['pattern'] . '$#', $uriWithoutQuery, $matches)) {
-                echo "eto";
                 if (!in_array($route['callback'][1], $allowed_end_point) && !isset($_SESSION['user'])) {
                     return header('Location: /login');
                 }

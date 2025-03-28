@@ -1,0 +1,40 @@
+{% extends "layouts/layout.html.twig" %}
+{% block title %}Bien{% endblock %}
+
+{% block content %}
+    <div class="h-100">
+        <div class="container mt-3 p-3 bg-white rounded">
+            <h1>Liste des biens</h1>
+            <div class="row m-auto p-5">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center text-capitalize">#</th>
+                            <th scope="col" class="text-center text-capitalize">Type de bien</th>
+                            <th scope="col" class="text-center text-capitalize">Etat general</th>
+                            <th scope="col" class="text-center text-capitalize">Status propiete</th>
+                            <th scope="col" class="text-center text-capitalize"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bien in biens %}
+                            <tr>
+                                <td scope="row" class="text-center">{{ loop.index }}</td>
+                                <td scope="row" class="text-center">{{ bien.type_bien_id }}</td>
+                                <td scope="row" class="text-center">{{ bien.etat_general }}</td>
+                                <td scope="row" class="text-center">{{ bien.statut_propriete }}</td>
+                                <td scope="row" class="position-relative">
+                                    <div class="d-flex justify-content-around text-center align-items-end">
+                                        <i class="fa-solid fa-eye"></i>
+                                        <i class="fa-solid fa-pen"></i>
+                                        <i class="text-red fa-solid fa-trash"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

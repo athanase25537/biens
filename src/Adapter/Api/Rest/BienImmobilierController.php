@@ -121,11 +121,11 @@ class BienImmobilierController
         $this->sendResponseController::sendResponse($response, 201);
     }
 
-    public function getAll(int $offset=0): void
+    public function getAll($offset=0): void
     {
         try {
             // Get all bien immobilier by use case
-            $bienImmobilier = $this->getAllBienImmobilierUseCase->execute($offset);
+            $bienImmobilier = $this->getAllBienImmobilierUseCase->execute(intval($offset));
         } catch(\Exception $e) {
             echo "Erreur: " . $e->getMessage();
         }

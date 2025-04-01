@@ -66,6 +66,7 @@ use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\GetAllBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\GetBienImmobilierUseCase;
 
 // Type Bien
 use App\Core\Application\UseCase\TypeBien\CreateTypeBienUseCase;
@@ -235,11 +236,13 @@ $createBienImmobilierUseCase = new CreateBienImmobilierUseCase($bienImmobilierRe
 $updateBienImmobilierUseCase = new UpdateBienImmobilierUseCase($bienImmobilierRepository);
 $getAllBienImmobilierUseCase = new GetAllBienImmobilierUseCase($bienImmobilierRepository);
 $deleteBienImmobilierUseCase = new DeleteBienImmobilierUseCase($bienImmobilierRepository);
+$getBienImmobilierUseCase = new GetBienImmobilierUseCase($bienImmobilierRepository);
 $bienImmobilier = new BienImmobilierController(
     $createBienImmobilierUseCase,
     $updateBienImmobilierUseCase,
     $getAllBienImmobilierUseCase,
     $deleteBienImmobilierUseCase,
+    $getBienImmobilierUseCase,
 );
 
 // Type Bien

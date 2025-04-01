@@ -1,0 +1,45 @@
+{% extends "layouts/layout.html.twig" %}
+{% block title %}Bien{% endblock %}
+
+{% block content %}
+    <div class="h-100 w-100">
+        <div class="container w-100 mt-3 p-3 bg-white rounded">
+            <h1>Liste des biens</h1>
+            <div class="row m-auto w-100" style="overflow-x: auto; white-space: nowrap;">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Champ</th>
+                            <th class="text-center">Valeur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="text-center">ID</td><td class="text-center">{{ data.id }}</td></tr>
+                        <tr><td class="text-center">Propriétaire ID</td><td class="text-center">{{ data.proprietaire_id }}</td></tr>
+                        <tr><td class="text-center">Type Bien</td><td class="text-center">{{ data.type_bien_id }}</td></tr>
+                        <tr><td class="text-center">État Général</td><td class="text-center">{{ data.etat_general }}</td></tr>
+                        <tr><td class="text-center">Classe Énergétique</td><td class="text-center">{{ data.classe_energetique }}</td></tr>
+                        <tr><td class="text-center">Consommation Énergétique</td><td class="text-center">{{ data.consommation_energetique }}</td></tr>
+                        <tr><td class="text-center">Émissions GES</td><td class="text-center">{{ data.emissions_ges }}</td></tr>
+                        <tr><td class="text-center">Taxe Foncière</td><td class="text-center">{{ data.taxe_fonciere }}</td></tr>
+                        <tr><td class="text-center">Taxe Habitation</td><td class="text-center">{{ data.taxe_habitation }}</td></tr>
+                        <tr><td class="text-center">Orientation</td><td class="text-center">{{ data.orientation }}</td></tr>
+                        <tr><td class="text-center">Vue</td><td class="text-center">{{ data.vue }}</td></tr>
+                        <tr><td class="text-center">Type Chauffage</td><td class="text-center">{{ data.type_chauffage }}</td></tr>
+                        <tr><td class="text-center">Statut Propriété</td><td class="text-center">{{ data.statut_propriete }}</td></tr>
+                        <tr><td class="text-center">Description</td><td class="text-center">{{ data.description }}</td></tr>
+                        <tr><td class="text-center">Date Ajout</td><td class="text-center">{{ data.date_ajout }}</td></tr>
+                        <tr><td class="text-center">Date Mise à Jour</td><td class="text-center">{{ data.date_mise_a_jour }}</td></tr>
+                        <tr><td class="text-center">Adresse</td><td class="text-center">{{ data.adresse }}</td></tr>
+                        <tr><td class="text-center">Immeuble</td><td class="text-center">{{ data.immeuble }}</td></tr>
+                        <tr><td class="text-center">Étage</td><td class="text-center">{{ data.etage }}</td></tr>
+                        <tr><td class="text-center">Quartier</td><td class="text-center">{{ data.quartier }}</td></tr>
+                        <tr><td class="text-center">Ville</td><td class="text-center">{{ data.ville }}</td></tr>
+                        <tr><td class="text-center">Code Postal</td><td class="text-center">{{ data.code_postal }}</td></tr>
+                        <tr><td class="text-center">Pays</td><td class="text-center">{{ data.pays }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -5,7 +5,6 @@ use App\Port\In\User\AuthGoogleInputPort;
 
 class AuthGoogleUseCase implements AuthGoogleInputPort
 {
-  
     private $login_url;
     private $client;
 

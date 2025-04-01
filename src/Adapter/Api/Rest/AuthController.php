@@ -79,10 +79,9 @@ class AuthController
             $response = $this->authGoogleUseCase->connect();
         } catch(\Exception $e) {
             $statusCode = 401;
-            $response = "Erreur: " . $e->getMessage();
+            echo "Erreur: " . $e->getMessage();
+            return;
         }
-
-        $this->sendResponseController::sendResponse($response, $statusCode);
     }
 
     public function auth_google_check()
@@ -91,12 +90,10 @@ class AuthController
             $response = $this->authGoogleUseCase->checkLogin();
             $statusCode = 200;
         } catch(\Exception $e) {
-            $statusCode = 404;
-            $response = "Erreur: " . $e->getMessage();
+            echo "Erreur: " . $e->getMessage();
             return;
         }
 
         $this->sendResponseController::sendResponse($response, $statusCode);
     }
-
 }

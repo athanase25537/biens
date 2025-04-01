@@ -2,6 +2,14 @@
 {% block title %}Connexion{% endblock %}
 	
 {% block content %}
+	{% if error %}
+		<div class="alert alert-danger alert-dismissible fade show position-absolute l-50" role="alert">
+			<strong>Attention!</strong> {{ error}}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	{% endif %}
 	<div class="h-100">
 		<div class="d-flex justify-content-end m-0 align-items-center w-100 h-100">
 			<div class="void-content m-0 p-0 w-50 h-100">

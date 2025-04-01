@@ -4,6 +4,7 @@ namespace App\Adapter\Api\Rest;
 use App\Core\Application\UseCase\BienImmobilier\CreateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\UpdateBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\GetAllBienImmobilierUseCase;
+use App\Core\Application\UseCase\BienImmobilier\GetBienImmobilierUseCase;
 use App\Core\Application\UseCase\BienImmobilier\DeleteBienImmobilierUseCase;
 
 class BienImmobilierController
@@ -13,13 +14,15 @@ class BienImmobilierController
     private $updateBienImmobilierUseCase;
     private $getAllBienImmobilierUseCase;
     private $deleteBienImmobilierUseCase;
+    private $getBienImmobilierUseCase;
     private $sendResponseController;
 
     public function __construct(
         CreateBienImmobilierUseCase $createBienImmobilierUseCase,
         UpdateBienImmobilierUseCase $updateBienImmobilierUseCase,    
         GetAllBienImmobilierUseCase $getAllBienImmobilierUseCase,    
-        DeleteBienImmobilierUseCase $deleteBienImmobilierUseCase,    
+        DeleteBienImmobilierUseCase $deleteBienImmobilierUseCase, 
+        GetBienImmobilierUseCase $getBienImmobilierUseCase,   
     )
     {
 
@@ -27,6 +30,7 @@ class BienImmobilierController
         $this->updateBienImmobilierUseCase = $updateBienImmobilierUseCase;
         $this->getAllBienImmobilierUseCase = $getAllBienImmobilierUseCase;
         $this->deleteBienImmobilierUseCase = $deleteBienImmobilierUseCase;
+        $this->getBienImmobilierUseCase = $getBienImmobilierUseCase;
         $this->sendResponseController = new SendResponseController();
     }
 
@@ -128,11 +132,31 @@ class BienImmobilierController
             $bienImmobilier = $this->getAllBienImmobilierUseCase->execute(intval($offset));
         } catch(\Exception $e) {
             echo "Erreur: " . $e->getMessage();
+            return;
         }
 
         // Structure response data
         $response = [
             'message' => 'On a les 10 (ou inférieurs) biens immobiliers depuis ' . $offset,
+            'bien_immobilier' => $bienImmobilier
+        ];
+
+        $this->sendResponseController::sendResponse($response, 201);
+    }
+
+    public function getBienImmobilierById($idBien): void
+    {
+        try {
+            // Get all bien immobilier by use case
+            $bienImmobilier = $this->getBienImmobilierUseCase->execute(intval($idBien));
+        } catch(\Exception $e) {
+            echo "Erreur: " . $e->getMessage();
+            return;
+        }
+
+        // Structure response data
+        $response = [
+            'message' => 'On a le bien immobilier avec l\'id ' . $idBien,
             'bien_immobilier' => $bienImmobilier
         ];
 

@@ -27,7 +27,7 @@
                                     <div class="d-flex justify-content-around text-center align-items-end">
                                         <a href="biens/display-bien/{{ bien.id }}"><i class="fa-solid fa-eye"></i></a>
                                         <a><i class="fa-solid fa-pen"></i></a>
-                                        <a><i class="text-red fa-solid fa-trash"></i></a>
+                                        <a><i class="text-red fa-solid fa-trash" data-bs-toggle="modal" id="{{ bien.id }}" data-bs-target="#confirm-choice"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -36,5 +36,39 @@
                 </table>
             </div>
         </div>
+
     </div>
+      
+    <!-- Structure du modal -->
+    <div class="modal fade" id="confirm-choice" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-triangle-exclamation text-warning"></i> Attention</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <small class="text-muted mb-3">Vous voulez vraiment supprimer ce bien ?</small>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            <a href="" class="btn btn-primary">Confirmer</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        const trash = document.querySelectorAll('.fa-trash')
+        const modal_body = document.querySelector('.modal-body')
+        for(i=0; i<trash.length; i++) {
+            trash[i].addEventListener('click', function(e) {
+                console.log(this.id)
+                input = document.createElement('input')
+                input.setAttribute('type', 'hidden')
+                input.setAttribute('value', this.id)
+                modal_body.appendChild(input)
+            })
+        }
+    </script
 {% endblock %}
